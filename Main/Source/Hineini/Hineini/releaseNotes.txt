@@ -1,0 +1,8 @@
+0.0.3.0
+
+* Fixed: wrong location was used for automatic updates following typed-in location updates
+* Added: link to mobile Fire Eagle site in Menu
+* Improved: GPS accuracy
+* Added: GPS Stationary Threshold
+* Added: Link to Fire Eagle mobile website
+* Removed: "Activate after Update" backlight option

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <appSettings>
+    <add key="UpdateIntervalInMinutes" value="1" />
+    <add key="TowerLocationProvidersList" value="Yahoo,Google" />
+    <add key="LocateViaList" value="GPS,Towers" />
+    <add key="Backlight" value="SystemManaged" />
+    <add key="GpsStationaryThresholdInMiles" value="0.25" />
+  </appSettings>
+</configuration>
