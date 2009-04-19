@@ -11,7 +11,6 @@ using Hineini.Utility;
 using Microsoft.WindowsMobile.Status;
 
 // TODO icons panel can be placed dynamically... if landscape, place on right side of display; if portrait, place on bottom of display
-// TODO map logic should be changed to show based on lat/long and label based on mostrecentlocation.Name
 
 namespace Hineini {
     public partial class MainForm : Form {
