@@ -6,3 +6,7 @@
 * Added: GPS Stationary Threshold
 * Added: Link to Fire Eagle mobile website
 * Removed: "Activate after Update" backlight option
+
+0.0.3.1
+
+* Fixed: map failed to display after location update
