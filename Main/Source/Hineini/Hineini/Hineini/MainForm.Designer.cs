@@ -85,6 +85,7 @@ namespace Hineini {
             this.errorMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenuItem = new System.Windows.Forms.MenuItem();
             this.userManualMenuItem = new System.Windows.Forms.MenuItem();
+            this.aboutMenuItem = new System.Windows.Forms.MenuItem();
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
             this.timer1 = new System.Windows.Forms.Timer();
             this.updatePanel = new System.Windows.Forms.Panel();
@@ -98,7 +99,6 @@ namespace Hineini {
             this.pictureBoxMessageLabel = new System.Windows.Forms.Label();
             this.mostRecentInfoMessageLabel = new System.Windows.Forms.Label();
             this.locationPictureBox = new System.Windows.Forms.PictureBox();
-            this.aboutMenuItem = new System.Windows.Forms.MenuItem();
             this.updatePanel.SuspendLayout();
             this.leftMostUpdateBorderPanel.SuspendLayout();
             this.locationPicturePanel.SuspendLayout();
@@ -297,6 +297,11 @@ namespace Hineini {
             this.userManualMenuItem.Text = "User Manual";
             this.userManualMenuItem.Click += new System.EventHandler(this.UserManualMenuItem_Click);
             // 
+            // aboutMenuItem
+            // 
+            this.aboutMenuItem.Text = "About";
+            this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
+            // 
             // exitMenuItem
             // 
             this.exitMenuItem.Text = "Exit";
@@ -304,6 +309,7 @@ namespace Hineini {
             // 
             // timer1
             // 
+            this.timer1.Enabled = true;
             this.timer1.Interval = 500;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
@@ -415,11 +421,6 @@ namespace Hineini {
             this.locationPictureBox.Name = "locationPictureBox";
             this.locationPictureBox.Size = new System.Drawing.Size(240, 245);
             this.locationPictureBox.Resize += new System.EventHandler(this.locationPictureBox_Resize);
-            // 
-            // aboutMenuItem
-            // 
-            this.aboutMenuItem.Text = "About";
-            this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
             // 
             // MainForm
             // 

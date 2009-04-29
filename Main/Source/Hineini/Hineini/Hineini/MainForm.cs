@@ -96,7 +96,6 @@ namespace Hineini {
             bool authorizedForFireEagle = _fireEagle.UserToken != null && Helpers.StringHasValue(_fireEagle.UserToken.SecretToken);
             SetupMainFormObjects(authorizedForFireEagle);
 
-            timer1.Enabled = true;
             ResetFireEagleWorkerThread();
         }
 
