@@ -607,7 +607,7 @@ namespace Hineini {
         }
 
         private void aboutMenuItem_Click(object sender, EventArgs e) {
-            _aboutForm.Show();
+            _aboutForm.ResetAndShow();
             Hide();
         }
 
