@@ -503,7 +503,7 @@ namespace Hineini {
                 }
             }
             catch (Exception e1) {
-                MessagesForm.AddMessage(DateTime.Now, MainUtility.GetExceptionMessage(e1), Constants.MessageType.Error);
+                MessagesForm.AddMessage(DateTime.Now, "PFEU: " + MainUtility.GetExceptionMessage(e1), Constants.MessageType.Error);
             }
             finally {
                 if (!(successfulUpdate || unsuccessfulUpdateWasHandled)) {

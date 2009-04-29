@@ -86,7 +86,7 @@ namespace Hineini {
             }
             else {
                 message = String.Format(Constants.FAILED_UPDATE_MESSAGE_AUTOMATIC_TEMPLATE, Descriptions.LocateViaDescription);
-                MessagesForm.AddMessage(DateTime.Now, message, Constants.MessageType.Error);
+                MessagesForm.AddMessage(DateTime.Now, "HFU: " + message, Constants.MessageType.Error);
                 MainForm.SecondsBeforeNextFireEagleProcessing = 2;
             }
         }
