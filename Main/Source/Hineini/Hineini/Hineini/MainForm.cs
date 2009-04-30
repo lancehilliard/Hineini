@@ -198,23 +198,29 @@ namespace Hineini {
 
         private bool TryLocationUpdate() {
             bool locationUpdated = false;
-            if (Helpers.StringHasValue(_userUpdateLocation)) {
-                locationUpdated = UpdateAddressLocationData();
+            try {
+                if (Helpers.StringHasValue(_userUpdateLocation)) {
+                    locationUpdated = UpdateAddressLocationData();
+                }
+                else {
+                    Position? currentGpsPosition = _locationManager.UseGps ? _locationManager.GetValidGpsLocation() : null;
+                    if (currentGpsPosition != null) {
+                        UpdatePositionLocationData(currentGpsPosition);
+                        locationUpdated = true;
+                    }
+                    else if (_locationManager.UseTowers) {
+                        if (_locationManager.CanLocateTowers) {
+                            locationUpdated = UpdateCellTowerLocationData();
+                        }
+                        else {
+                            throw new Exception(Constants.UNABLE_TO_IDENTIFY_CELL_TOWERS_MESSAGE);
+                        }
+                    }
+                }
             }
-            else {
-                Position? currentGpsPosition = _locationManager.UseGps ? _locationManager.GetValidGpsLocation() : null;
-                if (currentGpsPosition != null) {
-                    UpdatePositionLocationData(currentGpsPosition);
-                    locationUpdated = true;
-                }
-                else if (_locationManager.UseTowers) {
-                    if (_locationManager.CanLocateTowers) {
-                        locationUpdated = UpdateCellTowerLocationData();
-                    }
-                    else {
-                        throw new Exception(Constants.UNABLE_TO_IDENTIFY_CELL_TOWERS_MESSAGE);
-                    }
-                }
+            catch (Exception e) {
+                MessagesForm.AddMessage(DateTime.Now, "TLU: " + MainUtility.GetExceptionMessage(e), Constants.MessageType.Error);
+                throw;
             }
             return locationUpdated;
         }
@@ -406,10 +412,12 @@ namespace Hineini {
         }
 
         private void UpdatePendingMapImage() {
+            string mapServiceUrl = string.Empty;
             try {
-                string mapServiceUrl = MapManager.GetMapServiceUrl(_pendingMapInfo, _mapWidth, _mapHeight);
+                mapServiceUrl = MapManager.GetMapServiceUrl(_pendingMapInfo, _mapWidth, _mapHeight);
                 string imageUrl = null;
                 if (Helpers.StringHasValue(mapServiceUrl)) {
+                        _pictureBoxMessage = Constants.FETCHING_MAP_MESSAGE;
                         XmlTextReader xmlTextReader = new XmlTextReader(mapServiceUrl); // http://msdn.microsoft.com/en-us/library/aa446526.aspx#mgexmlnetcpctfrmwrk_topic2
                         xmlTextReader.WhitespaceHandling = WhitespaceHandling.Significant;
                         imageUrl = MapManager.GetMapImageUrl(xmlTextReader);
@@ -427,8 +435,10 @@ namespace Hineini {
                     }
                 }
             }
-            catch (Exception) {
-                MessagesForm.AddMessage(DateTime.Now, Constants.UPDATING_PENDING_MAP_IMAGE_MESSAGE, Constants.MessageType.Error);
+            catch (Exception e) {
+                _pictureBoxMessage = Constants.MAP_FETCH_FAILED_MESSAGE;
+                _pendingMapInfo = null;
+                MessagesForm.AddMessage(DateTime.Now, "UPMI: " + e.Message, Constants.MessageType.Error);
             }
         }
 
@@ -497,7 +507,7 @@ namespace Hineini {
                     }
                 }
                 catch (Exception e) {
-                    MainUtility.HandleExpectedErrors(e);
+                    ExceptionManager.HandleExpectedErrors(e);
                     MainUtility.SetTimerPerSuccessfulOrHandledUpdate();
                     unsuccessfulUpdateWasHandled = true;
                 }

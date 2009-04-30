@@ -52,26 +52,6 @@ namespace Hineini {
             }
         }
 
-        public static void HandleExpectedErrors(Exception e) {
-            bool errorHandled = false;
-            if (e != null) {
-                string exceptionMessage = GetExceptionMessage(e);
-                if (Helpers.StringHasValue(exceptionMessage)) {
-                    if (exceptionMessage.Contains("EXAMPLE OF TEXT THAT MEANS SUCCESSFUL UPDATE DESPITE EXCEPTION")) {
-                        MessagesForm.AddMessage(DateTime.Now, "Location updated (DESPITE EXCEPTION)", Constants.MessageType.Info);
-                        errorHandled = true;
-                    }
-                    else if (exceptionMessage.Equals(Constants.UNABLE_TO_IDENTIFY_CELL_TOWERS_MESSAGE)) {
-                        MessagesForm.AddMessage(DateTime.Now, Constants.UNABLE_TO_IDENTIFY_CELL_TOWERS_MESSAGE, Constants.MessageType.Info);
-                        errorHandled = true;
-                    }
-                }
-                if (!errorHandled) {
-                    throw e;
-                }
-            }
-        }
-
         public static string GetExceptionMessage(Exception e1) {
             string message = e1.InnerException == null ? e1.Message : e1.InnerException.Message;
             return message;
@@ -86,7 +66,7 @@ namespace Hineini {
             }
             else {
                 message = String.Format(Constants.FAILED_UPDATE_MESSAGE_AUTOMATIC_TEMPLATE, Descriptions.LocateViaDescription);
-                MessagesForm.AddMessage(DateTime.Now, "HFU: " + message, Constants.MessageType.Error);
+                MessagesForm.AddMessage(DateTime.Now, message, Constants.MessageType.Error);
                 MainForm.SecondsBeforeNextFireEagleProcessing = 2;
             }
         }

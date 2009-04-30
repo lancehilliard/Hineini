@@ -71,6 +71,7 @@
     <Compile Include="Classes\DataReader.cs" />
     <Compile Include="Classes\Descriptions.cs" />
     <Compile Include="Classes\MainUtility.cs" />
+    <Compile Include="ExceptionManager.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
