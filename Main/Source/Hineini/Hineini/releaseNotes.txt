@@ -16,3 +16,7 @@
 * Known: map still fails, rarely, to display after location update
 * Improved: diagnostic logging
 
+0.0.3.3
+
+* Disabled: "Always On" feature of backlight menu (will return after bugs are fixed)
+
