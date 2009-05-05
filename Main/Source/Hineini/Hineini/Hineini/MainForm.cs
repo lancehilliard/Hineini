@@ -753,12 +753,18 @@ namespace Hineini {
         }
 
         private void timer1_Tick(object sender, EventArgs e) {
-            HandleFirstTick();
-            bool isActiveApplication = Boolean.IsActiveApplication;
-            MainUtility.ReleaseBacklightIfNoLongerActiveApplication(_wasActiveApplicationAtLastTick, isActiveApplication);
-            _wasActiveApplicationAtLastTick = isActiveApplication;
-            if (isActiveApplication) {
-                PerformActiveApplicationUserInterfaceUpdates();
+            timer1.Enabled = false;
+            try {
+                HandleFirstTick();
+                bool isActiveApplication = Boolean.IsActiveApplication;
+                MainUtility.ReleaseBacklightIfNoLongerActiveApplication(_wasActiveApplicationAtLastTick, isActiveApplication);
+                _wasActiveApplicationAtLastTick = isActiveApplication;
+                if (isActiveApplication) {
+                    PerformActiveApplicationUserInterfaceUpdates();
+                }
+            }
+            finally {
+                timer1.Enabled = true;
             }
         }
 
