@@ -324,7 +324,7 @@ namespace Hineini {
 
         private void UpdatePendingMapInfo(FireEagle.Location mostRecentLocation, int mapZoomLevel) {
             if (mostRecentLocation != null && !mostRecentLocation.Name.Equals(_lastLocationName)) {
-                _pendingMapInfo = new MapInfo(mostRecentLocation.Name, mostRecentLocation.ExactPoint, mapZoomLevel);
+                _pendingMapInfo = new MapInfo(mostRecentLocation.Name, mostRecentLocation.ExactPoint, mostRecentLocation.UpperCorner, mostRecentLocation.LowerCorner, mapZoomLevel);
                 _pendingMapImage = null;
                 _lastLocationName = mostRecentLocation.Name;
             }
@@ -412,17 +412,23 @@ namespace Hineini {
         }
 
         private void UpdatePendingMapImage() {
-            string mapServiceUrl = string.Empty;
+            //string mapServiceUrl = string.Empty;
             try {
-                mapServiceUrl = MapManager.GetMapServiceUrl(_pendingMapInfo, _mapWidth, _mapHeight);
-                string imageUrl = null;
-                if (Helpers.StringHasValue(mapServiceUrl)) {
-                        _pictureBoxMessage = Constants.FETCHING_MAP_MESSAGE;
-                        XmlTextReader xmlTextReader = new XmlTextReader(mapServiceUrl); // http://msdn.microsoft.com/en-us/library/aa446526.aspx#mgexmlnetcpctfrmwrk_topic2
-                        xmlTextReader.WhitespaceHandling = WhitespaceHandling.Significant;
-                        imageUrl = MapManager.GetMapImageUrl(xmlTextReader);
-                        xmlTextReader.Close();
+                //mapServiceUrl = MapManager.GetMapServiceUrl(_pendingMapInfo, _mapWidth, _mapHeight);
+                //string imageUrl = null;
+                //if (Helpers.StringHasValue(mapServiceUrl)) {
+                //        _pictureBoxMessage = Constants.FETCHING_MAP_MESSAGE;
+                //        XmlTextReader xmlTextReader = new XmlTextReader(mapServiceUrl); // http://msdn.microsoft.com/en-us/library/aa446526.aspx#mgexmlnetcpctfrmwrk_topic2
+                //        xmlTextReader.WhitespaceHandling = WhitespaceHandling.Significant;
+                //        imageUrl = MapManager.GetMapImageUrl(xmlTextReader);
+                //        xmlTextReader.Close();
+                //}
+                if (_pendingMapInfo.LocationLatLong == null) {
+                    double centerLongitude = (_pendingMapInfo.UpperCornerLatLong.Longitude + _pendingMapInfo.LowerCornerLatLong.Longitude) / 2;
+                    double centerLatitude = (_pendingMapInfo.UpperCornerLatLong.Latitude + _pendingMapInfo.LowerCornerLatLong.Latitude) / 2;
+                    _pendingMapInfo.LocationLatLong = new LatLong(centerLatitude, centerLongitude);
                 }
+                string imageUrl = String.Format("http://maps.google.com/staticmap?size={0}x{1}&maptype=mobile&key=ABQIAAAAu-YXjAmyKTn4bLyq60KPJxRCmR3BMzCOmnDxzV__D6GogjP-bxS2YsxdOmDDPViifiljA1OCCzYkPQ&sensor=false&center={2},{3}&zoom={4}", _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
                 if (Helpers.StringHasValue(imageUrl)) {
                     _pictureBoxMessage = Constants.LOADING_MAP_MESSAGE;
                     Bitmap mapImage = MapManager.GetMapImage(imageUrl);
@@ -438,6 +444,7 @@ namespace Hineini {
             catch (Exception e) {
                 _pictureBoxMessage = Constants.MAP_FETCH_FAILED_MESSAGE;
                 _pendingMapInfo = null;
+                _pendingMapImage = null;
                 MessagesForm.AddMessage(DateTime.Now, "UPMI: " + e.Message, Constants.MessageType.Error);
             }
         }

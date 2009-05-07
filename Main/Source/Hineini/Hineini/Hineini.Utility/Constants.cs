@@ -6,8 +6,8 @@ namespace Hineini.Utility {
         public const string GETTING_MAP_IMAGE_MESSAGE = "Getting map image...";
         public const string MAP_FETCH_FAILED_MESSAGE = "Map fetch failed...";
         public const string USER_SUPPLIED_ADDRESS_MUST_CONTAIN_ZIPCODE = "Address must contain zipcode...";
-        public const int MAP_ZOOM_LEVEL_CLOSER = 3;
-        public const int MAP_ZOOM_LEVEL_FARTHER = 6;
+        public const int MAP_ZOOM_LEVEL_CLOSER = 16;
+        public const int MAP_ZOOM_LEVEL_FARTHER = 11;
         public const string UNABLE_TO_IDENTIFY_LOCATION = "Can't determine location...";
         public const string LOADING_MAP_MESSAGE = "Loading map...";
         public const string HINEINI_CONSUMER_KEY = "GaAkDhCTfNsa";
