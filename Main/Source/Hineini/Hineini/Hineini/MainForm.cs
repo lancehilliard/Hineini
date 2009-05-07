@@ -34,7 +34,6 @@ namespace Hineini {
         private bool _wasActiveApplicationAtLastTick;
         private MapInfo _pendingMapInfo;
         private string _lastLocationName;
-        private static string _pictureBoxMessage;
         private readonly HelpForm _helpForm = new HelpForm();
         private readonly AboutForm _aboutForm = new AboutForm();
         private bool _needToHidePreAuthorizationFormAndShowMainForm;
@@ -324,7 +323,7 @@ namespace Hineini {
 
         private void UpdatePendingMapInfo(FireEagle.Location mostRecentLocation, int mapZoomLevel) {
             if (mostRecentLocation != null && !mostRecentLocation.Name.Equals(_lastLocationName)) {
-                _pendingMapInfo = new MapInfo(mostRecentLocation.Name, mostRecentLocation.ExactPoint, mostRecentLocation.UpperCorner, mostRecentLocation.LowerCorner, mapZoomLevel);
+                _pendingMapInfo = new MapInfo(mostRecentLocation.ExactPoint, mostRecentLocation.UpperCorner, mostRecentLocation.LowerCorner, mapZoomLevel);
                 _pendingMapImage = null;
                 _lastLocationName = mostRecentLocation.Name;
             }
@@ -345,7 +344,6 @@ namespace Hineini {
             else if (_needToHidePreAuthorizationFormAndShowMainForm) {
                 ShowMainFormAfterPreAuthorization();
             }
-            UpdatePictureBoxMessageLabel();
             UpdateMostRecentInfoMessageLabel();
             ChangeToManualUpdateIntervalIfUserIsTypingLocation();
             UpdateUserInterfaceWithPendingMapImage();
@@ -360,12 +358,10 @@ namespace Hineini {
 
         private void UpdateUserInterfaceWithPendingMapImage() {
             if (_mapImageIsPending) {
-                _pictureBoxMessage = _pendingMapInfo.LocationName;
                 ResetUpdateTextBoxAfterMapImageUpdate();
                 UpdatePictureBoxWithPendingMapImage();
                 _pendingMapInfo = null;
             }
-            pictureBoxMessageLabel.Visible = Helpers.StringHasValue(_pictureBoxMessage);
         }
 
         private void ResetUpdateTextBoxAfterMapImageUpdate() {
@@ -378,15 +374,6 @@ namespace Hineini {
         private void ChangeToManualUpdateIntervalIfUserIsTypingLocation() {
             if (Helpers.StringHasValue(_userUpdateLocation) && !Constants.UPDATE_INTERVAL_MANUAL_ONLY.Equals(Settings.UpdateIntervalInMinutes)) {
                 MainUtility.ChangeUpdateIntervalSetting(Constants.UPDATE_INTERVAL_MANUAL_ONLY, updateIntervalMenuItem, manuallyMenuItem);
-            }
-        }
-
-        private void UpdatePictureBoxMessageLabel() {
-            string candidateText = " " + _pictureBoxMessage;
-            if (!pictureBoxMessageLabel.Text.Equals(candidateText)) {
-                pictureBoxMessageLabel.Text = candidateText;
-                MainUtility.ResizeLabel(pictureBoxMessageLabel, CreateGraphics());
-                pictureBoxMessageLabel.Left = locationPictureBox.Width - pictureBoxMessageLabel.Width + 1;
             }
         }
 
@@ -430,7 +417,6 @@ namespace Hineini {
                 }
                 string imageUrl = String.Format("http://maps.google.com/staticmap?size={0}x{1}&maptype=mobile&key=ABQIAAAAu-YXjAmyKTn4bLyq60KPJxRCmR3BMzCOmnDxzV__D6GogjP-bxS2YsxdOmDDPViifiljA1OCCzYkPQ&sensor=false&center={2},{3}&zoom={4}", _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
                 if (Helpers.StringHasValue(imageUrl)) {
-                    _pictureBoxMessage = Constants.LOADING_MAP_MESSAGE;
                     Bitmap mapImage = MapManager.GetMapImage(imageUrl);
                     if (mapImage == null) {
                         MessagesForm.AddMessage(DateTime.Now, Constants.GETTING_MAP_IMAGE_MESSAGE, Constants.MessageType.Error);
@@ -442,10 +428,10 @@ namespace Hineini {
                 }
             }
             catch (Exception e) {
-                _pictureBoxMessage = Constants.MAP_FETCH_FAILED_MESSAGE;
                 _pendingMapInfo = null;
                 _pendingMapImage = null;
                 MessagesForm.AddMessage(DateTime.Now, "UPMI: " + e.Message, Constants.MessageType.Error);
+                MessagesForm.AddMessage(DateTime.Now, Constants.MAP_FETCH_FAILED_MESSAGE, Constants.MessageType.Error);
             }
         }
 
@@ -743,7 +729,8 @@ namespace Hineini {
             locationPictureBox.Size = new Size(locationPicturePanel.Size.Width - 2, locationPicturePanel.Size.Height - 2);
             locationPictureBox.Location = new Point(1, 1);
             mostRecentInfoMessageLabel.Size = new Size(0, mostRecentInfoMessageLabel.Size.Height);
-            mostRecentInfoMessageLabel.Location = new Point(1, locationPictureBox.Size.Height - mostRecentInfoMessageLabel.Size.Height + 1);
+            //mostRecentInfoMessageLabel.Location = new Point(1, locationPictureBox.Size.Height - mostRecentInfoMessageLabel.Size.Height + 1);
+            mostRecentInfoMessageLabel.Location = new Point(1, 1);
             if (mostRecentInfoMessageLabel.Text.Length > 0) {
                 MainUtility.ResizeLabel(mostRecentInfoMessageLabel, CreateGraphics());
             }

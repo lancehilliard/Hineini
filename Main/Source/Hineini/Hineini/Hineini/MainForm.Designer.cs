@@ -96,7 +96,6 @@ namespace Hineini {
             this.updateLinkLabel = new System.Windows.Forms.LinkLabel();
             this.rightMostUpdateBorderPanel = new System.Windows.Forms.Panel();
             this.locationPicturePanel = new System.Windows.Forms.Panel();
-            this.pictureBoxMessageLabel = new System.Windows.Forms.Label();
             this.mostRecentInfoMessageLabel = new System.Windows.Forms.Label();
             this.locationPictureBox = new System.Windows.Forms.PictureBox();
             this.updatePanel.SuspendLayout();
@@ -385,7 +384,6 @@ namespace Hineini {
             // locationPicturePanel
             // 
             this.locationPicturePanel.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.locationPicturePanel.Controls.Add(this.pictureBoxMessageLabel);
             this.locationPicturePanel.Controls.Add(this.mostRecentInfoMessageLabel);
             this.locationPicturePanel.Controls.Add(this.locationPictureBox);
             this.locationPicturePanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -393,17 +391,6 @@ namespace Hineini {
             this.locationPicturePanel.Name = "locationPicturePanel";
             this.locationPicturePanel.Size = new System.Drawing.Size(240, 245);
             this.locationPicturePanel.Resize += new System.EventHandler(this.locationPicturePanel_Resize);
-            // 
-            // pictureBoxMessageLabel
-            // 
-            this.pictureBoxMessageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBoxMessageLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(224)))), ((int)(((byte)(255)))));
-            this.pictureBoxMessageLabel.Font = new System.Drawing.Font("Segoe Condensed", 8F, System.Drawing.FontStyle.Regular);
-            this.pictureBoxMessageLabel.Location = new System.Drawing.Point(176, 1);
-            this.pictureBoxMessageLabel.Name = "pictureBoxMessageLabel";
-            this.pictureBoxMessageLabel.Size = new System.Drawing.Size(64, 18);
-            this.pictureBoxMessageLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.pictureBoxMessageLabel.Visible = false;
             // 
             // mostRecentInfoMessageLabel
             // 
@@ -455,7 +442,6 @@ namespace Hineini {
         private MenuItem helpMenuItem;
         private MenuItem userManualMenuItem;
         private Panel locationPicturePanel;
-        private Label pictureBoxMessageLabel;
         private PictureBox locationPictureBox;
         private Panel betweenTextBoxAndLinkLabelBorderPanel;
         private Panel leftMostUpdateBorderPanel;

@@ -2,8 +2,7 @@ using Hineini.FireEagle;
 
 namespace Hineini.Maps {
     public class MapInfo {
-        public MapInfo(string locationName, LatLong locationLatLong, LatLong upperCorner, LatLong lowerCorner, int mapZoomLevel) {
-            LocationName = locationName;
+        public MapInfo(LatLong locationLatLong, LatLong upperCorner, LatLong lowerCorner, int mapZoomLevel) {
             LocationLatLong = locationLatLong;
             UpperCornerLatLong = upperCorner;
             LowerCornerLatLong = lowerCorner;
@@ -13,8 +12,6 @@ namespace Hineini.Maps {
         public LatLong LowerCornerLatLong { get; set; }
 
         public LatLong UpperCornerLatLong { get; set; }
-
-        public string LocationName { get; set; }
 
         public LatLong LocationLatLong { get; set; }
 
