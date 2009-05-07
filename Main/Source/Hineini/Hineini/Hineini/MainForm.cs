@@ -444,13 +444,6 @@ namespace Hineini {
                 if (Boolean.IsActiveApplication && _pendingMapInfo != null && _pendingMapImage == null) {
                     UpdatePendingMapImage();
                 }
-                if (Boolean.BacklightAlwaysOn) {
-                    //MainUtility.ActivateBacklight();
-                    // TODO refactor backlight code
-                    byte VK_F24 = 0x87;
-                    int KEYEVENTF_KEYUP = 2;
-                    keybd_event(VK_F24, 0, KEYEVENTF_KEYUP, 0);
-                }
                 Thread.Sleep(1000);
                 if (SecondsBeforeNextFireEagleProcessing > 0) {
                     SecondsBeforeNextFireEagleProcessing--;
@@ -753,10 +746,6 @@ namespace Hineini {
             _userUpdateLocation = updateTextBox.Text;
         }
 
-        [DllImport("coredll.dll", SetLastError = true)]
-        static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
-
-
         private void timer1_Tick(object sender, EventArgs e) {
             timer1.Enabled = false;
             try {
@@ -767,6 +756,9 @@ namespace Hineini {
                 _wasActiveApplicationAtLastTick = isActiveApplication;
                 if (isActiveApplication) {
                     PerformActiveApplicationUserInterfaceUpdates();
+                    if (Boolean.BacklightAlwaysOn) {
+                        MainUtility.ActivateBacklight();
+                    }
                 }
             }
             finally {

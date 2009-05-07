@@ -121,10 +121,15 @@ namespace Hineini {
             }
         }
 
+        [DllImport("coredll.dll", SetLastError = true)]
+        static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+
         public static void ActivateBacklight() {
-            //if (Boolean.IsActiveApplication) {
-                Backlight.Activate();
-            //}
+                //Backlight.Activate();
+                // TODO refactor backlight code
+                byte VK_F24 = 0x87;
+                int KEYEVENTF_KEYUP = 2;
+                keybd_event(VK_F24, 0, KEYEVENTF_KEYUP, 0);
         }
 
         private static string GetWorkingDirectory() {
