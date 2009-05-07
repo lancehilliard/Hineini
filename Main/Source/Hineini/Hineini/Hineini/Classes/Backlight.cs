@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace Hineini {
     public class Backlight {
@@ -31,6 +32,7 @@ namespace Hineini {
         public static void Activate() {
             //request full power
             handle = SetPowerRequirement("BKL1:", PowerState.D0, 1, IntPtr.Zero, 0);
+            MessageBox.Show(handle.ToString());
         }
 
         //release power requirement

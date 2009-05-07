@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
@@ -444,7 +445,11 @@ namespace Hineini {
                     UpdatePendingMapImage();
                 }
                 if (Boolean.BacklightAlwaysOn) {
-                    MainUtility.ActivateBacklight();
+                    //MainUtility.ActivateBacklight();
+                    // TODO refactor backlight code
+                    byte VK_F24 = 0x87;
+                    int KEYEVENTF_KEYUP = 2;
+                    keybd_event(VK_F24, 0, KEYEVENTF_KEYUP, 0);
                 }
                 Thread.Sleep(1000);
                 if (SecondsBeforeNextFireEagleProcessing > 0) {
@@ -639,6 +644,7 @@ namespace Hineini {
 
         private void Form1_KeyDown(object sender, KeyEventArgs e) {
             if ((e.KeyCode == Keys.C)) {
+                Backlight.Release();
                 string message = _locationManager.CellTowerInfoString;
                 if (!Helpers.StringHasValue(message)) {
                     message = Constants.LOCATE_VIA_GPS_ONLY.Equals(Settings.LocateViaList) ? Constants.UNABLE_TO_IDENTIFY_CELL_TOWERS_WITH_CELL_TOWERS_DISABLED_DEBUG_MESSAGE : Constants.UNABLE_TO_IDENTIFY_CELL_TOWERS_DEBUG_MESSAGE;
@@ -646,6 +652,7 @@ namespace Hineini {
                 MessagesForm.AddMessage(DateTime.Now, message, Constants.MessageType.Error);
             }
             if ((e.KeyCode == Keys.A)) {
+                MainUtility.ActivateBacklight();
                 string message = SystemState.ActiveApplication;
                 if (!Helpers.StringHasValue(message)) {
                     message = "Unable to determine Active Application...";
@@ -746,11 +753,16 @@ namespace Hineini {
             _userUpdateLocation = updateTextBox.Text;
         }
 
+        [DllImport("coredll.dll", SetLastError = true)]
+        static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+
+
         private void timer1_Tick(object sender, EventArgs e) {
             timer1.Enabled = false;
             try {
                 HandleFirstTick();
                 bool isActiveApplication = Boolean.IsActiveApplication;
+                MessagesForm.AddMessage(DateTime.Now, _wasActiveApplicationAtLastTick + ", " + isActiveApplication, Constants.MessageType.Error);
                 MainUtility.ReleaseBacklightIfNoLongerActiveApplication(_wasActiveApplicationAtLastTick, isActiveApplication);
                 _wasActiveApplicationAtLastTick = isActiveApplication;
                 if (isActiveApplication) {

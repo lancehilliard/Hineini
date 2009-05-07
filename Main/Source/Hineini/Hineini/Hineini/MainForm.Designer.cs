@@ -245,8 +245,7 @@ namespace Hineini {
             // 
             // alwaysOnMenuItem
             // 
-            this.alwaysOnMenuItem.Enabled = false;
-            this.alwaysOnMenuItem.Text = "Always On (Coming Soon)";
+            this.alwaysOnMenuItem.Text = "Always On";
             this.alwaysOnMenuItem.Click += new System.EventHandler(this.alwaysOnMenuItem_Click);
             // 
             // accountSetupMenuItem

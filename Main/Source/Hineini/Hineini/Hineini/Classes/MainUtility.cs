@@ -121,14 +121,10 @@ namespace Hineini {
             }
         }
 
-        [DllImport("coredll")]
-        public static extern void SystemIdleTimerReset();
-
         public static void ActivateBacklight() {
-            if (Boolean.IsActiveApplication) {
-                SystemIdleTimerReset();
+            //if (Boolean.IsActiveApplication) {
                 Backlight.Activate();
-            }
+            //}
         }
 
         private static string GetWorkingDirectory() {
