@@ -12,9 +12,6 @@ EndProject
 Project("{B900F1C2-3D47-4FEC-85B3-04AAF18C3634}") = "Hineini.Install", "Hineini.Install\Hineini.Install.vddproj", "{16613C2F-82A8-4741-964E-A7C1EB1C656C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevNotes", "DevNotes", "{75F6E34A-5214-46CD-B8D3-83B879AF2485}"
-	ProjectSection(SolutionItems) = preProject
-		releaseNotes.txt = releaseNotes.txt
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hineini.Utility", "Hineini.Utility\Hineini.Utility.csproj", "{96F89D48-B24C-4EDC-8748-346FF82DBCB6}"
 EndProject

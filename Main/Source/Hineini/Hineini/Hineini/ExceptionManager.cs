@@ -17,7 +17,7 @@ namespace Hineini {
                         errorHandled = true;
                     }
                     else if (exceptionMessage.Contains("Place can't be identified")) {
-                        MessagesForm.AddMessage(DateTime.Now, Constants.UNABLE_TO_IDENTIFY_LOCATION, Constants.MessageType.Info);
+                        MessagesForm.AddMessage(DateTime.Now, Constants.WORKING_TO_IDENTIFY_LOCATION, Constants.MessageType.Info);
                         errorHandled = true;
                     }
                 }

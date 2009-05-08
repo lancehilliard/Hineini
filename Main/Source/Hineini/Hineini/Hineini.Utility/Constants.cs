@@ -8,7 +8,7 @@ namespace Hineini.Utility {
         public const string USER_SUPPLIED_ADDRESS_MUST_CONTAIN_ZIPCODE = "Address must contain zipcode...";
         public const int MAP_ZOOM_LEVEL_CLOSER = 16;
         public const int MAP_ZOOM_LEVEL_FARTHER = 11;
-        public const string UNABLE_TO_IDENTIFY_LOCATION = "Can't determine location...";
+        public const string WORKING_TO_IDENTIFY_LOCATION = "Determining location...";
         public const string LOADING_MAP_MESSAGE = "Loading map...";
         public const string HINEINI_CONSUMER_KEY = "GaAkDhCTfNsa";
         public const string HINEINI_CONSUMER_SECRET = "q1tIZbRR0FP4yHpZWwoyLzVWrD1RoMJt";

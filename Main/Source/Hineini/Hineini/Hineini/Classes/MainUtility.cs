@@ -125,7 +125,6 @@ namespace Hineini {
         static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
 
         public static void ActivateBacklight() {
-                //Backlight.Activate();
                 // TODO refactor backlight code
                 byte VK_F24 = 0x87;
                 int KEYEVENTF_KEYUP = 2;
@@ -183,12 +182,6 @@ namespace Hineini {
             int result = granularLocationTypes.Contains(location.LevelName) ? Constants.MAP_ZOOM_LEVEL_CLOSER : Constants.MAP_ZOOM_LEVEL_FARTHER;
             //MessagesForm.AddMessage(DateTime.Now, location.LevelName + " = " + result, Constants.MessageType.Error);
             return result;
-        }
-
-        public static void ReleaseBacklightIfNoLongerActiveApplication(bool wasActiveApplicationAtLastTick, bool isActiveApplication) {
-            if (wasActiveApplicationAtLastTick && !isActiveApplication) {
-                Backlight.Release();
-            }
         }
 
         public static void ResizeLabel(Label label, Graphics graphics) {

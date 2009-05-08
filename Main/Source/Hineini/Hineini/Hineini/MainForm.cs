@@ -636,26 +636,6 @@ namespace Hineini {
         #region Keypress handler
 
         private void Form1_KeyDown(object sender, KeyEventArgs e) {
-            if ((e.KeyCode == Keys.C)) {
-                Backlight.Release();
-                string message = _locationManager.CellTowerInfoString;
-                if (!Helpers.StringHasValue(message)) {
-                    message = Constants.LOCATE_VIA_GPS_ONLY.Equals(Settings.LocateViaList) ? Constants.UNABLE_TO_IDENTIFY_CELL_TOWERS_WITH_CELL_TOWERS_DISABLED_DEBUG_MESSAGE : Constants.UNABLE_TO_IDENTIFY_CELL_TOWERS_DEBUG_MESSAGE;
-                }
-                MessagesForm.AddMessage(DateTime.Now, message, Constants.MessageType.Error);
-            }
-            if ((e.KeyCode == Keys.A)) {
-                MainUtility.ActivateBacklight();
-                string message = SystemState.ActiveApplication;
-                if (!Helpers.StringHasValue(message)) {
-                    message = "Unable to determine Active Application...";
-                }
-                else {
-                    message = "Active Application: " + message;
-                }
-                MessagesForm.AddMessage(DateTime.Now, message, Constants.MessageType.Error);
-            }
-
             #region Unused keys
 
             if ((e.KeyCode == Keys.F1)) {
@@ -751,13 +731,16 @@ namespace Hineini {
             try {
                 HandleFirstTick();
                 bool isActiveApplication = Boolean.IsActiveApplication;
-                MessagesForm.AddMessage(DateTime.Now, _wasActiveApplicationAtLastTick + ", " + isActiveApplication, Constants.MessageType.Error);
-                MainUtility.ReleaseBacklightIfNoLongerActiveApplication(_wasActiveApplicationAtLastTick, isActiveApplication);
                 _wasActiveApplicationAtLastTick = isActiveApplication;
                 if (isActiveApplication) {
-                    PerformActiveApplicationUserInterfaceUpdates();
                     if (Boolean.BacklightAlwaysOn) {
                         MainUtility.ActivateBacklight();
+                    }
+                    PerformActiveApplicationUserInterfaceUpdates();
+                }
+                else {
+                    if (locationPictureBox.Image != null && _pendingMapImage == null) {
+                        locationPictureBox.Image = null;
                     }
                 }
             }
