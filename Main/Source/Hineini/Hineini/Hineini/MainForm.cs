@@ -498,7 +498,7 @@ namespace Hineini {
                     }
                 }
                 catch (Exception e) {
-                    ExceptionManager.HandleExpectedErrors(e);
+                    ExceptionManager.HandleExpectedErrors(e, ref _pendingMapImage);
                     MainUtility.SetTimerPerSuccessfulOrHandledUpdate();
                     unsuccessfulUpdateWasHandled = true;
                 }

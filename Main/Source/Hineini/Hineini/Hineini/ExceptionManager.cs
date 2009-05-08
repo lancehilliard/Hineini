@@ -1,9 +1,10 @@
 using System;
+using System.Drawing;
 using Hineini.Utility;
 
 namespace Hineini {
     public class ExceptionManager {
-        public static void HandleExpectedErrors(Exception e) {
+        public static void HandleExpectedErrors(Exception e, ref Bitmap pendingMapImage) {
             bool errorHandled = false;
             if (e != null) {
                 string exceptionMessage = MainUtility.GetExceptionMessage(e);
@@ -18,6 +19,7 @@ namespace Hineini {
                     }
                     else if (exceptionMessage.Contains("Place can't be identified")) {
                         MessagesForm.AddMessage(DateTime.Now, Constants.WORKING_TO_IDENTIFY_LOCATION, Constants.MessageType.Info);
+                        pendingMapImage = null;
                         errorHandled = true;
                     }
                 }
