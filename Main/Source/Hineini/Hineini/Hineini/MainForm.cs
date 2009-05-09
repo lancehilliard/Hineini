@@ -11,8 +11,6 @@ using Hineini.Maps;
 using Hineini.Utility;
 using Microsoft.WindowsMobile.Status;
 
-// TODO icons panel can be placed dynamically... if landscape, place on right side of display; if portrait, place on bottom of display
-
 namespace Hineini {
     public partial class MainForm : Form {
         #region Fields
@@ -32,7 +30,6 @@ namespace Hineini {
         private int _mapWidth;
         private Bitmap _pendingMapImage;
         private bool _mapImageIsPending;
-        private bool _wasActiveApplicationAtLastTick;
         private MapInfo _pendingMapInfo;
         private string _lastLocationName;
         private readonly HelpForm _helpForm = new HelpForm();
@@ -400,23 +397,13 @@ namespace Hineini {
         }
 
         private void UpdatePendingMapImage() {
-            //string mapServiceUrl = string.Empty;
             try {
-                //mapServiceUrl = MapManager.GetMapServiceUrl(_pendingMapInfo, _mapWidth, _mapHeight);
-                //string imageUrl = null;
-                //if (Helpers.StringHasValue(mapServiceUrl)) {
-                //        _pictureBoxMessage = Constants.FETCHING_MAP_MESSAGE;
-                //        XmlTextReader xmlTextReader = new XmlTextReader(mapServiceUrl); // http://msdn.microsoft.com/en-us/library/aa446526.aspx#mgexmlnetcpctfrmwrk_topic2
-                //        xmlTextReader.WhitespaceHandling = WhitespaceHandling.Significant;
-                //        imageUrl = MapManager.GetMapImageUrl(xmlTextReader);
-                //        xmlTextReader.Close();
-                //}
                 if (_pendingMapInfo.LocationLatLong == null) {
                     double centerLongitude = (_pendingMapInfo.UpperCornerLatLong.Longitude + _pendingMapInfo.LowerCornerLatLong.Longitude) / 2;
                     double centerLatitude = (_pendingMapInfo.UpperCornerLatLong.Latitude + _pendingMapInfo.LowerCornerLatLong.Latitude) / 2;
                     _pendingMapInfo.LocationLatLong = new LatLong(centerLatitude, centerLongitude);
                 }
-                string imageUrl = String.Format("http://maps.google.com/staticmap?size={0}x{1}&maptype=mobile&key=ABQIAAAAu-YXjAmyKTn4bLyq60KPJxRCmR3BMzCOmnDxzV__D6GogjP-bxS2YsxdOmDDPViifiljA1OCCzYkPQ&sensor=false&center={2},{3}&zoom={4}", _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
+                string imageUrl = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
                 if (Helpers.StringHasValue(imageUrl)) {
                     Bitmap mapImage = MapManager.GetMapImage(imageUrl);
                     if (mapImage == null) {
@@ -730,9 +717,7 @@ namespace Hineini {
             timer1.Enabled = false;
             try {
                 HandleFirstTick();
-                bool isActiveApplication = Boolean.IsActiveApplication;
-                _wasActiveApplicationAtLastTick = isActiveApplication;
-                if (isActiveApplication) {
+                if (Boolean.IsActiveApplication) {
                     if (Boolean.BacklightAlwaysOn) {
                         MainUtility.ActivateBacklight();
                     }

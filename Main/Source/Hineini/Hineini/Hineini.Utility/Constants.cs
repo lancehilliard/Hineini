@@ -1,5 +1,8 @@
+using System;
+
 namespace Hineini.Utility {
     public class Constants {
+        public const string MAP_URL_TEMPLATE = "http://maps.google.com/staticmap?size={0}x{1}&maptype=mobile&key=ABQIAAAAu-YXjAmyKTn4bLyq60KPJxRCmR3BMzCOmnDxzV__D6GogjP-bxS2YsxdOmDDPViifiljA1OCCzYkPQ&sensor=false&center={2},{3}&zoom={4}";
         public const string FETCHING_MAP_MESSAGE = "Fetching map...";
         public const double DISTANCE_UNKNOWN = -1;
         public const string GETTING_AUTH_TOKEN_MESSAGE = "Getting auth token...";
