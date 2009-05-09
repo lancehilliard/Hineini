@@ -9,13 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hineini.Location", "Hineini
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hineini.Encryption", "Hineini.Encryption\Hineini.Encryption.csproj", "{CA7F6927-69B7-47BC-B9AE-26BCF41B7E4C}"
 EndProject
-Project("{B900F1C2-3D47-4FEC-85B3-04AAF18C3634}") = "Hineini.Install", "Hineini.Install\Hineini.Install.vddproj", "{16613C2F-82A8-4741-964E-A7C1EB1C656C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevNotes", "DevNotes", "{75F6E34A-5214-46CD-B8D3-83B879AF2485}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hineini.Utility", "Hineini.Utility\Hineini.Utility.csproj", "{96F89D48-B24C-4EDC-8748-346FF82DBCB6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hineini.Maps", "Hineini.Maps\Hineini.Maps.csproj", "{4992D85C-51DF-4071-AA99-D9C917D570B5}"
+EndProject
+Project("{B900F1C2-3D47-4FEC-85B3-04AAF18C3634}") = "Hineini.Install", "Hineini.Install\Hineini.Install.vddproj", "{2C8B2A46-BF39-44C0-9936-17555CBFC3B7}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -35,7 +35,6 @@ Global
 		{F5926DB4-5243-4C5D-989E-2A0062EFC1A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5926DB4-5243-4C5D-989E-2A0062EFC1A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5926DB4-5243-4C5D-989E-2A0062EFC1A8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F5926DB4-5243-4C5D-989E-2A0062EFC1A8}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{0D448612-DB16-412F-841C-65353910A730}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0D448612-DB16-412F-841C-65353910A730}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D448612-DB16-412F-841C-65353910A730}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -44,8 +43,6 @@ Global
 		{CA7F6927-69B7-47BC-B9AE-26BCF41B7E4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA7F6927-69B7-47BC-B9AE-26BCF41B7E4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA7F6927-69B7-47BC-B9AE-26BCF41B7E4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{16613C2F-82A8-4741-964E-A7C1EB1C656C}.Debug|Any CPU.ActiveCfg = Release
-		{16613C2F-82A8-4741-964E-A7C1EB1C656C}.Release|Any CPU.ActiveCfg = Release
 		{96F89D48-B24C-4EDC-8748-346FF82DBCB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{96F89D48-B24C-4EDC-8748-346FF82DBCB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96F89D48-B24C-4EDC-8748-346FF82DBCB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -54,6 +51,8 @@ Global
 		{4992D85C-51DF-4071-AA99-D9C917D570B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4992D85C-51DF-4071-AA99-D9C917D570B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4992D85C-51DF-4071-AA99-D9C917D570B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C8B2A46-BF39-44C0-9936-17555CBFC3B7}.Debug|Any CPU.ActiveCfg = Debug
+		{2C8B2A46-BF39-44C0-9936-17555CBFC3B7}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

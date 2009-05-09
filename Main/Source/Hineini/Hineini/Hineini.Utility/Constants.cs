@@ -41,7 +41,7 @@ namespace Hineini.Utility {
         public const string UNABLE_TO_IDENTIFY_CELL_TOWERS_WITH_CELL_TOWERS_DISABLED_DEBUG_MESSAGE = "Locate via Cell Towers to see cell info...";
         public const string UPDATE_INTERVAL_MESSAGE_MANUAL = "Update interval: Manually";
         public const string UPDATE_INTERVAL_MESSAGE_MANUAL_AFTER_AUTOMATIC = "Update interval: Manually";
-        public const string VERSIONED_WELCOME_MESSAGE = "Hineini (v0.0.3.3)";
+        public const string VERSIONED_WELCOME_MESSAGE = "Hineini (v0.0.4.0)";
         public const string BACKLIGHT_ALWAYS_ON = "AlwaysOn";
         public const string BACKLIGHT_SYSTEM_MANAGED = "SystemManaged";
         public const char ESCAPE_CHARACTER = '\x001b';
