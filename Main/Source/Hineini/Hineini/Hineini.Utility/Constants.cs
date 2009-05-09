@@ -2,6 +2,12 @@ using System;
 
 namespace Hineini.Utility {
     public class Constants {
+        public const string CLIENT_UPDATE_AVAILABLE_MENU_ITEM_TEXT = "Client Update Available";
+        public const string CLIENT_UPDATE_AVAILABLE_MESSAGE = "An updated version of Hineini can be found at http://hineini.codeplex.com.";
+        public const string CURRENT_VERSION = "0.0.4.0";
+        public const string RECOMMENDED_VERSION_HTML_DELIMITER_END = " --";
+        public const string RECOMMENDED_VERSION_HTML_DELIMITER_START = "!-- Recommend ";
+        public const string RECOMMENDED_VERSION_URL = "http://hineini.codeplex.com/Wiki/View.aspx?title=recommendedVersion";
         public const string MAP_URL_TEMPLATE = "http://maps.google.com/staticmap?size={0}x{1}&maptype=mobile&key=ABQIAAAAu-YXjAmyKTn4bLyq60KPJxRCmR3BMzCOmnDxzV__D6GogjP-bxS2YsxdOmDDPViifiljA1OCCzYkPQ&sensor=false&center={2},{3}&zoom={4}";
         public const string FETCHING_MAP_MESSAGE = "Fetching map...";
         public const double DISTANCE_UNKNOWN = -1;
@@ -41,7 +47,7 @@ namespace Hineini.Utility {
         public const string UNABLE_TO_IDENTIFY_CELL_TOWERS_WITH_CELL_TOWERS_DISABLED_DEBUG_MESSAGE = "Locate via Cell Towers to see cell info...";
         public const string UPDATE_INTERVAL_MESSAGE_MANUAL = "Update interval: Manually";
         public const string UPDATE_INTERVAL_MESSAGE_MANUAL_AFTER_AUTOMATIC = "Update interval: Manually";
-        public const string VERSIONED_WELCOME_MESSAGE = "Hineini (v0.0.4.0)";
+        public const string VERSIONED_WELCOME_MESSAGE = "Hineini (v" + CURRENT_VERSION + ")";
         public const string BACKLIGHT_ALWAYS_ON = "AlwaysOn";
         public const string BACKLIGHT_SYSTEM_MANAGED = "SystemManaged";
         public const char ESCAPE_CHARACTER = '\x001b';

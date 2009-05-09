@@ -124,6 +124,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Classes\Settings.cs" />
+    <Compile Include="VersionManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hineini.Encryption\Hineini.Encryption.csproj">

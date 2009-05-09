@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -39,6 +40,9 @@ namespace Hineini {
         private bool _manualUpdateRequested;
         private static string _lastLocationMarker;
         private static Position _lastUpdatedPosition;
+        private bool versionCheckPerformed;
+        private bool _userShouldBeAdvisedAboutRecommendedVersion;
+
         #endregion
 
         #region Properties
@@ -345,6 +349,32 @@ namespace Hineini {
             UpdateMostRecentInfoMessageLabel();
             ChangeToManualUpdateIntervalIfUserIsTypingLocation();
             UpdateUserInterfaceWithPendingMapImage();
+            if (_userShouldBeAdvisedAboutRecommendedVersion) {
+                ShowClientUpdateMenuItem();
+                _userShouldBeAdvisedAboutRecommendedVersion = false;
+            }
+        }
+
+        private void ShowClientUpdateMenuItem() {
+            MenuItem clientUpdateMenuItem = new MenuItem();
+            clientUpdateMenuItem.Text = Constants.CLIENT_UPDATE_AVAILABLE_MENU_ITEM_TEXT;
+            clientUpdateMenuItem.Click += clientUpdateMenuItem_Click;
+            mainMenu.MenuItems.Add(clientUpdateMenuItem);
+        }
+
+        static void clientUpdateMenuItem_Click(object sender, EventArgs e) {
+            MessageBox.Show(Constants.CLIENT_UPDATE_AVAILABLE_MESSAGE);
+        }
+
+        private static bool UserShouldBeAdvisedAboutRecommendedVersion() {
+            bool result = false;
+            try {
+                result = VersionManager.KnownRecommendedVersionDiffersFromCurrentVersion();
+            }
+            catch (Exception e) {
+                MessagesForm.AddMessage(DateTime.Now, "PVC: " + e.Message, Constants.MessageType.Error);
+            }
+            return result;
         }
 
         private void UpdateMostRecentInfoMessageLabel() {
@@ -427,9 +457,15 @@ namespace Hineini {
             while (true) {
                 if (SecondsBeforeNextFireEagleProcessing == 0) {
                     ProcessFireEagle();
+                    if (!versionCheckPerformed) {
+                        versionCheckPerformed = true;
+                        _userShouldBeAdvisedAboutRecommendedVersion = UserShouldBeAdvisedAboutRecommendedVersion();
+                    }
                 }
-                if (Boolean.IsActiveApplication && _pendingMapInfo != null && _pendingMapImage == null) {
-                    UpdatePendingMapImage();
+                if (Boolean.IsActiveApplication) {
+                    if (_pendingMapInfo != null && _pendingMapImage == null) {
+                        UpdatePendingMapImage();
+                    }
                 }
                 Thread.Sleep(1000);
                 if (SecondsBeforeNextFireEagleProcessing > 0) {
@@ -733,6 +769,5 @@ namespace Hineini {
                 timer1.Enabled = true;
             }
         }
-
     }
 }
