@@ -2,6 +2,8 @@ using System;
 
 namespace Hineini.Utility {
     public class Constants {
+        public const string ABOUT_FILENAME = "About.html";
+        public const string USER_MANUAL_FILENAME = "UserManual.html";
         public const string CLIENT_UPDATE_AVAILABLE_MENU_ITEM_TEXT = "Client Update Available";
         public const string CLIENT_UPDATE_AVAILABLE_MESSAGE = "An updated version of Hineini can be found at http://hineini.codeplex.com.";
         public const string CURRENT_VERSION = "0.0.4.1";

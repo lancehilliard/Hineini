@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -626,17 +627,23 @@ namespace Hineini {
         }
 
         private void UserManualMenuItem_Click(object sender, EventArgs e) {
-            _helpForm.Show();
-            Hide();
+            string userManualFilePath = MainUtility.GetWorkingDirectoryFileName(Constants.USER_MANUAL_FILENAME);
+            Process.Start(userManualFilePath, null);
+            // TODO remove helpform from project?
+            //_helpForm.Show();
+            //Hide();
         }
 
         private void aboutMenuItem_Click(object sender, EventArgs e) {
-            _aboutForm.ResetAndShow();
-            Hide();
+            string aboutFilePath = MainUtility.GetWorkingDirectoryFileName(Constants.ABOUT_FILENAME);
+            Process.Start(aboutFilePath, null);
+            // TODO remove aboutForm from project?
+            //_aboutForm.ResetAndShow();
+            //Hide();
         }
 
         private void mobileWebsiteMenuItem_Click(object sender, EventArgs e) {
-            System.Diagnostics.Process.Start("http://m.fireeagle.com", null);
+            Process.Start("http://m.fireeagle.com", null);
         }
 
         private void noneMenuItem_Click(object sender, EventArgs e) {
