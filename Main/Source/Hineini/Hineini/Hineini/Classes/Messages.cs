@@ -31,7 +31,7 @@ namespace Hineini {
                 int updateIntervalInMinutes = Settings.UpdateIntervalInMinutes;
                 string updatingDescription;
                 if (Constants.UPDATE_INTERVAL_MANUAL_ONLY.Equals(updateIntervalInMinutes)) {
-                    updatingDescription = MainForm.NeedToShowWelcomeMessage ? Constants.UPDATE_INTERVAL_MESSAGE_MANUAL : Constants.UPDATE_INTERVAL_MESSAGE_MANUAL_AFTER_AUTOMATIC;
+                    updatingDescription = MainForm.NeedToShowIntroductionMessage ? Constants.UPDATE_INTERVAL_MESSAGE_MANUAL : Constants.UPDATE_INTERVAL_MESSAGE_MANUAL_AFTER_AUTOMATIC;
                 }
                 else {
                     updatingDescription = String.Format(Constants.UPDATE_INTERVAL_MESSAGE_AUTOMATIC_TEMPLATE, updateIntervalInMinutes, (updateIntervalInMinutes == 1 ? "minute" : "minutes"));

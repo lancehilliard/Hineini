@@ -17,7 +17,7 @@ namespace Hineini {
     public partial class MainForm : Form {
         #region Fields
         private static string _formName;
-        private static bool _needToShowWelcomeMessage = true;
+        private static bool _needToShowIntroductionMessage = true;
         private static bool _messageWaitingToBeShown;
         private static int _secondsBeforeNextFireEagleProcessing;
         private static readonly LocationManager _locationManager = new LocationManager();
@@ -67,9 +67,9 @@ namespace Hineini {
             set { _fireEagleRequestAuthorizationUrl = value; }
         }
 
-        public static bool NeedToShowWelcomeMessage {
-            get { return _needToShowWelcomeMessage; }
-            set { _needToShowWelcomeMessage = value; }
+        public static bool NeedToShowIntroductionMessage {
+            get { return _needToShowIntroductionMessage; }
+            set { _needToShowIntroductionMessage = value; }
         }
 
         public static int SecondsBeforeNextFireEagleProcessing {
@@ -88,12 +88,6 @@ namespace Hineini {
             _fireEagle.UserToken = Settings.FireEagleUserToken;
 
             InitializeUpdateControls();
-            VerifySettings();
-
-            MenuItems.SetUpdateIntervalMenuItemCheckmarks(updateIntervalMenuItem, manuallyMenuItem);
-            MenuItems.SetGpsStationaryThresholdMenuItemCheckmarks(gpsStationaryThresholdMenuItem);
-
-            ApplyEventHandlers();
 
             bool authorizedForFireEagle = _fireEagle.UserToken != null && Helpers.StringHasValue(_fireEagle.UserToken.SecretToken);
             SetupMainFormObjects(authorizedForFireEagle);
@@ -159,14 +153,14 @@ namespace Hineini {
             _processFireEagleWorkerThread.Start();
         }
 
-        private static void ShowWelcomeMessage() {
+        private static void ShowIntroductionMessage() {
             DateTime now = DateTime.Now;
             MessagesForm.AddMessage(now, Messages.UpdateIntervalMessage, Constants.MessageType.Info);
             MessagesForm.AddMessage(now, Descriptions.TowerProviders, Constants.MessageType.Info);
             MessagesForm.AddMessage(now, Messages.LocateViaMessage, Constants.MessageType.Info);
             MessagesForm.AddMessage(now, Messages.BacklightMessage, Constants.MessageType.Info);
-            MessagesForm.AddMessage(DateTime.Now, Constants.VERSIONED_WELCOME_MESSAGE, Constants.MessageType.Info);
-            NeedToShowWelcomeMessage = false;
+            MessagesForm.AddMessage(DateTime.Now, Constants.WORKING_TO_IDENTIFY_LOCATION, Constants.MessageType.Info);
+            NeedToShowIntroductionMessage = false;
         }
 
         private void PopulateRequestTokenUrl() {
@@ -334,6 +328,13 @@ namespace Hineini {
 
         private void HandleFirstTick() {
             if (!_timerHasTicked) {
+                VerifySettings();
+
+                MenuItems.SetUpdateIntervalMenuItemCheckmarks(updateIntervalMenuItem, manuallyMenuItem);
+                MenuItems.SetGpsStationaryThresholdMenuItemCheckmarks(gpsStationaryThresholdMenuItem);
+
+                ApplyEventHandlers();
+
                 FormName = Text;
                 UpdateInitialSettings();
                 _timerHasTicked = true;
@@ -480,8 +481,8 @@ namespace Hineini {
                 ProcessFireEaglePrerequisites();
             }
             else {
-                if (NeedToShowWelcomeMessage) {
-                    ShowWelcomeMessage();
+                if (NeedToShowIntroductionMessage) {
+                    ShowIntroductionMessage();
                 }
                 ProcessFireEagleUpdate();
             }
