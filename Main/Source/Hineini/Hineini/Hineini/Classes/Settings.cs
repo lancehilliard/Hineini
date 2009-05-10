@@ -50,7 +50,7 @@ namespace Hineini {
                     result = Encryptor.Decrypt(encryptedToken, Encryptor.Password);
                 }
                 catch (Exception e) {
-                    // No need to do anything.  The 'result' variable can keep the value it already has.
+                    MessagesForm.AddMessage(DateTime.Now, "GD: " + e.Message, Constants.MessageType.Error);
                 }
             }
             return result;
@@ -78,6 +78,7 @@ namespace Hineini {
                     result = Int32.Parse(_settings.Get("UpdateIntervalInMinutes"));
                 }
                 catch (Exception e) {
+                    MessagesForm.AddMessage(DateTime.Now, "UIIM: " + e.Message, Constants.MessageType.Error);
                 }
                 if (!validUpdateIntervalValues.Contains(result)) {
                     result = UPDATE_INTERVAL_IN_MINUTES_DEFAULT_VALUE;
@@ -94,6 +95,7 @@ namespace Hineini {
                     result = double.Parse(_settings.Get("GpsStationaryThresholdInMiles"));
                 }
                 catch (Exception e) {
+                    MessagesForm.AddMessage(DateTime.Now, "GSTIM: " + e.Message, Constants.MessageType.Error);
                 }
                 if (!validGpsStationaryThresholdValues.Contains(result)) {
                     result = GPS_STATIONARY_THRESHOLD_DEFAULT_VALUE;

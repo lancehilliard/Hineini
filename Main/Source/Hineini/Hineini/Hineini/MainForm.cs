@@ -550,22 +550,27 @@ namespace Hineini {
         #region Menu click handlers
 
         private void oneMinuteMenuItem_Click(object sender, EventArgs e) {
+            updateTextBox.Text = string.Empty;
             MainUtility.ChangeUpdateIntervalSetting(1, updateIntervalMenuItem, manuallyMenuItem);
         }
 
         private void fiveMinutesMenuItem_Click(object sender, EventArgs e) {
+            updateTextBox.Text = string.Empty;
             MainUtility.ChangeUpdateIntervalSetting(5, updateIntervalMenuItem, manuallyMenuItem);
         }
 
         private void fifteenMinutesMenuItem_Click(object sender, EventArgs e) {
+            updateTextBox.Text = string.Empty;
             MainUtility.ChangeUpdateIntervalSetting(15, updateIntervalMenuItem, manuallyMenuItem);
         }
 
         private void thirtyMinutesMenuItem_Click(object sender, EventArgs e) {
+            updateTextBox.Text = string.Empty;
             MainUtility.ChangeUpdateIntervalSetting(30, updateIntervalMenuItem, manuallyMenuItem);
         }
 
         private void sixtyMinutesMenuItem_Click(object sender, EventArgs e) {
+            updateTextBox.Text = string.Empty;
             MainUtility.ChangeUpdateIntervalSetting(60, updateIntervalMenuItem, manuallyMenuItem);
         }
 
