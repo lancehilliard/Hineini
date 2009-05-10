@@ -10,6 +10,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hineini.Encryption", "Hineini.Encryption\Hineini.Encryption.csproj", "{CA7F6927-69B7-47BC-B9AE-26BCF41B7E4C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevNotes", "DevNotes", "{75F6E34A-5214-46CD-B8D3-83B879AF2485}"
+	ProjectSection(SolutionItems) = preProject
+		releaseNotes.txt = releaseNotes.txt
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hineini.Utility", "Hineini.Utility\Hineini.Utility.csproj", "{96F89D48-B24C-4EDC-8748-346FF82DBCB6}"
 EndProject
