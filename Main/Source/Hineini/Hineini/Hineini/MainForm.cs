@@ -436,16 +436,17 @@ namespace Hineini {
                     _pendingMapInfo.LocationLatLong = new LatLong(centerLatitude, centerLongitude);
                 }
                 string imageUrl = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
+                Bitmap mapImage = null;
                 if (Helpers.StringHasValue(imageUrl)) {
-                    Bitmap mapImage = MapManager.GetMapImage(imageUrl);
+                    mapImage = MapManager.GetMapImage(imageUrl);
                     if (mapImage == null) {
                         MessagesForm.AddMessage(DateTime.Now, Constants.GETTING_MAP_IMAGE_MESSAGE, Constants.MessageType.Error);
                     }
                     else {
-                        _pendingMapImage = mapImage;
                         _mapImageIsPending = true;
                     }
                 }
+                _pendingMapImage = mapImage;
             }
             catch (Exception e) {
                 _pendingMapInfo = null;
@@ -772,10 +773,8 @@ namespace Hineini {
                     }
                     PerformActiveApplicationUserInterfaceUpdates();
                 }
-                else {
-                    if (locationPictureBox.Image != null && _pendingMapImage == null) {
-                        locationPictureBox.Image = null;
-                    }
+                if (locationPictureBox.Image != null && _pendingMapImage == null) {
+                    locationPictureBox.Image = null;
                 }
             }
             finally {
