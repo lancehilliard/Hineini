@@ -1,3 +1,9 @@
+0.5
+
+* Improved: startup time
+* Improved: help content readability
+* Improved: location-to-map synchronization
+
 0.0.4.1
 
 * Fixed: "Always On" backlight feature
