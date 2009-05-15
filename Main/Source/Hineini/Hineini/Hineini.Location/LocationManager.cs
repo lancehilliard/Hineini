@@ -133,15 +133,11 @@ namespace Hineini.Location {
         }
 
         public double DistanceInMiles(Position startLocation, Position endLocation) {
-            double result = Constants.DISTANCE_UNKNOWN;
-            try {
-                double theta = startLocation.Longitude - endLocation.Longitude;
-                result = Math.Sin(deg2rad(startLocation.Latitude)) * Math.Sin(deg2rad(endLocation.Latitude)) + Math.Cos(deg2rad(startLocation.Latitude)) * Math.Cos(deg2rad(endLocation.Latitude)) * Math.Cos(deg2rad(theta));
-                result = Math.Acos(result);
-                result = rad2deg(result);
-                result = result * 60 * 1.1515;
-            }
-            catch (Exception e) {}
+            double theta = startLocation.Longitude - endLocation.Longitude;
+            double result = Math.Sin(deg2rad(startLocation.Latitude)) * Math.Sin(deg2rad(endLocation.Latitude)) + Math.Cos(deg2rad(startLocation.Latitude)) * Math.Cos(deg2rad(endLocation.Latitude)) * Math.Cos(deg2rad(theta));
+            result = Math.Acos(result);
+            result = rad2deg(result);
+            result = result * 60 * 1.1515;
             return (result);
         }
 

@@ -2,6 +2,7 @@ using System;
 
 namespace Hineini.Utility {
     public class Constants {
+        public const string UPDATE_SKIPPED_GPS_THRESHOLD = "No update (within GPS Threshold)";
         public const string ABOUT_FILENAME = "About.html";
         public const string USER_MANUAL_FILENAME = "UserManual.html";
         public const string CLIENT_UPDATE_AVAILABLE_MENU_ITEM_TEXT = "Client Update Available";

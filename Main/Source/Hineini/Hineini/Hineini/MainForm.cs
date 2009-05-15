@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using System.Xml;
 using Hineini.FireEagle;
 using Hineini.Location;
 using Hineini.Maps;
 using Hineini.Utility;
-using Microsoft.WindowsMobile.Status;
 
 namespace Hineini {
     public partial class MainForm : Form {
@@ -34,8 +30,6 @@ namespace Hineini {
         private bool _mapImageIsPending;
         private MapInfo _pendingMapInfo;
         private string _lastLocationName;
-        private readonly HelpForm _helpForm = new HelpForm();
-        private readonly AboutForm _aboutForm = new AboutForm();
         private bool _needToHidePreAuthorizationFormAndShowMainForm;
         private bool _timerHasTicked;
         private bool _manualUpdateRequested;
@@ -98,13 +92,6 @@ namespace Hineini {
         private void ApplyEventHandlers() {
             _preAuthForm.Exit += _preAuthForm_Exit;
             _messagesForm.HideForm += _messagesForm_HideForm;
-            _helpForm.HideForm += _helpForm_HideForm;
-            _aboutForm.HideForm += _aboutForm_HideForm;
-        }
-
-        void _aboutForm_HideForm(object sender, EventArgs e) {
-            Show();
-            _aboutForm.Hide();
         }
 
         private void InitializeUpdateControls() {
@@ -132,11 +119,6 @@ namespace Hineini {
             updatePanel.Visible = authorizedForFireEagle;
             mainMenu.Enabled = authorizedForFireEagle;
             mainMenu.Text = authorizedForFireEagle ? "Menu" : string.Empty;
-        }
-
-        void _helpForm_HideForm(object sender, EventArgs e) {
-            Show();
-            _helpForm.Hide();
         }
 
         private void _messagesForm_HideForm(object sender, EventArgs e) {
@@ -192,27 +174,10 @@ namespace Hineini {
             _lastUpdatedPosition = new Position();
         }
 
-        private bool TryLocationUpdate() {
-            bool locationUpdated = false;
+        private bool UpdateLocationData() {
+            bool locationUpdated;
             try {
-                if (Helpers.StringHasValue(_userUpdateLocation)) {
-                    locationUpdated = UpdateAddressLocationData();
-                }
-                else {
-                    Position? currentGpsPosition = _locationManager.UseGps ? _locationManager.GetValidGpsLocation() : null;
-                    if (currentGpsPosition != null) {
-                        UpdatePositionLocationData(currentGpsPosition);
-                        locationUpdated = true;
-                    }
-                    else if (_locationManager.UseTowers) {
-                        if (_locationManager.CanLocateTowers) {
-                            locationUpdated = UpdateCellTowerLocationData();
-                        }
-                        else {
-                            throw new Exception(Constants.UNABLE_TO_IDENTIFY_CELL_TOWERS_MESSAGE);
-                        }
-                    }
-                }
+                locationUpdated = Helpers.StringHasValue(_userUpdateLocation) ? UpdateLocationDataByUserInput() : UpdateLocationDataByEnvironmentInput();
             }
             catch (Exception e) {
                 MessagesForm.AddMessage(DateTime.Now, "TLU: " + MainUtility.GetExceptionMessage(e), Constants.MessageType.Error);
@@ -221,47 +186,128 @@ namespace Hineini {
             return locationUpdated;
         }
 
-        private bool UpdateCellTowerLocationData() {
-            bool locationUpdated = false;
-            string towerLocationProvidersList = Settings.TowerLocationProvidersList;
-            if (!Constants.TOWER_LOCATIONS_GOOGLE_ALWAYS.Equals(towerLocationProvidersList)) {
-                locationUpdated = TryLocationUpdateYahoo();
-            }
-            if (!locationUpdated && !Constants.TOWER_LOCATIONS_YAHOO_ALWAYS.Equals(towerLocationProvidersList)) {
-                locationUpdated = TryLocationUpdateGoogle();
+        private bool UpdateLocationDataByEnvironmentInput() {
+            bool locationUpdated;
+            Position? currentGpsPosition = GetCurrentGpsPosition();
+            locationUpdated = UpdateLocationDataByCurrentGpsPosition(currentGpsPosition);
+            if (!locationUpdated && _locationManager.UseTowers) {
+                locationUpdated = UpdateLocationDataByCellTower();
             }
             return locationUpdated;
         }
 
-        private void UpdatePositionLocationData(Position? currentGpsPosition) {
-            bool updateShouldProceed = _manualUpdateRequested;
-            if (!updateShouldProceed) {
-                double distanceInMiles = _locationManager.DistanceInMiles(currentGpsPosition.Value, _lastUpdatedPosition);
-                updateShouldProceed = distanceInMiles == Constants.DISTANCE_UNKNOWN || distanceInMiles >= Settings.GpsStationaryThresholdInMiles;
+        private bool UpdateLocationDataByUserInput() {
+            bool locationUpdated = false;
+            Address? address = GetAddressFromUserUpdateLocation();
+            if (address.HasValue) {
+                locationUpdated = UpdateLocationDataByAddress(address);
             }
-            if (updateShouldProceed) {
-                UpdateLocationData(currentGpsPosition.Value, Constants.LOCATION_DESCRIPTION_PREFIX_GPS);
-                _lastUpdatedPosition = currentGpsPosition.Value;
-            }
-            else {
-                MessagesForm.AddMessage(DateTime.Now, "No update (GPS Threshold)", Constants.MessageType.Error);
-            }
+            return locationUpdated;
         }
 
-        private bool UpdateAddressLocationData() {
-            bool result = false;
+        private bool UpdateLocationDataByCellTower() {
+            bool locationUpdated;
+            object locatedCellTower = GetYahooLocatedCellTower() ?? GetGoogleLocatedCellTower();
+            if (locatedCellTower != null) {
+                string locationMessagePrefix = locatedCellTower is Position ? Constants.LOCATION_DESCRIPTION_PREFIX_GOOGLE : null;
+                locationUpdated = UpdateLocationData(locatedCellTower, locationMessagePrefix);
+            }
+            else {
+                throw new Exception(Constants.UNABLE_TO_IDENTIFY_CELL_TOWERS_MESSAGE);
+            }
+            return locationUpdated;
+        }
+
+        private bool UpdateLocationDataByCurrentGpsPosition(Position? currentGpsPosition) {
+            bool locationUpdated = false;
+            bool gpsUpdateShouldProceed = GpsUpdateShouldProceed(currentGpsPosition);
+            if (gpsUpdateShouldProceed) {
+                locationUpdated = UpdateLocationData(currentGpsPosition.Value, Constants.LOCATION_DESCRIPTION_PREFIX_GPS);
+                _lastUpdatedPosition = currentGpsPosition.Value;
+            }
+            return locationUpdated;
+        }
+
+        private bool UpdateLocationDataByAddress(Address? address) {
+            bool locationUpdated;
+            locationUpdated = UpdateLocationData(address.Value, Constants.LOCATION_DESCRIPTION_PREFIX_USERSUPPLIED);
+            _lastUpdatedPosition = new Position();
+            return locationUpdated;
+        }
+
+        private Position? GetCurrentGpsPosition() {
+            return _locationManager.UseGps ? _locationManager.GetValidGpsLocation() : null;
+        }
+
+        private object GetGoogleLocatedCellTower() {
+            Position? result = null;
+            if (UserAllowsCellTowerLocatingViaGoogle()) {
+                bool googleKnowsLocationOfCurrentCellTower = GetGoogleKnowsLocationOfCurrentCellTower();
+                if (googleKnowsLocationOfCurrentCellTower) {
+                    result = _locationManager.CurrentCellTowerPosition.Value;
+                }
+            }
+            return result;
+        }
+
+        private CellTower? GetYahooLocatedCellTower() {
+            CellTower? result = null;
+            if (UserAllowsCellTowerLocatingViaYahoo()) {
+                bool yahooKnowsLocationOfCurrentCellTower = GetYahooKnowsLocationOfCurrentCellTower();
+                if (yahooKnowsLocationOfCurrentCellTower) {
+                    result = _locationManager.CurrentCellTower;
+                }
+            }
+            return result;
+        }
+
+        private bool GetGoogleKnowsLocationOfCurrentCellTower() {
+            Position? currentCellTowerPosition = _locationManager.CurrentCellTowerPosition;
+            bool result = currentCellTowerPosition.HasValue;
+            return result;
+        }
+
+        private bool GetYahooKnowsLocationOfCurrentCellTower() {
+            CellTower currentCellTower = _locationManager.CurrentCellTower;
+            Locations locations = _fireEagle.Lookup(currentCellTower);
+            return locations.LocationCollection.Length > 0;
+        }
+
+        private bool UserAllowsCellTowerLocatingViaGoogle() {
+            return !Constants.TOWER_LOCATIONS_YAHOO_ALWAYS.Equals(Settings.TowerLocationProvidersList);
+        }
+
+        private bool UserAllowsCellTowerLocatingViaYahoo() {
+            return !Constants.TOWER_LOCATIONS_GOOGLE_ALWAYS.Equals(Settings.TowerLocationProvidersList);
+        }
+
+        private bool GpsUpdateShouldProceed(Position? currentGpsPosition) {
+            bool updateShouldProceed = false;
+            if (currentGpsPosition.HasValue) {
+                updateShouldProceed = _manualUpdateRequested;
+                if (!updateShouldProceed) {
+                    updateShouldProceed = DistanceInMilesExceedsGpsStationaryThreshold(currentGpsPosition);
+                    if (!updateShouldProceed) {
+                        MessagesForm.AddMessage(DateTime.Now, Constants.UPDATE_SKIPPED_GPS_THRESHOLD, Constants.MessageType.Error);
+                    }
+                }
+            }
+            return updateShouldProceed;
+        }
+
+        private static bool DistanceInMilesExceedsGpsStationaryThreshold(Position? currentGpsPosition) {
+            double distanceInMiles = _locationManager.DistanceInMiles(currentGpsPosition.Value, _lastUpdatedPosition);
+            bool result = distanceInMiles == Constants.DISTANCE_UNKNOWN || distanceInMiles >= Settings.GpsStationaryThresholdInMiles;
+            return result;
+        }
+
+        private Address? GetAddressFromUserUpdateLocation() {
+            Address? result = null;
             Match postalCodeMatch = Regex.Match(_userUpdateLocation, Constants.REGEX_POSTAL_CODE);
             if (postalCodeMatch.Success) {
                 string postalCode = postalCodeMatch.ToString();
-                string streetAddress = _userUpdateLocation.Replace(postalCode, string.Empty);
-                char[] endingCharactersToIgnoreInStreetAddress = {',', ' '};
-                streetAddress = streetAddress.TrimEnd(endingCharactersToIgnoreInStreetAddress);
-                Address address = new Address();
-                address.Postal = postalCode;
-                address.StreetAddress = streetAddress;
-                UpdateLocationData(address, Constants.LOCATION_DESCRIPTION_PREFIX_USERSUPPLIED);
-                _lastUpdatedPosition = new Position();
-                result = true;
+                string streetAddress = RemovePostalCodeFromUserUpdateLocation(postalCode);
+                result = BuildAddress(streetAddress, postalCode);
             }
             else {
                 MessagesForm.AddMessage(DateTime.Now, Constants.USER_SUPPLIED_ADDRESS_MUST_CONTAIN_ZIPCODE, Constants.MessageType.Error);
@@ -269,28 +315,41 @@ namespace Hineini {
             return result;
         }
 
-        private bool TryLocationUpdateGoogle() {
-            bool locationUpdated = false;
+        private Address BuildAddress(string streetAddress, string postalCode) {
+            Address address = new Address();
+            address.StreetAddress = streetAddress;
+            address.Postal = postalCode;
+            return address;
+        }
+
+        private string RemovePostalCodeFromUserUpdateLocation(string postalCode) {
+            string streetAddress = _userUpdateLocation.Replace(postalCode, string.Empty);
+            char[] endingCharactersToIgnoreInStreetAddress = {',', ' '};
+            streetAddress = streetAddress.TrimEnd(endingCharactersToIgnoreInStreetAddress);
+            return streetAddress;
+        }
+
+        private void TryLocationUpdateGoogle() {
+            //bool locationUpdated = false;
             Position? currentCellTowerPosition = _locationManager.CurrentCellTowerPosition;
             if (currentCellTowerPosition.HasValue) {
                 UpdateLocationData(currentCellTowerPosition.Value, Constants.LOCATION_DESCRIPTION_PREFIX_GOOGLE);
-                locationUpdated = true;
             }
-            return locationUpdated;
+            //return locationUpdated;
         }
 
-        private bool TryLocationUpdateYahoo() {
-            bool locationUpdated = false;
+        private void TryLocationUpdateYahoo() {
+            //bool locationUpdated = false;
             CellTower currentCellTower = _locationManager.CurrentCellTower;
             Locations locations = _fireEagle.Lookup(currentCellTower);
             if (locations.LocationCollection.Length > 0) {
                 UpdateLocationData(currentCellTower, null);
-                locationUpdated = true;
             }
-            return locationUpdated;
+            //return locationUpdated;
         }
 
-        private void UpdateLocationData(object locationObject, string locationMessagePrefix) {
+        private bool UpdateLocationData(object locationObject, string locationMessagePrefix) {
+            bool locationUpdated = false;
             if (locationObject != null) {
                 string locationMarker = MainUtility.GetLocationMarker(locationObject);
                 if (locationObject is Address) {
@@ -302,8 +361,10 @@ namespace Hineini {
                 else {
                     _fireEagle.Update((Position)locationObject);
                 }
+                locationUpdated = true;
                 UpdateRecentLocationData(locationMarker, locationMessagePrefix);
             }
+            return locationUpdated;
         }
 
         private static bool LocationMarkerHasMoved(string locationMarker) {
@@ -430,23 +491,14 @@ namespace Hineini {
 
         private void UpdatePendingMapImage() {
             try {
-                if (_pendingMapInfo.LocationLatLong == null) {
-                    double centerLongitude = (_pendingMapInfo.UpperCornerLatLong.Longitude + _pendingMapInfo.LowerCornerLatLong.Longitude) / 2;
-                    double centerLatitude = (_pendingMapInfo.UpperCornerLatLong.Latitude + _pendingMapInfo.LowerCornerLatLong.Latitude) / 2;
-                    _pendingMapInfo.LocationLatLong = new LatLong(centerLatitude, centerLongitude);
+                string imageUrl = GetMapImageUrl();
+                _pendingMapImage = Helpers.StringHasValue(imageUrl) ? MapManager.GetMapImage(imageUrl) : null;
+                if (_pendingMapImage == null) {
+                    MessagesForm.AddMessage(DateTime.Now, Constants.GETTING_MAP_IMAGE_MESSAGE, Constants.MessageType.Error);
                 }
-                string imageUrl = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
-                Bitmap mapImage = null;
-                if (Helpers.StringHasValue(imageUrl)) {
-                    mapImage = MapManager.GetMapImage(imageUrl);
-                    if (mapImage == null) {
-                        MessagesForm.AddMessage(DateTime.Now, Constants.GETTING_MAP_IMAGE_MESSAGE, Constants.MessageType.Error);
-                    }
-                    else {
-                        _mapImageIsPending = true;
-                    }
+                else {
+                    _mapImageIsPending = true;
                 }
-                _pendingMapImage = mapImage;
             }
             catch (Exception e) {
                 _pendingMapInfo = null;
@@ -454,6 +506,23 @@ namespace Hineini {
                 MessagesForm.AddMessage(DateTime.Now, "UPMI: " + e.Message, Constants.MessageType.Error);
                 MessagesForm.AddMessage(DateTime.Now, Constants.MAP_FETCH_FAILED_MESSAGE, Constants.MessageType.Error);
             }
+        }
+
+        private void SetPendingMapInfoLatLongFromGeoBoxIfNull() {
+            if (_pendingMapInfo.LocationLatLong == null) {
+                LatLong latLongFromGeoBox = GetLatLongFromGeoBox();
+                _pendingMapInfo.LocationLatLong = latLongFromGeoBox;
+            }
+        }
+
+        private string GetMapImageUrl() {
+            return String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
+        }
+
+        private LatLong GetLatLongFromGeoBox() {
+            double centerLongitude = (_pendingMapInfo.UpperCornerLatLong.Longitude + _pendingMapInfo.LowerCornerLatLong.Longitude) / 2;
+            double centerLatitude = (_pendingMapInfo.UpperCornerLatLong.Latitude + _pendingMapInfo.LowerCornerLatLong.Latitude) / 2;
+            return new LatLong(centerLatitude, centerLongitude);
         }
 
         private void FireEagleWorker() {
@@ -467,6 +536,7 @@ namespace Hineini {
                 }
                 if (Boolean.IsActiveApplication) {
                     if (_pendingMapInfo != null && _pendingMapImage == null) {
+                        SetPendingMapInfoLatLongFromGeoBoxIfNull();
                         UpdatePendingMapImage();
                     }
                 }
@@ -517,7 +587,7 @@ namespace Hineini {
             bool unsuccessfulUpdateWasHandled = false;
             try {
                 try {
-                    if (TryLocationUpdate()) {
+                    if (UpdateLocationData()) {
                         MainUtility.SetTimerPerSuccessfulOrHandledUpdate();
                         successfulUpdate = true;
                         _manualUpdateRequested = false;

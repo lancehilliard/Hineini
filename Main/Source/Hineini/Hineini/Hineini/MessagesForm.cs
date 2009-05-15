@@ -9,7 +9,7 @@ namespace Hineini {
         private static readonly List<string> _errorMessages = new List<string>(20);
         private static readonly List<string> _infoMessages = new List<string>(20);
 
-        public static List<string> ErrorMessages {
+        public List<string> ErrorMessages {
             get { return _errorMessages; }
         }
 
