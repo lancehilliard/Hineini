@@ -16,13 +16,13 @@ namespace Hineini {
         private static bool _needToShowIntroductionMessage = true;
         private static bool _messageWaitingToBeShown;
         private static int _secondsBeforeNextFireEagleProcessing;
-        private static readonly LocationManager _locationManager = new LocationManager();
+        private static LocationManager _locationManager;
         private Thread _processFireEagleWorkerThread;
         private Token _requestToken;
         private string _fireEagleRequestAuthorizationUrl = string.Empty;
         private readonly FireEagle.FireEagle _fireEagle = new FireEagle.FireEagle(Constants.HINEINI_CONSUMER_KEY, Constants.HINEINI_CONSUMER_SECRET);
-        private readonly PreAuthForm _preAuthForm = new PreAuthForm();
-        private readonly MessagesForm _messagesForm = new MessagesForm();
+        private PreAuthForm _preAuthForm;
+        private MessagesForm _messagesForm;
         private string _userUpdateLocation;
         private int _mapHeight;
         private int _mapWidth;
@@ -43,7 +43,19 @@ namespace Hineini {
         #region Properties
 
         public static LocationManager LocationManager {
-            get { return _locationManager; }
+            get { return _locationManager = _locationManager ?? new LocationManager(); }
+        }
+
+        private MessagesForm MessagesForm {
+            get {
+                return _messagesForm = _messagesForm ?? new MessagesForm();
+            }
+        }
+
+        private PreAuthForm PreAuthForm {
+            get {
+                return _preAuthForm = _preAuthForm ?? new PreAuthForm();
+            }
         }
 
         public static string FormName {
@@ -90,8 +102,8 @@ namespace Hineini {
         }
 
         private void ApplyEventHandlers() {
-            _preAuthForm.Exit += _preAuthForm_Exit;
-            _messagesForm.HideForm += _messagesForm_HideForm;
+            PreAuthForm.Exit += _preAuthForm_Exit;
+            MessagesForm.HideForm += _messagesForm_HideForm;
         }
 
         private void InitializeUpdateControls() {
@@ -123,7 +135,7 @@ namespace Hineini {
 
         private void _messagesForm_HideForm(object sender, EventArgs e) {
             Show();
-            _messagesForm.Hide();
+            MessagesForm.Hide();
         }
 
         void _preAuthForm_Exit(object sender, EventArgs e) {
@@ -165,7 +177,7 @@ namespace Hineini {
         #endregion
 
         private void ShowMessagesForm(Constants.MessageType messageType) {
-            _messagesForm.ShowMessages(messageType);
+            MessagesForm.ShowMessages(messageType);
             Hide();
         }
 
@@ -190,7 +202,7 @@ namespace Hineini {
             bool locationUpdated;
             Position? currentGpsPosition = GetCurrentGpsPosition();
             locationUpdated = UpdateLocationDataByCurrentGpsPosition(currentGpsPosition);
-            if (!locationUpdated && _locationManager.UseTowers) {
+            if (!locationUpdated && LocationManager.UseTowers) {
                 locationUpdated = UpdateLocationDataByCellTower();
             }
             return locationUpdated;
@@ -236,7 +248,7 @@ namespace Hineini {
         }
 
         private Position? GetCurrentGpsPosition() {
-            return _locationManager.UseGps ? _locationManager.GetValidGpsLocation() : null;
+            return LocationManager.UseGps ? LocationManager.GetValidGpsLocation() : null;
         }
 
         private object GetGoogleLocatedCellTower() {
@@ -244,7 +256,7 @@ namespace Hineini {
             if (UserAllowsCellTowerLocatingViaGoogle()) {
                 bool googleKnowsLocationOfCurrentCellTower = GetGoogleKnowsLocationOfCurrentCellTower();
                 if (googleKnowsLocationOfCurrentCellTower) {
-                    result = _locationManager.CurrentCellTowerPosition.Value;
+                    result = LocationManager.CurrentCellTowerPosition.Value;
                 }
             }
             return result;
@@ -255,20 +267,20 @@ namespace Hineini {
             if (UserAllowsCellTowerLocatingViaYahoo()) {
                 bool yahooKnowsLocationOfCurrentCellTower = GetYahooKnowsLocationOfCurrentCellTower();
                 if (yahooKnowsLocationOfCurrentCellTower) {
-                    result = _locationManager.CurrentCellTower;
+                    result = LocationManager.CurrentCellTower;
                 }
             }
             return result;
         }
 
         private bool GetGoogleKnowsLocationOfCurrentCellTower() {
-            Position? currentCellTowerPosition = _locationManager.CurrentCellTowerPosition;
+            Position? currentCellTowerPosition = LocationManager.CurrentCellTowerPosition;
             bool result = currentCellTowerPosition.HasValue;
             return result;
         }
 
         private bool GetYahooKnowsLocationOfCurrentCellTower() {
-            CellTower currentCellTower = _locationManager.CurrentCellTower;
+            CellTower currentCellTower = LocationManager.CurrentCellTower;
             Locations locations = _fireEagle.Lookup(currentCellTower);
             return locations.LocationCollection.Length > 0;
         }
@@ -296,7 +308,7 @@ namespace Hineini {
         }
 
         private static bool DistanceInMilesExceedsGpsStationaryThreshold(Position? currentGpsPosition) {
-            double distanceInMiles = _locationManager.DistanceInMiles(currentGpsPosition.Value, _lastUpdatedPosition);
+            double distanceInMiles = LocationManager.DistanceInMiles(currentGpsPosition.Value, _lastUpdatedPosition);
             bool result = distanceInMiles == Constants.DISTANCE_UNKNOWN || distanceInMiles >= Settings.GpsStationaryThresholdInMiles;
             return result;
         }
@@ -331,7 +343,7 @@ namespace Hineini {
 
         private void TryLocationUpdateGoogle() {
             //bool locationUpdated = false;
-            Position? currentCellTowerPosition = _locationManager.CurrentCellTowerPosition;
+            Position? currentCellTowerPosition = LocationManager.CurrentCellTowerPosition;
             if (currentCellTowerPosition.HasValue) {
                 UpdateLocationData(currentCellTowerPosition.Value, Constants.LOCATION_DESCRIPTION_PREFIX_GOOGLE);
             }
@@ -340,7 +352,7 @@ namespace Hineini {
 
         private void TryLocationUpdateYahoo() {
             //bool locationUpdated = false;
-            CellTower currentCellTower = _locationManager.CurrentCellTower;
+            CellTower currentCellTower = LocationManager.CurrentCellTower;
             Locations locations = _fireEagle.Lookup(currentCellTower);
             if (locations.LocationCollection.Length > 0) {
                 UpdateLocationData(currentCellTower, null);
@@ -471,15 +483,15 @@ namespace Hineini {
         private void ShowMainFormAfterPreAuthorization() {
             SetupMainFormObjects(true);
             Show();
-            _preAuthForm.Hide();
+            PreAuthForm.Hide();
             _needToHidePreAuthorizationFormAndShowMainForm = false;
         }
 
         private void ShowPreAuthForm() {
             string message = FireEagleRequestAuthorizationUrl.Length == 0 ? Constants.LOADING_REQUEST_AUTHORIZATION_MESSAGE : string.Format(Constants.AUTHORIZATION_REQUEST_TEMPLATE, FireEagleRequestAuthorizationUrl);
-            if (!message.Equals(_preAuthForm.Message)) {
-                _preAuthForm.Message = message;
-                _preAuthForm.Show();
+            if (!message.Equals(PreAuthForm.Message)) {
+                PreAuthForm.Message = message;
+                PreAuthForm.Show();
                 Hide();
             }
         }
