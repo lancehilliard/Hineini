@@ -99,6 +99,9 @@ namespace Hineini {
             this.locationPicturePanel = new System.Windows.Forms.Panel();
             this.mostRecentInfoMessageLabel = new System.Windows.Forms.Label();
             this.locationPictureBox = new System.Windows.Forms.PictureBox();
+            this.showTagMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.whatIsTagMenuItem = new System.Windows.Forms.MenuItem();
             this.updatePanel.SuspendLayout();
             this.leftMostUpdateBorderPanel.SuspendLayout();
             this.locationPicturePanel.SuspendLayout();
@@ -288,8 +291,9 @@ namespace Hineini {
             // 
             // helpMenuItem
             // 
-            this.helpMenuItem.MenuItems.Add(this.userManualMenuItem);
             this.helpMenuItem.MenuItems.Add(this.aboutMenuItem);
+            this.helpMenuItem.MenuItems.Add(this.userManualMenuItem);
+            this.helpMenuItem.MenuItems.Add(this.menuItem1);
             this.helpMenuItem.Text = "Help";
             // 
             // userManualMenuItem
@@ -410,6 +414,22 @@ namespace Hineini {
             this.locationPictureBox.Size = new System.Drawing.Size(240, 245);
             this.locationPictureBox.Resize += new System.EventHandler(this.locationPictureBox_Resize);
             // 
+            // showTagMenuItem
+            // 
+            this.showTagMenuItem.Text = "Show Tag";
+            this.showTagMenuItem.Click += new System.EventHandler(this.showTagMenuItem_Click);
+            // 
+            // menuItem1
+            // 
+            this.menuItem1.MenuItems.Add(this.showTagMenuItem);
+            this.menuItem1.MenuItems.Add(this.whatIsTagMenuItem);
+            this.menuItem1.Text = "Microsoft Tag";
+            // 
+            // whatIsTagMenuItem
+            // 
+            this.whatIsTagMenuItem.Text = "What\'s a \"Tag\"?";
+            this.whatIsTagMenuItem.Click += new System.EventHandler(this.whatIsTagMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(131F, 131F);
@@ -455,6 +475,9 @@ namespace Hineini {
         private MenuItem noneMenuItem;
         private Label mostRecentInfoMessageLabel;
         private MenuItem aboutMenuItem;
+        private MenuItem showTagMenuItem;
+        private MenuItem menuItem1;
+        private MenuItem whatIsTagMenuItem;
     }
 }
 

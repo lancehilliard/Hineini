@@ -2,6 +2,8 @@ using System;
 
 namespace Hineini.Utility {
     public class Constants {
+        public const string TAG_INFO_MESSAGE = "Help your friends get Hineini - simply show the Hineini tag on your phone's screen and point someone's Microsoft Tag Reader at it!\n\nWould you like to visit the Microsoft Tag homepage to learn more?";
+        public const string TAG_INFO_CAPTION = "Microsoft Tag";
         public const string UPDATE_SKIPPED_GPS_THRESHOLD = "No update (within GPS Threshold)";
         public const string ABOUT_FILENAME = "About.html";
         public const string USER_MANUAL_FILENAME = "UserManual.html";

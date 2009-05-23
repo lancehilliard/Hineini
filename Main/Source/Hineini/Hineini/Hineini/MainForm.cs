@@ -37,6 +37,7 @@ namespace Hineini {
         private static Position _lastUpdatedPosition;
         private bool versionCheckPerformed;
         private bool _userShouldBeAdvisedAboutRecommendedVersion;
+        private TagForm tagForm;
 
         #endregion
 
@@ -861,6 +862,28 @@ namespace Hineini {
             }
             finally {
                 timer1.Enabled = true;
+            }
+        }
+
+        private void showTagMenuItem_Click(object sender, EventArgs e) {
+            tagForm = new TagForm();
+            tagForm.FormClosed += tagForm_FormClosed;
+            tagForm.Show();
+            Hide();
+        }
+
+        void tagForm_FormClosed(object sender, EventArgs e) {
+            Show();
+            tagForm.Close();
+            tagForm.Dispose();
+        }
+
+        private void whatIsTagMenuItem_Click(object sender, EventArgs e) {
+            string text = Constants.TAG_INFO_MESSAGE;
+            string caption = Constants.TAG_INFO_CAPTION;
+            DialogResult dialogResult = MessageBox.Show(text, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            if (dialogResult.Equals(DialogResult.Yes)) {
+                Process.Start("http://gettag.mobi", null);
             }
         }
     }
