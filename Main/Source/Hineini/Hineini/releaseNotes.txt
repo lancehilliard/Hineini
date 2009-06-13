@@ -1,3 +1,9 @@
+0.6
+
+* Added: support for international address input
+* Added: Microsoft Tag display
+* Improved: logging of map fetch problems
+
 0.5
 
 * Improved: startup time
