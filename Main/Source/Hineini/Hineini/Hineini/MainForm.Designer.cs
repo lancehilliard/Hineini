@@ -85,8 +85,11 @@ namespace Hineini {
             this.infoMenuItem = new System.Windows.Forms.MenuItem();
             this.errorMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenuItem = new System.Windows.Forms.MenuItem();
-            this.userManualMenuItem = new System.Windows.Forms.MenuItem();
             this.aboutMenuItem = new System.Windows.Forms.MenuItem();
+            this.userManualMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.showTagMenuItem = new System.Windows.Forms.MenuItem();
+            this.whatIsTagMenuItem = new System.Windows.Forms.MenuItem();
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
             this.timer1 = new System.Windows.Forms.Timer();
             this.updatePanel = new System.Windows.Forms.Panel();
@@ -99,9 +102,6 @@ namespace Hineini {
             this.locationPicturePanel = new System.Windows.Forms.Panel();
             this.mostRecentInfoMessageLabel = new System.Windows.Forms.Label();
             this.locationPictureBox = new System.Windows.Forms.PictureBox();
-            this.showTagMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
-            this.whatIsTagMenuItem = new System.Windows.Forms.MenuItem();
             this.updatePanel.SuspendLayout();
             this.leftMostUpdateBorderPanel.SuspendLayout();
             this.locationPicturePanel.SuspendLayout();
@@ -296,15 +296,31 @@ namespace Hineini {
             this.helpMenuItem.MenuItems.Add(this.menuItem1);
             this.helpMenuItem.Text = "Help";
             // 
+            // aboutMenuItem
+            // 
+            this.aboutMenuItem.Text = "About";
+            this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
+            // 
             // userManualMenuItem
             // 
             this.userManualMenuItem.Text = "User Manual";
             this.userManualMenuItem.Click += new System.EventHandler(this.UserManualMenuItem_Click);
             // 
-            // aboutMenuItem
+            // menuItem1
             // 
-            this.aboutMenuItem.Text = "About";
-            this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
+            this.menuItem1.MenuItems.Add(this.showTagMenuItem);
+            this.menuItem1.MenuItems.Add(this.whatIsTagMenuItem);
+            this.menuItem1.Text = "Microsoft Tag";
+            // 
+            // showTagMenuItem
+            // 
+            this.showTagMenuItem.Text = "Show Tag";
+            this.showTagMenuItem.Click += new System.EventHandler(this.showTagMenuItem_Click);
+            // 
+            // whatIsTagMenuItem
+            // 
+            this.whatIsTagMenuItem.Text = "What\'s a \"Tag\"?";
+            this.whatIsTagMenuItem.Click += new System.EventHandler(this.whatIsTagMenuItem_Click);
             // 
             // exitMenuItem
             // 
@@ -413,22 +429,6 @@ namespace Hineini {
             this.locationPictureBox.Name = "locationPictureBox";
             this.locationPictureBox.Size = new System.Drawing.Size(240, 245);
             this.locationPictureBox.Resize += new System.EventHandler(this.locationPictureBox_Resize);
-            // 
-            // showTagMenuItem
-            // 
-            this.showTagMenuItem.Text = "Show Tag";
-            this.showTagMenuItem.Click += new System.EventHandler(this.showTagMenuItem_Click);
-            // 
-            // menuItem1
-            // 
-            this.menuItem1.MenuItems.Add(this.showTagMenuItem);
-            this.menuItem1.MenuItems.Add(this.whatIsTagMenuItem);
-            this.menuItem1.Text = "Microsoft Tag";
-            // 
-            // whatIsTagMenuItem
-            // 
-            this.whatIsTagMenuItem.Text = "What\'s a \"Tag\"?";
-            this.whatIsTagMenuItem.Click += new System.EventHandler(this.whatIsTagMenuItem_Click);
             // 
             // MainForm
             // 
