@@ -515,13 +515,19 @@ namespace Hineini {
         private void UpdatePendingMapImage() {
             try {
                 string imageUrl = GetMapImageUrl();
-                MessagesForm.AddMessage(DateTime.Now, Constants.RETRIEVED_MAP_URL_MESSAGE, Constants.MessageType.Error);
-                _pendingMapImage = Helpers.StringHasValue(imageUrl) ? MapManager.GetMapImage(imageUrl) : null;
-                if (_pendingMapImage == null) {
-                    MessagesForm.AddMessage(DateTime.Now, Constants.GETTING_MAP_IMAGE_MESSAGE, Constants.MessageType.Error);
+                if (Helpers.StringHasValue(imageUrl)) {
+                    MessagesForm.AddMessage(DateTime.Now, Constants.RETRIEVED_MAP_URL_MESSAGE, Constants.MessageType.Error);
+                    _pendingMapImage = MapManager.GetMapImage(imageUrl);
+                    if (_pendingMapImage == null) {
+                        MessagesForm.AddMessage(DateTime.Now, Constants.GETTING_MAP_IMAGE_MESSAGE, Constants.MessageType.Error);
+                    }
+                    else {
+                        _mapImageIsPending = true;
+                    }
                 }
                 else {
-                    _mapImageIsPending = true;
+                    MessagesForm.AddMessage(DateTime.Now, Constants.IMAGE_URL_FETCH_FAILED_MESSAGE, Constants.MessageType.Error);
+                    _pendingMapImage = null;
                 }
             }
             catch (Exception e) {
@@ -540,7 +546,11 @@ namespace Hineini {
         }
 
         private string GetMapImageUrl() {
-            return String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
+            string result = string.Empty;
+            if (_pendingMapInfo != null && _pendingMapInfo.LocationLatLong != null) {
+                result = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
+            }
+            return result;
         }
 
         private LatLong GetLatLongFromGeoBox() {

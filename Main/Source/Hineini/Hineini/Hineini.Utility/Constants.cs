@@ -2,6 +2,7 @@ using System;
 
 namespace Hineini.Utility {
     public class Constants {
+        public const string IMAGE_URL_FETCH_FAILED_MESSAGE = "Failed building map image URL...";
         public const string TAG_INFO_MESSAGE = "Help your friends get Hineini - simply show the Hineini tag on your phone's screen and point someone's Microsoft Tag Reader at it!\n\nWould you like to visit the Microsoft Tag homepage to learn more?";
         public const string TAG_INFO_CAPTION = "Microsoft Tag";
         public const string UPDATE_SKIPPED_GPS_THRESHOLD = "No update (within GPS Threshold)";
@@ -17,7 +18,7 @@ namespace Hineini.Utility {
         public const string FETCHING_MAP_MESSAGE = "Fetching map...";
         public const double DISTANCE_UNKNOWN = -1;
         public const string GETTING_AUTH_TOKEN_MESSAGE = "Getting auth token...";
-        public const string RETRIEVED_MAP_URL_MESSAGE = "Retrieved map URL...";
+        public const string RETRIEVED_MAP_URL_MESSAGE = "Succeeded building map image URL...";
         public const string GETTING_MAP_IMAGE_MESSAGE = "Getting map image...";
         public const string MAP_FETCH_FAILED_MESSAGE = "Map fetch failed...";
         public const string USER_SUPPLIED_ADDRESS_MUST_CONTAIN_ZIPCODE = "Address must contain zipcode...";
