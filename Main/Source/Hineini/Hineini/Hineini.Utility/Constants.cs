@@ -17,12 +17,13 @@ namespace Hineini.Utility {
         public const string FETCHING_MAP_MESSAGE = "Fetching map...";
         public const double DISTANCE_UNKNOWN = -1;
         public const string GETTING_AUTH_TOKEN_MESSAGE = "Getting auth token...";
+        public const string RETRIEVED_MAP_URL_MESSAGE = "Retrieved map URL...";
         public const string GETTING_MAP_IMAGE_MESSAGE = "Getting map image...";
         public const string MAP_FETCH_FAILED_MESSAGE = "Map fetch failed...";
         public const string USER_SUPPLIED_ADDRESS_MUST_CONTAIN_ZIPCODE = "Address must contain zipcode...";
         public const int MAP_ZOOM_LEVEL_CLOSER = 16;
         public const int MAP_ZOOM_LEVEL_FARTHER = 11;
-        public const string WORKING_TO_IDENTIFY_LOCATION = "Determining location...";
+        public const string LOCATION_NOT_YET_IDENTIFIED = "Location not yet identified...";
         public const string LOADING_MAP_MESSAGE = "Loading map...";
         public const string HINEINI_CONSUMER_KEY = "GaAkDhCTfNsa";
         public const string HINEINI_CONSUMER_SECRET = "q1tIZbRR0FP4yHpZWwoyLzVWrD1RoMJt";
@@ -72,7 +73,7 @@ namespace Hineini.Utility {
             Error = 1
         }
 
-        public const string YAHOO_MAPS_APPID = "lr79Yr_V34HxBTNJGpnzRLJXIo8y8HDN_9MamXpcC_XPSJMhADy4pPWrXIq4jddw";
-        public const string REGEX_POSTAL_CODE = @"\d{5}$";
+        //public const string YAHOO_MAPS_APPID = "lr79Yr_V34HxBTNJGpnzRLJXIo8y8HDN_9MamXpcC_XPSJMhADy4pPWrXIq4jddw";
+        //public const string REGEX_POSTAL_CODE = @"\d{5}$";
     }
 }

@@ -410,6 +410,16 @@ namespace Hineini.FireEagle {
             return resp.Locations;
         }
 
+        public Locations Lookup(string address) {
+            List<string> parameters = new List<string>();
+
+            parameters.Add("address=" + OAuth.UrlEncode(address));
+
+            Response resp = Lookup(parameters);
+
+            return resp.Locations;
+        }
+
         private Response Lookup(List<string> parameters) {
             AddStandardParams(parameters, m_token);
             Response resp = GetResponse("get", "lookup", m_token.SecretToken, parameters);

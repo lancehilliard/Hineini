@@ -97,6 +97,7 @@ namespace Hineini {
             InitializeUpdateControls();
 
             bool authorizedForFireEagle = _fireEagle.UserToken != null && Helpers.StringHasValue(_fireEagle.UserToken.SecretToken);
+
             SetupMainFormObjects(authorizedForFireEagle);
 
             ResetFireEagleWorkerThread();
@@ -154,7 +155,7 @@ namespace Hineini {
             MessagesForm.AddMessage(now, Descriptions.TowerProviders, Constants.MessageType.Info);
             MessagesForm.AddMessage(now, Messages.LocateViaMessage, Constants.MessageType.Info);
             MessagesForm.AddMessage(now, Messages.BacklightMessage, Constants.MessageType.Info);
-            MessagesForm.AddMessage(DateTime.Now, Constants.WORKING_TO_IDENTIFY_LOCATION, Constants.MessageType.Info);
+            MessagesForm.AddMessage(DateTime.Now, Constants.LOCATION_NOT_YET_IDENTIFIED, Constants.MessageType.Info);
             NeedToShowIntroductionMessage = false;
         }
 
@@ -190,7 +191,13 @@ namespace Hineini {
         private bool UpdateLocationData() {
             bool locationUpdated;
             try {
-                locationUpdated = Helpers.StringHasValue(_userUpdateLocation) ? UpdateLocationDataByUserInput() : UpdateLocationDataByEnvironmentInput();
+                if (Helpers.StringHasValue(_userUpdateLocation)) {
+                    locationUpdated = UpdateLocationDataByUserInput(_userUpdateLocation);
+                }
+                else {
+                    MessagesForm.AddMessage(DateTime.Now, "TLU: " + "UpdateLocationDataByEnvironmentInput" + _userUpdateLocation, Constants.MessageType.Error);
+                    locationUpdated = UpdateLocationDataByEnvironmentInput();
+                }
             }
             catch (Exception e) {
                 MessagesForm.AddMessage(DateTime.Now, "TLU: " + MainUtility.GetExceptionMessage(e), Constants.MessageType.Error);
@@ -209,12 +216,8 @@ namespace Hineini {
             return locationUpdated;
         }
 
-        private bool UpdateLocationDataByUserInput() {
-            bool locationUpdated = false;
-            Address? address = GetAddressFromUserUpdateLocation();
-            if (address.HasValue) {
-                locationUpdated = UpdateLocationDataByAddress(address);
-            }
+        private bool UpdateLocationDataByUserInput(string userUpdateLocation) {
+            bool locationUpdated = UpdateLocationDataByAddress(userUpdateLocation);
             return locationUpdated;
         }
 
@@ -241,10 +244,12 @@ namespace Hineini {
             return locationUpdated;
         }
 
-        private bool UpdateLocationDataByAddress(Address? address) {
-            bool locationUpdated;
-            locationUpdated = UpdateLocationData(address.Value, Constants.LOCATION_DESCRIPTION_PREFIX_USERSUPPLIED);
-            _lastUpdatedPosition = new Position();
+        private bool UpdateLocationDataByAddress(string userUpdateLocation) {
+            bool locationUpdated = false;
+            if (GetYahooKnowsLocationOfAddress(userUpdateLocation)) {
+                locationUpdated = UpdateLocationData(userUpdateLocation, Constants.LOCATION_DESCRIPTION_PREFIX_USERSUPPLIED);
+                _lastUpdatedPosition = new Position();
+            }
             return locationUpdated;
         }
 
@@ -286,6 +291,11 @@ namespace Hineini {
             return locations.LocationCollection.Length > 0;
         }
 
+        private bool GetYahooKnowsLocationOfAddress(string address) {
+            Locations locations = _fireEagle.Lookup(address);
+            return locations.LocationCollection.Length > 0;
+        }
+
         private bool UserAllowsCellTowerLocatingViaGoogle() {
             return !Constants.TOWER_LOCATIONS_YAHOO_ALWAYS.Equals(Settings.TowerLocationProvidersList);
         }
@@ -314,33 +324,33 @@ namespace Hineini {
             return result;
         }
 
-        private Address? GetAddressFromUserUpdateLocation() {
-            Address? result = null;
-            Match postalCodeMatch = Regex.Match(_userUpdateLocation, Constants.REGEX_POSTAL_CODE);
-            if (postalCodeMatch.Success) {
-                string postalCode = postalCodeMatch.ToString();
-                string streetAddress = RemovePostalCodeFromUserUpdateLocation(postalCode);
-                result = BuildAddress(streetAddress, postalCode);
-            }
-            else {
-                MessagesForm.AddMessage(DateTime.Now, Constants.USER_SUPPLIED_ADDRESS_MUST_CONTAIN_ZIPCODE, Constants.MessageType.Error);
-            }
-            return result;
-        }
+        //private Address? GetAddressFromUserUpdateLocation() {
+        //    Address? result = null;
+        //    Match postalCodeMatch = Regex.Match(_userUpdateLocation, Constants.REGEX_POSTAL_CODE);
+        //    if (postalCodeMatch.Success) {
+        //        string postalCode = postalCodeMatch.ToString();
+        //        string streetAddress = RemovePostalCodeFromUserUpdateLocation(postalCode);
+        //        result = BuildAddress(streetAddress, postalCode);
+        //    }
+        //    else {
+        //        MessagesForm.AddMessage(DateTime.Now, Constants.USER_SUPPLIED_ADDRESS_MUST_CONTAIN_ZIPCODE, Constants.MessageType.Error);
+        //    }
+        //    return result;
+        //}
 
-        private Address BuildAddress(string streetAddress, string postalCode) {
-            Address address = new Address();
-            address.StreetAddress = streetAddress;
-            address.Postal = postalCode;
-            return address;
-        }
+        //private Address BuildAddress(string streetAddress, string postalCode) {
+        //    Address address = new Address();
+        //    address.StreetAddress = streetAddress;
+        //    address.Postal = postalCode;
+        //    return address;
+        //}
 
-        private string RemovePostalCodeFromUserUpdateLocation(string postalCode) {
-            string streetAddress = _userUpdateLocation.Replace(postalCode, string.Empty);
-            char[] endingCharactersToIgnoreInStreetAddress = {',', ' '};
-            streetAddress = streetAddress.TrimEnd(endingCharactersToIgnoreInStreetAddress);
-            return streetAddress;
-        }
+        //private string RemovePostalCodeFromUserUpdateLocation(string postalCode) {
+        //    string streetAddress = _userUpdateLocation.Replace(postalCode, string.Empty);
+        //    char[] endingCharactersToIgnoreInStreetAddress = {',', ' '};
+        //    streetAddress = streetAddress.TrimEnd(endingCharactersToIgnoreInStreetAddress);
+        //    return streetAddress;
+        //}
 
         private void TryLocationUpdateGoogle() {
             //bool locationUpdated = false;
@@ -365,8 +375,8 @@ namespace Hineini {
             bool locationUpdated = false;
             if (locationObject != null) {
                 string locationMarker = MainUtility.GetLocationMarker(locationObject);
-                if (locationObject is Address) {
-                    _fireEagle.Update((Address) locationObject);
+                if (locationObject is string) {
+                    _fireEagle.Update(LocationType.address, (string)locationObject);
                 }
                 else if (locationObject is CellTower && (_manualUpdateRequested || LocationMarkerHasMoved(locationMarker))) {
                     _fireEagle.Update((CellTower)locationObject);
@@ -505,6 +515,7 @@ namespace Hineini {
         private void UpdatePendingMapImage() {
             try {
                 string imageUrl = GetMapImageUrl();
+                MessagesForm.AddMessage(DateTime.Now, Constants.RETRIEVED_MAP_URL_MESSAGE, Constants.MessageType.Error);
                 _pendingMapImage = Helpers.StringHasValue(imageUrl) ? MapManager.GetMapImage(imageUrl) : null;
                 if (_pendingMapImage == null) {
                     MessagesForm.AddMessage(DateTime.Now, Constants.GETTING_MAP_IMAGE_MESSAGE, Constants.MessageType.Error);

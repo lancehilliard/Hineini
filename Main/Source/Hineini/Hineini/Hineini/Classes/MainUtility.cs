@@ -82,9 +82,8 @@ namespace Hineini {
                 CellTower cellTower = (CellTower)locationObject;
                 result = String.Format("{0}{1}", cellTower.lac, cellTower.cellid);
             }
-            else if (locationObject is Address) {
-                Address address = (Address)locationObject;
-                result = String.Format("{0}{1}", address.StreetAddress, address.Postal);
+            else if (locationObject is string) {
+                result = (string)locationObject;
             }
             return result;
         }
