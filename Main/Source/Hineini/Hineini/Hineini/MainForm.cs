@@ -538,25 +538,12 @@ namespace Hineini {
             }
         }
 
-        private void SetPendingMapInfoLatLongFromGeoBoxIfNull() {
-            if (_pendingMapInfo.LocationLatLong == null) {
-                LatLong latLongFromGeoBox = GetLatLongFromGeoBox();
-                _pendingMapInfo.LocationLatLong = latLongFromGeoBox;
-            }
-        }
-
         private string GetMapImageUrl() {
-            string result = string.Empty;
+            string result = null;
             if (_pendingMapInfo != null && _pendingMapInfo.LocationLatLong != null) {
                 result = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
             }
             return result;
-        }
-
-        private LatLong GetLatLongFromGeoBox() {
-            double centerLongitude = (_pendingMapInfo.UpperCornerLatLong.Longitude + _pendingMapInfo.LowerCornerLatLong.Longitude) / 2;
-            double centerLatitude = (_pendingMapInfo.UpperCornerLatLong.Latitude + _pendingMapInfo.LowerCornerLatLong.Latitude) / 2;
-            return new LatLong(centerLatitude, centerLongitude);
         }
 
         private void FireEagleWorker() {
@@ -570,7 +557,6 @@ namespace Hineini {
                 }
                 if (Boolean.IsActiveApplication) {
                     if (_pendingMapInfo != null && _pendingMapImage == null) {
-                        SetPendingMapInfoLatLongFromGeoBoxIfNull();
                         UpdatePendingMapImage();
                     }
                 }
