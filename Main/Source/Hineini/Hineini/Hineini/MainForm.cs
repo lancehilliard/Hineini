@@ -195,7 +195,7 @@ namespace Hineini {
                     locationUpdated = UpdateLocationDataByUserInput(_userUpdateLocation);
                 }
                 else {
-                    MessagesForm.AddMessage(DateTime.Now, "TLU: " + "UpdateLocationDataByEnvironmentInput" + _userUpdateLocation, Constants.MessageType.Error);
+                    MessagesForm.AddMessage(DateTime.Now, "TLU: UpdateLocationDataByEnvironmentInput" + _userUpdateLocation, Constants.MessageType.Error);
                     locationUpdated = UpdateLocationDataByEnvironmentInput();
                 }
             }
@@ -540,8 +540,16 @@ namespace Hineini {
 
         private string GetMapImageUrl() {
             string result = null;
-            if (_pendingMapInfo != null && _pendingMapInfo.LocationLatLong != null) {
-                result = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
+            if (_pendingMapInfo == null) {
+                MessagesForm.AddMessage(DateTime.Now, "GMIU: no map info...", Constants.MessageType.Error);
+            }
+            else {
+                if (_pendingMapInfo.LocationLatLong == null) {
+                    MessagesForm.AddMessage(DateTime.Now, "GMIU: no lat/long...", Constants.MessageType.Error);
+                }
+                else {
+                    result = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
+                }
             }
             return result;
         }
