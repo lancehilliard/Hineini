@@ -1,3 +1,7 @@
+0.6.1
+
+* Fixed: map-fetching crash bug
+
 0.6
 
 * Added: support for international address input
