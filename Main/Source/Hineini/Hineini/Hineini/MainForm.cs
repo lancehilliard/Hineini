@@ -38,6 +38,7 @@ namespace Hineini {
         private bool versionCheckPerformed;
         private bool _userShouldBeAdvisedAboutRecommendedVersion;
         private TagForm tagForm;
+        private readonly string errorLogFilePath = MainUtility.GetWorkingDirectoryFileName("errors.log");
 
         #endregion
 
@@ -405,6 +406,14 @@ namespace Hineini {
         private void UpdatePendingMapInfo(FireEagle.Location mostRecentLocation, int mapZoomLevel) {
             if (mostRecentLocation != null && !mostRecentLocation.Name.Equals(_lastLocationName)) {
                 _pendingMapInfo = new MapInfo(mostRecentLocation.ExactPoint, mostRecentLocation.UpperCorner, mostRecentLocation.LowerCorner, mapZoomLevel);
+                string message;
+                if (_pendingMapInfo.LocationLatLong == null) {
+                    message = "Pending map for: LAT/LONG MISSING!";
+                }
+                else {
+                    message = string.Format("Pending map for: {0}, {1}", _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude);
+                }
+                MessagesForm.AddMessage(DateTime.Now, message, Constants.MessageType.Info);
                 _pendingMapImage = null;
                 _lastLocationName = mostRecentLocation.Name;
             }
@@ -628,7 +637,9 @@ namespace Hineini {
                 }
             }
             catch (Exception e1) {
-                MessagesForm.AddMessage(DateTime.Now, "PFEU: " + MainUtility.GetExceptionMessage(e1), Constants.MessageType.Error);
+                string errorDescriptor = "PFEU: " + MainUtility.GetExceptionMessage(e1);
+                MessagesForm.AddMessage(DateTime.Now, errorDescriptor, Constants.MessageType.Error);
+                Helpers.WriteToFile(DateTime.Now.ToShortTimeString() + ": " + errorDescriptor, e1, errorLogFilePath, true);
             }
             finally {
                 if (!(successfulUpdate || unsuccessfulUpdateWasHandled)) {
