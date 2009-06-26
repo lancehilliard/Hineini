@@ -106,12 +106,28 @@ namespace Hineini.Location {
                 //CellTower cellTower = CellTowerLocationProvider.GetCellTowerInfo();
                 RIL.CELLINFO cellTowerInfo = RIL.GetCellTowerInfo();
                 FireEagle.CellTower result = new FireEagle.CellTower();
-                result.cellid = Convert.ToInt32(cellTowerInfo.CellID);
-                result.lac = Convert.ToInt32(cellTowerInfo.LocationAreaCode);
-                result.mcc = Convert.ToInt32(cellTowerInfo.MobileCountryCode);
-                result.mnc = Convert.ToInt32(cellTowerInfo.MobileNetworkCode);
+                result.cellid = GetCellTowerIdInt(cellTowerInfo);
+                result.lac = GetLocationAreaCodeInt(cellTowerInfo);
+                result.mcc = GetMobileCountryCodeInt(cellTowerInfo);
+                result.mnc = GetMobileNetworkCodeInt(cellTowerInfo);
                 return result;
             }
+        }
+
+        private int GetMobileNetworkCodeInt(RIL.CELLINFO cellTowerInfo) {
+            return Convert.ToInt32(cellTowerInfo.MobileNetworkCode);
+        }
+
+        private int GetMobileCountryCodeInt(RIL.CELLINFO cellTowerInfo) {
+            return Convert.ToInt32(cellTowerInfo.MobileCountryCode);
+        }
+
+        private int GetLocationAreaCodeInt(RIL.CELLINFO cellTowerInfo) {
+            return Convert.ToInt32(cellTowerInfo.LocationAreaCode);
+        }
+
+        private int GetCellTowerIdInt(RIL.CELLINFO cellTowerInfo) {
+            return Convert.ToInt32(cellTowerInfo.CellID);
         }
 
         public string CellTowerInfoString {

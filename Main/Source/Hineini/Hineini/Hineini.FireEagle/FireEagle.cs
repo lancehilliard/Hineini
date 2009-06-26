@@ -64,6 +64,7 @@ namespace Hineini.FireEagle {
             get { return m_proxy; }
             set { m_proxy = value; }
         }
+
         #endregion
 
         #region [Constructors]
@@ -307,10 +308,10 @@ namespace Hineini.FireEagle {
         #endregion
 
         #region [Public Methods]
-        public Token OAuthGetRequestToken()
-        {
+        public Token OAuthGetRequestToken() {
             List<string> parameters = new List<string>();
             AddStandardParams(parameters);
+            //parameters.Add("oauth_callback=oob"); // Hineini has no "callback URL to which the Service Provider will redirect the User back when the Obtaining User Authorization (Obtaining User Authorization) step is completed" -- http://oauth.googlecode.com/svn/spec/core/1.0a/drafts/3/oauth-core-1_0a.html
             return GetTokenResponse("get", "request_token", parameters);
         }
 
@@ -325,7 +326,6 @@ namespace Hineini.FireEagle {
             AddStandardParams(parameters, token);
             return GetTokenResponse("get", "access_token", token.SecretToken, parameters);
         }
-
 
         public User User()
         {
@@ -474,6 +474,7 @@ namespace Hineini.FireEagle {
             Update(parameters);
         }
         #endregion
+
     }
 
     /// <summary>

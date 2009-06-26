@@ -413,7 +413,7 @@ namespace Hineini {
                 else {
                     message = string.Format("Pending map for: {0}, {1}", _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude);
                 }
-                MessagesForm.AddMessage(DateTime.Now, message, Constants.MessageType.Info);
+                MessagesForm.AddMessage(DateTime.Now, message, Constants.MessageType.Error);
                 _pendingMapImage = null;
                 _lastLocationName = mostRecentLocation.Name;
             }
