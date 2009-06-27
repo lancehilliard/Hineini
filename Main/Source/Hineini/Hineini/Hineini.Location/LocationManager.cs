@@ -108,10 +108,29 @@ namespace Hineini.Location {
                 FireEagle.CellTower result = new FireEagle.CellTower();
                 result.cellid = GetCellTowerIdInt(cellTowerInfo);
                 result.lac = GetLocationAreaCodeInt(cellTowerInfo);
-                result.mcc = GetMobileCountryCodeInt(cellTowerInfo);
-                result.mnc = GetMobileNetworkCodeInt(cellTowerInfo);
+                try {
+                    result.mcc = GetMobileCountryCodeInt(cellTowerInfo);
+                    result.mnc = GetMobileNetworkCodeInt(cellTowerInfo);
+                }
+                catch (Exception e) {
+                    RIL.OPERATORNAMES currentOperator = GetCurrentOperator();
+                    result.mcc = GetMobileCountryCodeInt(currentOperator);
+                    result.mnc = GetMobileNetworkCodeInt(currentOperator);
+                }
                 return result;
             }
+        }
+
+        private int GetMobileNetworkCodeInt(RIL.OPERATORNAMES currentOperator) {
+            return Convert.ToInt32(currentOperator.NumName.Substring(3, 2));
+        }
+
+        private int GetMobileCountryCodeInt(RIL.OPERATORNAMES currentOperator) {
+            return Convert.ToInt32(currentOperator.NumName.Substring(0, 3));
+        }
+
+        private RIL.OPERATORNAMES GetCurrentOperator() {
+            return RIL.GetCurrentOperator(RIL.RIL_OPFORMAT.NUM);
         }
 
         private int GetMobileNetworkCodeInt(RIL.CELLINFO cellTowerInfo) {

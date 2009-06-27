@@ -1,3 +1,7 @@
+0.6.4
+
+* Improved: celltower detection logic
+
 0.6.31
 
 * Improved: error logging
