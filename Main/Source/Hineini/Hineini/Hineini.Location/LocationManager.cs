@@ -50,7 +50,7 @@ namespace Hineini.Location {
         public Position? GetBestGuessPosition() {
             Position? result = GetValidGpsLocation();
             if (result == null) {
-                Position geoLocation = GoogleMapsCellService.GetLocation(GetGoogleCellTower(RIL.GetCellTowerInfo()));
+                Position geoLocation = GoogleMapsCellService.GetLocation(CurrentCellTower);
                 bool locationIsValid = !double.NaN.Equals(geoLocation.Latitude) && !double.NaN.Equals(geoLocation.Longitude);
                 if (locationIsValid) {
                     result = geoLocation;
@@ -59,19 +59,19 @@ namespace Hineini.Location {
             return result;
         }
 
-        private static CellTower GetGoogleCellTower(RIL.CELLINFO cellinfo) {
-            CellTower result = new CellTower();
-            result.lac = Convert.ToInt32(cellinfo.LocationAreaCode);
-            result.mcc = Convert.ToInt32(cellinfo.MobileCountryCode);
-            result.mnc = Convert.ToInt32(cellinfo.MobileNetworkCode);
-            result.cellid = Convert.ToInt32(cellinfo.CellID);
-            return result;
-        }
+        //private static CellTower GetGoogleCellTower(RIL.CELLINFO cellinfo) {
+        //    CellTower result = new CellTower();
+        //    result.lac = Convert.ToInt32(cellinfo.LocationAreaCode);
+        //    result.mcc = Convert.ToInt32(cellinfo.MobileCountryCode);
+        //    result.mnc = Convert.ToInt32(cellinfo.MobileNetworkCode);
+        //    result.cellid = Convert.ToInt32(cellinfo.CellID);
+        //    return result;
+        //}
 
         public Position? CurrentCellTowerPosition {
             get {
                 Position? result = null;
-                Position geoLocation = GoogleMapsCellService.GetLocation(GetGoogleCellTower(RIL.GetCellTowerInfo()));
+                Position geoLocation = GoogleMapsCellService.GetLocation(CurrentCellTower);
                 bool locationIsValid = !double.NaN.Equals(geoLocation.Latitude) && !double.NaN.Equals(geoLocation.Longitude);
                 if (locationIsValid) {
                     result = geoLocation;
