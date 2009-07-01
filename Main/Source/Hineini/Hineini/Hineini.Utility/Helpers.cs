@@ -10,7 +10,9 @@ namespace Hineini.Utility {
         public static void WriteToFile(string errorDescriptor, Exception exception, string path, bool append) {
             StreamWriter streamWriter = new StreamWriter(path, append);
             streamWriter.WriteLine(errorDescriptor);
-            streamWriter.Write(exception);
+            if (exception != null) {
+                streamWriter.Write(exception);
+            }
             streamWriter.Flush();
             streamWriter.Close();
         }

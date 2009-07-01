@@ -59,5 +59,9 @@ namespace Hineini.FireEagle {
         {
             return (this.latitude >= -90.0 && this.latitude <= 90.0 && this.longitude >= -180.0 && this.longitude <= 180.0);
         }
+
+        public override string ToString() {
+            return string.Format("Latitude: {0}, Longitude: {1}", latitude, longitude);
+        }
     }
 }

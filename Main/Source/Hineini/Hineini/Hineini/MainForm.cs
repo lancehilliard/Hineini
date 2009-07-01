@@ -408,7 +408,8 @@ namespace Hineini {
                 _pendingMapInfo = new MapInfo(mostRecentLocation.ExactPoint, mostRecentLocation.UpperCorner, mostRecentLocation.LowerCorner, mapZoomLevel);
                 string message;
                 if (_pendingMapInfo.LocationLatLong == null) {
-                    message = "Pending map for: LAT/LONG MISSING! (" + mostRecentLocation.box_raw + ")";
+                    message = "Pending map for: LAT/LONG MISSING! (details: errors.log)";
+                    Helpers.WriteToFile(DateTime.Now.ToShortTimeString() + ": point_raw: " + mostRecentLocation.point_raw + "; box_raw: " + mostRecentLocation.box_raw + "; ExactPoint: " + mostRecentLocation.ExactPoint + "; UpperCorner: " + mostRecentLocation.UpperCorner + "; LowerCorner: " + mostRecentLocation.LowerCorner, null, errorLogFilePath, true);
                 }
                 else {
                     message = string.Format("Pending map for: {0}, {1}", _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude);
