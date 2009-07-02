@@ -101,11 +101,11 @@ namespace Hineini.Location {
             return result;
         }
 
-        public FireEagle.CellTower CurrentCellTower {
+        public CellTower CurrentCellTower {
             get {
                 //CellTower cellTower = CellTowerLocationProvider.GetCellTowerInfo();
                 RIL.CELLINFO cellTowerInfo = RIL.GetCellTowerInfo();
-                FireEagle.CellTower result = new FireEagle.CellTower();
+                CellTower result = new CellTower();
                 result.cellid = GetCellTowerIdInt(cellTowerInfo);
                 result.lac = GetLocationAreaCodeInt(cellTowerInfo);
                 try {
@@ -129,7 +129,7 @@ namespace Hineini.Location {
             return Convert.ToInt32(currentOperator.NumName.Substring(0, 3));
         }
 
-        private RIL.OPERATORNAMES GetCurrentOperator() {
+        public RIL.OPERATORNAMES GetCurrentOperator() {
             return RIL.GetCurrentOperator(RIL.RIL_OPFORMAT.NUM);
         }
 
@@ -151,18 +151,7 @@ namespace Hineini.Location {
 
         public string CellTowerInfoString {
             get {
-                RIL.CELLINFO cellTowerInfo = RIL.GetCellTowerInfo();
-                string result = string.Empty;
-                if (cellTowerInfo != null) {
-                    result = string.Format(cellTowerInfoTemplate, cellTowerInfo.CellID, cellTowerInfo.LocationAreaCode, cellTowerInfo.MobileCountryCode, cellTowerInfo.MobileNetworkCode);
-                }
-                return result;
-            }
-        }
-
-        public bool CanLocateTowers {
-            get {
-                bool result = Utility.Helpers.StringHasValue(CellTowerInfoString);
+                string result = string.Format(cellTowerInfoTemplate, CurrentCellTower.cellid, CurrentCellTower.lac, CurrentCellTower.mcc, CurrentCellTower.mnc);
                 return result;
             }
         }

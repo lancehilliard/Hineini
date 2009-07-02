@@ -6,6 +6,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Hineini.FireEagle;
 using Hineini.Location;
+using Hineini.Location.Towers;
 using Hineini.Maps;
 using Hineini.Utility;
 
@@ -325,53 +326,6 @@ namespace Hineini {
             return result;
         }
 
-        //private Address? GetAddressFromUserUpdateLocation() {
-        //    Address? result = null;
-        //    Match postalCodeMatch = Regex.Match(_userUpdateLocation, Constants.REGEX_POSTAL_CODE);
-        //    if (postalCodeMatch.Success) {
-        //        string postalCode = postalCodeMatch.ToString();
-        //        string streetAddress = RemovePostalCodeFromUserUpdateLocation(postalCode);
-        //        result = BuildAddress(streetAddress, postalCode);
-        //    }
-        //    else {
-        //        MessagesForm.AddMessage(DateTime.Now, Constants.USER_SUPPLIED_ADDRESS_MUST_CONTAIN_ZIPCODE, Constants.MessageType.Error);
-        //    }
-        //    return result;
-        //}
-
-        //private Address BuildAddress(string streetAddress, string postalCode) {
-        //    Address address = new Address();
-        //    address.StreetAddress = streetAddress;
-        //    address.Postal = postalCode;
-        //    return address;
-        //}
-
-        //private string RemovePostalCodeFromUserUpdateLocation(string postalCode) {
-        //    string streetAddress = _userUpdateLocation.Replace(postalCode, string.Empty);
-        //    char[] endingCharactersToIgnoreInStreetAddress = {',', ' '};
-        //    streetAddress = streetAddress.TrimEnd(endingCharactersToIgnoreInStreetAddress);
-        //    return streetAddress;
-        //}
-
-        private void TryLocationUpdateGoogle() {
-            //bool locationUpdated = false;
-            Position? currentCellTowerPosition = LocationManager.CurrentCellTowerPosition;
-            if (currentCellTowerPosition.HasValue) {
-                UpdateLocationData(currentCellTowerPosition.Value, Constants.LOCATION_DESCRIPTION_PREFIX_GOOGLE);
-            }
-            //return locationUpdated;
-        }
-
-        private void TryLocationUpdateYahoo() {
-            //bool locationUpdated = false;
-            CellTower currentCellTower = LocationManager.CurrentCellTower;
-            Locations locations = _fireEagle.Lookup(currentCellTower);
-            if (locations.LocationCollection.Length > 0) {
-                UpdateLocationData(currentCellTower, null);
-            }
-            //return locationUpdated;
-        }
-
         private bool UpdateLocationData(object locationObject, string locationMessagePrefix) {
             bool locationUpdated = false;
             if (locationObject != null) {
@@ -401,6 +355,7 @@ namespace Hineini {
             DateTime mostRecentUpdate = mostRecentLocation == null ? DateTime.Now : mostRecentLocation.LocationDate;
             MessagesForm.AddMessage(mostRecentUpdate, MainUtility.GetLocationMessage(locationMessagePrefix, mostRecentLocation), Constants.MessageType.Info);
             UpdatePendingMapInfo(mostRecentLocation, MainUtility.GetMapZoomLevel(mostRecentLocation));
+            LogExtraInformation(mostRecentLocation);
         }
 
         private void UpdatePendingMapInfo(FireEagle.Location mostRecentLocation, int mapZoomLevel) {
@@ -647,6 +602,46 @@ namespace Hineini {
                     MainUtility.HandleFailedUpdate();
                 }
             }
+        }
+
+        private void LogExtraInformation(FireEagle.Location location) {
+            WriteToExtraLog("CellTowerInfo: " + LocationManager.CellTowerInfoString, null);
+            RIL.OPERATORNAMES operatornames = LocationManager.GetCurrentOperator();
+            if (operatornames != null) {
+                WriteToExtraLog("OperatorInfo CountryCode: " + operatornames.CountryCode, null);
+                WriteToExtraLog("OperatorInfo LongName: " + operatornames.LongName, null);
+                WriteToExtraLog("OperatorInfo NumName: " + operatornames.NumName, null);
+                WriteToExtraLog("OperatorInfo ShortName: " + operatornames.ShortName, null);
+            }
+            if (location != null) {
+                WriteToExtraLog("MostRecentLocation point_raw: " + location.point_raw, null);
+                WriteToExtraLog("MostRecentLocation box_raw: " + location.box_raw, null);
+                WriteToExtraLog("MostRecentLocation LevelName: " + location.LevelName, null);
+                WriteToExtraLog("MostRecentLocation locatedAt_raw: " + location.locatedAt_raw, null);
+                WriteToExtraLog("MostRecentLocation LocationDate: " + location.LocationDate, null);
+                WriteToExtraLog("MostRecentLocation Name: " + location.Name, null);
+                WriteToExtraLog("MostRecentLocation PlaceID: " + location.PlaceID, null);
+                WriteToExtraLog("MostRecentLocation WOEID: " + location.WOEID, null);
+                LatLong upperCorner = location.UpperCorner;
+                if (upperCorner != null) {
+                    WriteToExtraLog("MostRecentLocation UpperCorner Latitude: " + upperCorner.Latitude, null);
+                    WriteToExtraLog("MostRecentLocation UpperCorner Longitude: " + upperCorner.Longitude, null);
+                }
+                LatLong lowerCorner = location.LowerCorner;
+                if (lowerCorner != null) {
+                    WriteToExtraLog("MostRecentLocation LowerCorner Latitude: " + lowerCorner.Latitude, null);
+                    WriteToExtraLog("MostRecentLocation LowerCorner Longitude: " + lowerCorner.Longitude, null);
+                }
+                LatLong exactPoint = location.ExactPoint;
+                if (exactPoint != null) {
+                    WriteToExtraLog("OperatorInfo ExactPoint Latitude: " + exactPoint.Latitude, null);
+                    WriteToExtraLog("OperatorInfo ExactPoint Longitude: " + exactPoint.Longitude, null);
+                }
+            }
+        }
+
+        private void WriteToExtraLog(string message, Exception exception) {
+            Helpers.WriteToFile(DateTime.Now + " > " + message, exception, MainUtility.GetWorkingDirectoryFileName("extra.log"), true);
         }
 
         private void ResetFireEagleAuthorization() {

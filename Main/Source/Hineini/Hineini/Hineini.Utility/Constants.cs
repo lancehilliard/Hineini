@@ -10,7 +10,7 @@ namespace Hineini.Utility {
         public const string USER_MANUAL_FILENAME = "UserManual.html";
         public const string CLIENT_UPDATE_AVAILABLE_MENU_ITEM_TEXT = "Client Update Available";
         public const string CLIENT_UPDATE_AVAILABLE_MESSAGE = "An updated version of Hineini can be found at http://hineini.codeplex.com.";
-        public const string CURRENT_VERSION = "0.6.42";
+        public const string CURRENT_VERSION = "0.6.43";
         public const string RECOMMENDED_VERSION_HTML_DELIMITER_END = " --";
         public const string RECOMMENDED_VERSION_HTML_DELIMITER_START = "!-- Recommend ";
         public const string RECOMMENDED_VERSION_URL = "http://hineini.codeplex.com/Wiki/View.aspx?title=recommendedVersion";
