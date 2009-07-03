@@ -39,7 +39,7 @@ namespace Hineini {
         private bool versionCheckPerformed;
         private bool _userShouldBeAdvisedAboutRecommendedVersion;
         private TagForm tagForm;
-        private readonly string errorLogFilePath = MainUtility.GetWorkingDirectoryFileName("errors.log");
+        private readonly string errorLogFilePath = Helpers.GetWorkingDirectoryFileName("errors.log");
 
         #endregion
 
@@ -92,6 +92,7 @@ namespace Hineini {
         #region Non-repeating code
 
         public MainForm() {
+
             InitializeComponent();
 
             _fireEagle.UserToken = Settings.FireEagleUserToken;
@@ -605,43 +606,39 @@ namespace Hineini {
         }
 
         private void LogExtraInformation(FireEagle.Location location) {
-            WriteToExtraLog("CellTowerInfo: " + LocationManager.CellTowerInfoString, null);
+            Helpers.WriteToExtraLog("CellTowerInfo: " + LocationManager.CellTowerInfoString, null);
             RIL.OPERATORNAMES operatornames = LocationManager.GetCurrentOperator();
             if (operatornames != null) {
-                WriteToExtraLog("OperatorInfo CountryCode: " + operatornames.CountryCode, null);
-                WriteToExtraLog("OperatorInfo LongName: " + operatornames.LongName, null);
-                WriteToExtraLog("OperatorInfo NumName: " + operatornames.NumName, null);
-                WriteToExtraLog("OperatorInfo ShortName: " + operatornames.ShortName, null);
+                Helpers.WriteToExtraLog("OperatorInfo CountryCode: " + operatornames.CountryCode, null);
+                Helpers.WriteToExtraLog("OperatorInfo LongName: " + operatornames.LongName, null);
+                Helpers.WriteToExtraLog("OperatorInfo NumName: " + operatornames.NumName, null);
+                Helpers.WriteToExtraLog("OperatorInfo ShortName: " + operatornames.ShortName, null);
             }
             if (location != null) {
-                WriteToExtraLog("MostRecentLocation point_raw: " + location.point_raw, null);
-                WriteToExtraLog("MostRecentLocation box_raw: " + location.box_raw, null);
-                WriteToExtraLog("MostRecentLocation LevelName: " + location.LevelName, null);
-                WriteToExtraLog("MostRecentLocation locatedAt_raw: " + location.locatedAt_raw, null);
-                WriteToExtraLog("MostRecentLocation LocationDate: " + location.LocationDate, null);
-                WriteToExtraLog("MostRecentLocation Name: " + location.Name, null);
-                WriteToExtraLog("MostRecentLocation PlaceID: " + location.PlaceID, null);
-                WriteToExtraLog("MostRecentLocation WOEID: " + location.WOEID, null);
+                Helpers.WriteToExtraLog("MostRecentLocation point_raw: " + location.point_raw, null);
+                Helpers.WriteToExtraLog("MostRecentLocation box_raw: " + location.box_raw, null);
+                Helpers.WriteToExtraLog("MostRecentLocation LevelName: " + location.LevelName, null);
+                Helpers.WriteToExtraLog("MostRecentLocation locatedAt_raw: " + location.locatedAt_raw, null);
+                Helpers.WriteToExtraLog("MostRecentLocation LocationDate: " + location.LocationDate, null);
+                Helpers.WriteToExtraLog("MostRecentLocation Name: " + location.Name, null);
+                Helpers.WriteToExtraLog("MostRecentLocation PlaceID: " + location.PlaceID, null);
+                Helpers.WriteToExtraLog("MostRecentLocation WOEID: " + location.WOEID, null);
                 LatLong upperCorner = location.UpperCorner;
                 if (upperCorner != null) {
-                    WriteToExtraLog("MostRecentLocation UpperCorner Latitude: " + upperCorner.Latitude, null);
-                    WriteToExtraLog("MostRecentLocation UpperCorner Longitude: " + upperCorner.Longitude, null);
+                    Helpers.WriteToExtraLog("MostRecentLocation UpperCorner Latitude: " + upperCorner.Latitude, null);
+                    Helpers.WriteToExtraLog("MostRecentLocation UpperCorner Longitude: " + upperCorner.Longitude, null);
                 }
                 LatLong lowerCorner = location.LowerCorner;
                 if (lowerCorner != null) {
-                    WriteToExtraLog("MostRecentLocation LowerCorner Latitude: " + lowerCorner.Latitude, null);
-                    WriteToExtraLog("MostRecentLocation LowerCorner Longitude: " + lowerCorner.Longitude, null);
+                    Helpers.WriteToExtraLog("MostRecentLocation LowerCorner Latitude: " + lowerCorner.Latitude, null);
+                    Helpers.WriteToExtraLog("MostRecentLocation LowerCorner Longitude: " + lowerCorner.Longitude, null);
                 }
                 LatLong exactPoint = location.ExactPoint;
                 if (exactPoint != null) {
-                    WriteToExtraLog("OperatorInfo ExactPoint Latitude: " + exactPoint.Latitude, null);
-                    WriteToExtraLog("OperatorInfo ExactPoint Longitude: " + exactPoint.Longitude, null);
+                    Helpers.WriteToExtraLog("OperatorInfo ExactPoint Latitude: " + exactPoint.Latitude, null);
+                    Helpers.WriteToExtraLog("OperatorInfo ExactPoint Longitude: " + exactPoint.Longitude, null);
                 }
             }
-        }
-
-        private void WriteToExtraLog(string message, Exception exception) {
-            Helpers.WriteToFile(DateTime.Now + " > " + message, exception, MainUtility.GetWorkingDirectoryFileName("extra.log"), true);
         }
 
         private void ResetFireEagleAuthorization() {
@@ -739,7 +736,7 @@ namespace Hineini {
         }
 
         private void UserManualMenuItem_Click(object sender, EventArgs e) {
-            string userManualFilePath = MainUtility.GetWorkingDirectoryFileName(Constants.USER_MANUAL_FILENAME);
+            string userManualFilePath = Helpers.GetWorkingDirectoryFileName(Constants.USER_MANUAL_FILENAME);
             Process.Start(userManualFilePath, null);
             // TODO remove helpform from project?
             //_helpForm.Show();
@@ -747,7 +744,7 @@ namespace Hineini {
         }
 
         private void aboutMenuItem_Click(object sender, EventArgs e) {
-            string aboutFilePath = MainUtility.GetWorkingDirectoryFileName(Constants.ABOUT_FILENAME);
+            string aboutFilePath = Helpers.GetWorkingDirectoryFileName(Constants.ABOUT_FILENAME);
             Process.Start(aboutFilePath, null);
             // TODO remove aboutForm from project?
             //_aboutForm.ResetAndShow();

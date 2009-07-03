@@ -1,3 +1,7 @@
+0.6.44
+
+* Improved: device/environment logging
+
 0.6.43
 
 * Improved: device/environment logging

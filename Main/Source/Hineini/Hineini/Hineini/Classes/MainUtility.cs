@@ -130,14 +130,6 @@ namespace Hineini {
                 keybd_event(VK_F24, 0, KEYEVENTF_KEYUP, 0);
         }
 
-        private static string GetWorkingDirectory() {
-            return Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase) + @"\";
-        }
-
-        public static string GetWorkingDirectoryFileName(string fileName) {
-            return GetWorkingDirectory() + fileName;
-        }
-
         public static void SetBorders(Control edit, bool border, bool focusBorder) {
             // Optionally remove the border around the edit control
             // that occurs whenever the control has focus

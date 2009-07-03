@@ -72,6 +72,12 @@
     <Compile Include="User.cs" />
     <Compile Include="Users.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Hineini.Utility\Hineini.Utility.csproj">
+      <Project>{96F89D48-B24C-4EDC-8748-346FF82DBCB6}</Project>
+      <Name>Hineini.Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>

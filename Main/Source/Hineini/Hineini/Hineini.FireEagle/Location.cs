@@ -4,6 +4,7 @@ using System.Text;
 
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Hineini.Utility;
 
 namespace Hineini.FireEagle {
     [XmlRoot("location")]
@@ -78,18 +79,27 @@ namespace Hineini.FireEagle {
         {
             get
             {
+                LogBoxRaw(box_raw);
+
                 if (String.IsNullOrEmpty(this.box_raw))
                 {
                     return null;
                 }
 
-                string[] parts = this.box_raw.Split(' ');
+                string[] parts = BowRawStringArray;
                 if (parts.Length == 4)
                 {
                     return this.ParseLatLong(parts[0], parts[1]);
                 }
 
                 return null;
+            }
+        }
+
+        protected string[] BowRawStringArray {
+            get {
+                // return box_raw.Split(' ');
+                return System.Text.RegularExpressions.Regex.Split(box_raw.Trim(), @"\s+");
             }
         }
 
@@ -100,12 +110,14 @@ namespace Hineini.FireEagle {
         {
             get
             {
+                LogBoxRaw(box_raw);
+
                 if (String.IsNullOrEmpty(this.box_raw))
                 {
                     return null;
                 }
 
-                string[] parts = this.box_raw.Split(' ');
+                string[] parts = BowRawStringArray;
                 if (parts.Length == 4)
                 {
                     return this.ParseLatLong(parts[2], parts[3]);
@@ -113,6 +125,21 @@ namespace Hineini.FireEagle {
 
                 return null;
             }
+        }
+
+        private void LogBoxRaw(string boxRaw) {
+            Helpers.WriteToExtraLog("box_raw in ticks: '" + boxRaw + "'", null);
+            Helpers.WriteToExtraLog("box_raw TRIMMED in ticks: '" + boxRaw.Trim() + "'", null);
+
+            char[] characters = boxRaw.ToCharArray();
+            string[] integers = new string[characters.Length];
+            Helpers.WriteToExtraLog("box_raw characters length: " + characters.Length, null);
+            for (int i = 0; i < characters.Length; i++) {
+                integers[i] = ((int)characters[i]).ToString();
+            }
+            Helpers.WriteToExtraLog("box_raw integers length: " + integers.Length, null);
+            string integersString = string.Join(",", integers);
+            Helpers.WriteToExtraLog("box_raw integers: " + integersString, null);
         }
 
         /// <summary>

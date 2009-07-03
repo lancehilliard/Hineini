@@ -24,7 +24,7 @@ namespace Hineini {
         private const double GPS_STATIONARY_THRESHOLD_DEFAULT_VALUE = 0.25;
         
         static Settings() {
-            _settingsPath = MainUtility.GetWorkingDirectoryFileName("Settings.xml");
+            _settingsPath = Helpers.GetWorkingDirectoryFileName("Settings.xml");
 
             XmlDocument xdoc = new XmlDocument();
             xdoc.Load(_settingsPath);
