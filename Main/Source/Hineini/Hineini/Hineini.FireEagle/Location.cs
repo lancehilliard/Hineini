@@ -59,15 +59,22 @@ namespace Hineini.FireEagle {
             {
                 if (String.IsNullOrEmpty(this.point_raw))
                 {
+                    Helpers.WriteToExtraLog("ExactPoint is null due to point_raw.", null);
+                    if (point_raw == null) {
+                        Helpers.WriteToExtraLog("point_raw is null.", null);
+                    }
                     return null;
                 }
 
                 string[] parts = this.point_raw.Split(' ');
+                Helpers.WriteToExtraLog("ExactPoint parts length: " + parts.Length, null);
                 if (parts.Length == 2)
                 {
+                    Helpers.WriteToExtraLog("ExactPoint parts: '" + parts[0] + "', '" + parts[1] + "'", null);
                     return this.ParseLatLong(parts[0], parts[1]);
                 }
 
+                Helpers.WriteToExtraLog("ExactPoint is null.", null);
                 return null;
             }
         }
@@ -77,23 +84,33 @@ namespace Hineini.FireEagle {
         /// </summary>
         public LatLong LowerCorner
         {
-            get
-            {
+            get {
                 LogBoxRaw(box_raw);
+                return GetBoxCorner("LowerCorner");
+            }
+        }
 
-                if (String.IsNullOrEmpty(this.box_raw))
-                {
-                    return null;
-                }
-
-                string[] parts = BowRawStringArray;
-                if (parts.Length == 4)
-                {
-                    return this.ParseLatLong(parts[0], parts[1]);
+        private LatLong GetBoxCorner(string whichCorner) {
+            if (String.IsNullOrEmpty(this.box_raw))
+            {
+                Helpers.WriteToExtraLog(whichCorner + " is null due to box_raw.", null);
+                if (box_raw == null) {
+                    Helpers.WriteToExtraLog("box_raw is null.", null);
                 }
 
                 return null;
             }
+
+            string[] parts = BowRawStringArray;
+            Helpers.WriteToExtraLog(whichCorner + " parts length: " + parts.Length, null);
+            if (parts.Length == 4)
+            {
+                int partStartIndex = "LowerCorner".Equals(whichCorner) ? 0 : 2;
+                return this.ParseLatLong(parts[partStartIndex], parts[partStartIndex + 1]);
+            }
+
+            Helpers.WriteToExtraLog(whichCorner + " is null.", null);
+            return null;
         }
 
         protected string[] BowRawStringArray {
@@ -111,19 +128,7 @@ namespace Hineini.FireEagle {
             get
             {
                 LogBoxRaw(box_raw);
-
-                if (String.IsNullOrEmpty(this.box_raw))
-                {
-                    return null;
-                }
-
-                string[] parts = BowRawStringArray;
-                if (parts.Length == 4)
-                {
-                    return this.ParseLatLong(parts[2], parts[3]);
-                }
-
-                return null;
+                return GetBoxCorner("UpperCorner");
             }
         }
 
