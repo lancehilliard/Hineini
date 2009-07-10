@@ -1,3 +1,8 @@
+0.6.46
+
+* Improved: location data parsing
+* Improved: location logging
+
 0.6.45
 
 * Improved: location logging

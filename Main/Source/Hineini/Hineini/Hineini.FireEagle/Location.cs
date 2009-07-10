@@ -159,15 +159,19 @@ namespace Hineini.FireEagle {
             double longitude = double.MinValue;
 
             try {
-                latitude = Double.Parse(lat);
-                longitude = Double.Parse(lon);
+                latitude = Double.Parse(lat, System.Globalization.CultureInfo.InvariantCulture); // http://bytes.com/groups/net-c/224441-double-conversion-problem#post923798
+                longitude = Double.Parse(lon, System.Globalization.CultureInfo.InvariantCulture);
+                
                 LatLong latLong = new LatLong(latitude, longitude);
 
                 if (latLong.Valid()) {
+                    Helpers.WriteToExtraLog("ParseLatLong returned valid latLong", null);
                     return latLong;
                 }
             }
-            catch (Exception e) {}
+            catch (Exception e) {
+                Helpers.WriteToExtraLog(e.Message, e);
+            }
 
             return null;
         }

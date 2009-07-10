@@ -8,7 +8,7 @@ namespace Hineini.Utility {
             return !String.IsNullOrEmpty(candidate);
         }
 
-        public static void WriteToFile(string errorDescriptor, Exception exception, string path, bool append) {
+        private static void WriteToFile(string errorDescriptor, Exception exception, string path, bool append) {
             StreamWriter streamWriter = new StreamWriter(path, append);
             streamWriter.WriteLine(errorDescriptor);
             if (exception != null) {
