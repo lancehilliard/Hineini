@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 
 using System.Xml.Serialization;
 using System.Xml.Schema;
+using Hineini.Utility;
 
 namespace Hineini.FireEagle {
     /// <summary>
@@ -468,8 +469,11 @@ namespace Hineini.FireEagle {
         public void Update(Position pos)
         {
             List<string> parameters = new List<string>();
-            parameters.Add("lat=" + OAuth.UrlEncode(pos.Latitude.ToString()));
-            parameters.Add("lon=" + OAuth.UrlEncode(pos.Longitude.ToString()));
+            string latitude = pos.Latitude.ToString();
+            string longitude = pos.Longitude.ToString();
+            Helpers.WriteToExtraLog("Updating Fire Eagle position with lat/long: '" + latitude + "', '" + longitude + "'", null);
+            parameters.Add("lat=" + OAuth.UrlEncode(latitude));
+            parameters.Add("lon=" + OAuth.UrlEncode(longitude));
 
             Update(parameters);
         }
