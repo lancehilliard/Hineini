@@ -309,19 +309,23 @@ namespace Hineini {
         private bool GpsUpdateShouldProceed(Position? currentGpsPosition) {
             bool updateShouldProceed = false;
             if (currentGpsPosition.HasValue) {
-                updateShouldProceed = _manualUpdateRequested;
-                if (!updateShouldProceed) {
-                    updateShouldProceed = DistanceInMilesExceedsGpsStationaryThreshold(currentGpsPosition);
+                Position position = currentGpsPosition.Value;
+                bool positionIsValid = position.Latitude != 0 && position.Longitude != 0;
+                if (positionIsValid) {
+                    updateShouldProceed = _manualUpdateRequested || DistanceInMilesExceedsGpsStationaryThreshold(position);
                     if (!updateShouldProceed) {
                         MessagesForm.AddMessage(DateTime.Now, Constants.UPDATE_SKIPPED_GPS_THRESHOLD, Constants.MessageType.Error);
                     }
+                }
+                else {
+                    MessagesForm.AddMessage(DateTime.Now, Constants.LOCATION_NOT_YET_IDENTIFIED, Constants.MessageType.Error);
                 }
             }
             return updateShouldProceed;
         }
 
-        private static bool DistanceInMilesExceedsGpsStationaryThreshold(Position? currentGpsPosition) {
-            double distanceInMiles = LocationManager.DistanceInMiles(currentGpsPosition.Value, _lastUpdatedPosition);
+        private static bool DistanceInMilesExceedsGpsStationaryThreshold(Position currentGpsPosition) {
+            double distanceInMiles = LocationManager.DistanceInMiles(currentGpsPosition, _lastUpdatedPosition);
             bool result = distanceInMiles == Constants.DISTANCE_UNKNOWN || distanceInMiles >= Settings.GpsStationaryThresholdInMiles;
             return result;
         }

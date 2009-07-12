@@ -19,7 +19,7 @@ namespace Hineini.Utility {
         }
 
         public static void WriteToExtraLog(string message, Exception exception) {
-            WriteToFile(DateTime.Now + " > " + message, exception, GetWorkingDirectoryFileName("extra.log"), true);
+            WriteToFile(DateTime.Now + " | " + Constants.CURRENT_VERSION + " > " + message, exception, GetWorkingDirectoryFileName("extra.log"), true);
         }
 
         public static string GetWorkingDirectoryFileName(string fileName) {
