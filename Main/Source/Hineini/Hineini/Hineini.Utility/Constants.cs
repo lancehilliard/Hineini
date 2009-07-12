@@ -10,7 +10,7 @@ namespace Hineini.Utility {
         public const string USER_MANUAL_FILENAME = "UserManual.html";
         public const string CLIENT_UPDATE_AVAILABLE_MENU_ITEM_TEXT = "Client Update Available";
         public const string CLIENT_UPDATE_AVAILABLE_MESSAGE = "An updated version of Hineini can be found at http://hineini.codeplex.com.";
-        public const string CURRENT_VERSION = "0.6.48";
+        public const string CURRENT_VERSION = "0.6.5";
         public const string RECOMMENDED_VERSION_HTML_DELIMITER_END = " --";
         public const string RECOMMENDED_VERSION_HTML_DELIMITER_START = "!-- Recommend ";
         public const string RECOMMENDED_VERSION_URL = "http://hineini.codeplex.com/Wiki/View.aspx?title=recommendedVersion";
@@ -45,7 +45,7 @@ namespace Hineini.Utility {
         public const string TOWER_LOCATIONS_MESSAGE_TEMPLATE = "Geolocate towers w/: {0}";
         public const string UPDATE_INTERVAL_MESSAGE_AUTOMATIC_TEMPLATE = "Locate every: {0} {1}";
         public const string SHOW_MESSAGES_NEXT_MESSAGE_TEMPLATE = "{0}\r\n{1}";
-        public const string AUTHORIZATION_REQUEST_TEMPLATE = "Visit the URL below to authorize Hineini.  When the authorization is confirmed, Hineini will automatically start updating your location to Fire Eagle after a short delay.\r\n\r\n{0}";
+        public const string AUTHORIZATION_REQUEST_TEMPLATE = "Visit the URL below to authorize Hineini.  Part of the authorization is a verification code.  Press 'Verify' when you have it.\r\n\r\n{0}";
         public const string FAILED_UPDATE_MESSAGE_IDLE = "Won't update until you choose 'Update'.";
         public const string LOADING_REQUEST_AUTHORIZATION_MESSAGE = "Starting Fire Eagle authorization setup...";
         public const string MANUAL_UPDATE_STARTED_MESSAGE = "Manual update started...";

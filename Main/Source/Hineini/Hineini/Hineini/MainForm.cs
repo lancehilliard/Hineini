@@ -23,6 +23,7 @@ namespace Hineini {
         private string _fireEagleRequestAuthorizationUrl = string.Empty;
         private readonly FireEagle.FireEagle _fireEagle = new FireEagle.FireEagle(Constants.HINEINI_CONSUMER_KEY, Constants.HINEINI_CONSUMER_SECRET);
         private PreAuthForm _preAuthForm;
+        private VerifyForm _verifyForm;
         private MessagesForm _messagesForm;
         private string _userUpdateLocation;
         private int _mapHeight;
@@ -51,6 +52,12 @@ namespace Hineini {
         private MessagesForm MessagesForm {
             get {
                 return _messagesForm = _messagesForm ?? new MessagesForm();
+            }
+        }
+
+        private VerifyForm VerifyForm {
+            get {
+                return _verifyForm = _verifyForm ?? new VerifyForm();
             }
         }
 
@@ -107,7 +114,34 @@ namespace Hineini {
 
         private void ApplyEventHandlers() {
             PreAuthForm.Exit += _preAuthForm_Exit;
+            PreAuthForm.Verify += _preAuthForm_Verify;
+            VerifyForm.Verify += _verifyForm_Verify;
+            VerifyForm.Exit += _verifyForm_Exit;
             MessagesForm.HideForm += _messagesForm_HideForm;
+        }
+
+        private void _verifyForm_Verify(object sender, VerifyEventArguments verifyEventArguments) {
+            try {
+                string oauth_verifier = verifyEventArguments.Verifier;
+                //Helpers.WriteToExtraLog("Verify with '" + oauth_verifier + "'", null);
+                _fireEagle.UserToken = _fireEagle.OAuthGetToken(_requestToken, oauth_verifier);
+                _verifyForm.Status = "Succeeded!";
+                //Helpers.WriteToExtraLog("Verify succeeded", null);
+                Settings.FireEagleUserToken = _fireEagle.UserToken;
+                Settings.Update();
+                //whatisupwiththisline FireEagleRequestAuthorizationUrl = string.Empty;
+                _needToHidePreAuthorizationFormAndShowMainForm = true;
+            }
+            catch (Exception e) {
+                _verifyForm.Status = "Failed.  Try Again.";
+                Helpers.WriteToExtraLog("Verify failed...", e);
+                MessagesForm.AddMessage(DateTime.Now, Constants.GETTING_AUTH_TOKEN_MESSAGE, Constants.MessageType.Error);
+            }
+        }
+
+        private void _preAuthForm_Verify(object sender, EventArgs e) {
+            VerifyForm.Show();
+            PreAuthForm.Hide();
         }
 
         private void InitializeUpdateControls() {
@@ -143,6 +177,10 @@ namespace Hineini {
         }
 
         void _preAuthForm_Exit(object sender, EventArgs e) {
+            Quit();
+        }
+
+        void _verifyForm_Exit(object sender, EventArgs e) {
             Quit();
         }
 
@@ -461,9 +499,11 @@ namespace Hineini {
         }
 
         private void ShowMainFormAfterPreAuthorization() {
+            //Helpers.WriteToExtraLog("Go: ShowMainFormAfterPreAuthorization", null);
             SetupMainFormObjects(true);
             Show();
-            PreAuthForm.Hide();
+            PreAuthForm.Dispose();
+            VerifyForm.Dispose();
             _needToHidePreAuthorizationFormAndShowMainForm = false;
         }
 
@@ -560,19 +600,6 @@ namespace Hineini {
             if (NeedFireEaglePrerequisiteRequestAuthorizationToken()) {
                 PopulateRequestTokenUrl();
             }
-            else {
-                try {
-                    _fireEagle.UserToken = _fireEagle.OAuthGetToken(_requestToken);
-                    Settings.FireEagleUserToken = _fireEagle.UserToken;
-                    Settings.Update();
-                    FireEagleRequestAuthorizationUrl = string.Empty;
-                    _needToHidePreAuthorizationFormAndShowMainForm = true;
-                }
-                catch (Exception) {
-                    MessagesForm.AddMessage(DateTime.Now, Constants.GETTING_AUTH_TOKEN_MESSAGE, Constants.MessageType.Error);
-                }
-            }
-            SecondsBeforeNextFireEagleProcessing = 0;
         }
 
         private bool NeedFireEaglePrerequisiteRequestAuthorizationToken() {
@@ -609,6 +636,8 @@ namespace Hineini {
         }
 
         private void LogExtraInformation(FireEagle.Location location) {
+            Helpers.WriteToExtraLog("Using Cell Towers: " + LocationManager.UseTowers, null);
+            Helpers.WriteToExtraLog("Using GPS: " + LocationManager.UseGps, null);
             Helpers.WriteToExtraLog("CellTowerInfo: " + LocationManager.CellTowerInfoString, null);
             RIL.OPERATORNAMES operatornames = LocationManager.GetCurrentOperator();
             if (operatornames != null) {
@@ -638,8 +667,8 @@ namespace Hineini {
                 }
                 LatLong exactPoint = location.ExactPoint;
                 if (exactPoint != null) {
-                    Helpers.WriteToExtraLog("OperatorInfo ExactPoint Latitude: " + exactPoint.Latitude, null);
-                    Helpers.WriteToExtraLog("OperatorInfo ExactPoint Longitude: " + exactPoint.Longitude, null);
+                    Helpers.WriteToExtraLog("MostRecentLocation ExactPoint Latitude: " + exactPoint.Latitude, null);
+                    Helpers.WriteToExtraLog("MostRecentLocation ExactPoint Longitude: " + exactPoint.Longitude, null);
                 }
             }
         }

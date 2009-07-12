@@ -174,11 +174,13 @@ namespace Hineini.FireEagle {
             }
             catch (WebException ex)
             {
+                //Helpers.WriteToExtraLog("WebException in GetStringResponse...", ex);
                 string errorMessage = ex.Message;
                 if (ex.Response != null) {
                     Stream objStream = ex.Response.GetResponseStream();
                     StreamReader objStreamReader = new StreamReader(objStream);
                     resp = objStreamReader.ReadToEnd();
+                    //Helpers.WriteToExtraLog("Response: " + resp, null);
                     Response err = (Response)Deserialize(resp, typeof(Response));
                     errorMessage = err.Error.Message;
                 }
@@ -312,7 +314,7 @@ namespace Hineini.FireEagle {
         public Token OAuthGetRequestToken() {
             List<string> parameters = new List<string>();
             AddStandardParams(parameters);
-            //parameters.Add("oauth_callback=oob"); // Hineini has no "callback URL to which the Service Provider will redirect the User back when the Obtaining User Authorization (Obtaining User Authorization) step is completed" -- http://oauth.googlecode.com/svn/spec/core/1.0a/drafts/3/oauth-core-1_0a.html
+            parameters.Add("oauth_callback=oob"); // Hineini has no "callback URL to which the Service Provider will redirect the User back when the Obtaining User Authorization (Obtaining User Authorization) step is completed" -- http://oauth.googlecode.com/svn/spec/core/1.0a/drafts/3/oauth-core-1_0a.html
             return GetTokenResponse("get", "request_token", parameters);
         }
 
@@ -321,10 +323,11 @@ namespace Hineini.FireEagle {
             return m_siteUrl + "oauth/authorize?oauth_token=" + token.PublicToken;
         }
 
-        public Token OAuthGetToken(Token token)
+        public Token OAuthGetToken(Token token, string verifierToken)
         {
             List<string> parameters = new List<string>();
             AddStandardParams(parameters, token);
+            parameters.Add("oauth_verifier=" + OAuth.UrlEncode(verifierToken));
             return GetTokenResponse("get", "access_token", token.SecretToken, parameters);
         }
 

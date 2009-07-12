@@ -106,16 +106,18 @@ namespace Hineini.Location {
                 //CellTower cellTower = CellTowerLocationProvider.GetCellTowerInfo();
                 RIL.CELLINFO cellTowerInfo = RIL.GetCellTowerInfo();
                 CellTower result = new CellTower();
-                result.cellid = GetCellTowerIdInt(cellTowerInfo);
-                result.lac = GetLocationAreaCodeInt(cellTowerInfo);
-                try {
-                    result.mcc = GetMobileCountryCodeInt(cellTowerInfo);
-                    result.mnc = GetMobileNetworkCodeInt(cellTowerInfo);
-                }
-                catch (Exception e) {
-                    RIL.OPERATORNAMES currentOperator = GetCurrentOperator();
-                    result.mcc = GetMobileCountryCodeInt(currentOperator);
-                    result.mnc = GetMobileNetworkCodeInt(currentOperator);
+                if (cellTowerInfo != null) {
+                    result.cellid = GetCellTowerIdInt(cellTowerInfo);
+                    result.lac = GetLocationAreaCodeInt(cellTowerInfo);
+                    try {
+                        result.mcc = GetMobileCountryCodeInt(cellTowerInfo);
+                        result.mnc = GetMobileNetworkCodeInt(cellTowerInfo);
+                    }
+                    catch (Exception e) {
+                        RIL.OPERATORNAMES currentOperator = GetCurrentOperator();
+                        result.mcc = GetMobileCountryCodeInt(currentOperator);
+                        result.mnc = GetMobileNetworkCodeInt(currentOperator);
+                    }
                 }
                 return result;
             }

@@ -1,3 +1,9 @@
+0.6.5
+
+* Added: OAuth 1.0a compliance
+* Added: authorization screen now gathers verification key from user input
+* Improved: CurrentCellTower logging stability
+
 0.6.48
 
 * Improved: location parsing code

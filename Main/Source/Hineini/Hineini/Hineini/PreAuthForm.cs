@@ -10,6 +10,7 @@ using System.Windows.Forms;
 namespace Hineini {
     public partial class PreAuthForm : Form {
         public event EventHandler Exit;
+        public event EventHandler Verify;
 
         private string _message;
         private bool _newMessage;
@@ -25,6 +26,9 @@ namespace Hineini {
             set {
                 _message = value;
                 _newMessage = true;
+                if (_message.Contains("http://")) {
+                    verifyMenuItem.Enabled = true;
+                }
             }
         }
 
@@ -35,9 +39,16 @@ namespace Hineini {
         }
 
         private void timer1_Tick(object sender, EventArgs e) {
-            if (_newMessage) {
-                FormLabel.Text = _message;
+            if (!IsDisposed) {
+                if (_newMessage) {
+                    FormLabel.Text = _message;
+                }
             }
         }
+
+        private void verifyMenuItem_Click(object sender, EventArgs e) {
+            Verify(sender, e);
+        }
+
     }
 }
