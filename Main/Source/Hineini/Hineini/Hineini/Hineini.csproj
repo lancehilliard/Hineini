@@ -60,6 +60,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\Beep.cs">
+    </Compile>
     <Compile Include="Classes\Boolean.cs" />
     <Compile Include="Classes\DataReader.cs" />
     <Compile Include="Classes\Descriptions.cs" />

@@ -5,6 +5,7 @@ using System.Net;
 using System.IO;
 using Hineini.FireEagle;
 using Hineini.Location.Towers;
+using Hineini.Utility;
 
 namespace Hineini.Location.Towers {
     /// <summary>
@@ -41,10 +42,13 @@ namespace Hineini.Location.Towers {
 
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
 
-                return ReadResponse(response);
+                Position result = ReadResponse(response);
+                response.Close();
+                return result;
             }
-            catch
-            {}
+            catch (Exception e) {
+                Helpers.WriteToExtraLog(e.Message, e);
+            }
 
             return new Position();
         }

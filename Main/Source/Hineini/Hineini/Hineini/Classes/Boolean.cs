@@ -1,3 +1,4 @@
+using System;
 using Hineini.Utility;
 using Microsoft.WindowsMobile.Status;
 
@@ -31,6 +32,13 @@ namespace Hineini {
         public static bool BacklightAlwaysOn {
             get {
                 bool result = Constants.BACKLIGHT_ALWAYS_ON.Equals(Settings.Backlight);
+                return result;
+            }
+        }
+
+        public static bool GpsEnabled {
+            get {
+                bool result = !Constants.LOCATE_VIA_TOWERS_ONLY.Equals(Settings.LocateViaList);
                 return result;
             }
         }

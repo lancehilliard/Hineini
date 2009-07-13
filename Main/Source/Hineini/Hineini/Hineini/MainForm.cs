@@ -31,7 +31,6 @@ namespace Hineini {
         private Bitmap _pendingMapImage;
         private bool _mapImageIsPending;
         private MapInfo _pendingMapInfo;
-        private string _lastLocationName;
         private bool _needToHidePreAuthorizationFormAndShowMainForm;
         private bool _timerHasTicked;
         private bool _manualUpdateRequested;
@@ -247,9 +246,11 @@ namespace Hineini {
         }
 
         private bool UpdateLocationDataByEnvironmentInput() {
-            bool locationUpdated;
-            Position? currentGpsPosition = GetCurrentGpsPosition();
-            locationUpdated = UpdateLocationDataByCurrentGpsPosition(currentGpsPosition);
+            bool locationUpdated = false;
+            if (Boolean.GpsEnabled) {
+                Position? currentGpsPosition = GetCurrentGpsPosition();
+                locationUpdated = UpdateLocationDataByCurrentGpsPosition(currentGpsPosition);
+            }
             if (!locationUpdated && LocationManager.UseTowers) {
                 locationUpdated = UpdateLocationDataByCellTower();
             }
@@ -263,7 +264,28 @@ namespace Hineini {
 
         private bool UpdateLocationDataByCellTower() {
             bool locationUpdated;
-            object locatedCellTower = GetYahooLocatedCellTower() ?? GetGoogleLocatedCellTower();
+            object locatedCellTower = null;
+            Exception towerLocationException = null;
+            try {
+                CellTower? yahooLocatedCellTower = GetYahooLocatedCellTower();
+                if (yahooLocatedCellTower.HasValue) {
+                    locatedCellTower = yahooLocatedCellTower;
+                }
+            }
+            catch (Exception e) {
+                towerLocationException = e;
+            }
+            finally {
+                if (locatedCellTower == null) {
+                    Position? googleLocatedCellTower = GetGoogleLocatedCellTower();
+                    if (googleLocatedCellTower.HasValue) {
+                        locatedCellTower = googleLocatedCellTower;
+                    }
+                    else if (towerLocationException != null) {
+                        throw towerLocationException;
+                    }
+                }
+            }
             if (locatedCellTower != null) {
                 string locationMessagePrefix = locatedCellTower is Position ? Constants.LOCATION_DESCRIPTION_PREFIX_GOOGLE : null;
                 locationUpdated = UpdateLocationData(locatedCellTower, locationMessagePrefix);
@@ -297,7 +319,7 @@ namespace Hineini {
             return LocationManager.UseGps ? LocationManager.GetValidGpsLocation() : null;
         }
 
-        private object GetGoogleLocatedCellTower() {
+        private Position? GetGoogleLocatedCellTower() {
             Position? result = null;
             if (UserAllowsCellTowerLocatingViaGoogle()) {
                 bool googleKnowsLocationOfCurrentCellTower = GetGoogleKnowsLocationOfCurrentCellTower();
@@ -401,7 +423,7 @@ namespace Hineini {
         }
 
         private void UpdatePendingMapInfo(FireEagle.Location mostRecentLocation, int mapZoomLevel) {
-            if (mostRecentLocation != null && !mostRecentLocation.Name.Equals(_lastLocationName)) {
+            if (mostRecentLocation != null) {
                 _pendingMapInfo = new MapInfo(mostRecentLocation.ExactPoint, mostRecentLocation.UpperCorner, mostRecentLocation.LowerCorner, mapZoomLevel);
                 string message;
                 if (_pendingMapInfo.LocationLatLong == null) {
@@ -413,7 +435,6 @@ namespace Hineini {
                 }
                 MessagesForm.AddMessage(DateTime.Now, message, Constants.MessageType.Error);
                 _pendingMapImage = null;
-                _lastLocationName = mostRecentLocation.Name;
             }
         }
 
@@ -429,6 +450,30 @@ namespace Hineini {
                 FormName = Text;
                 UpdateInitialSettings();
                 _timerHasTicked = true;
+
+                //GeolocateTest();
+            }
+        }
+
+        private void GeolocateTest() {
+            CellTower cellTower = new CellTower(88, 222, 20041, 8228);
+            try {
+                Locations locations = _fireEagle.Lookup(cellTower);
+                Helpers.WriteToExtraLog("GeolocateTest Celltower Count: " + locations.Count, null);
+                Helpers.WriteToExtraLog("GeolocateTest Celltower TotalLocations: " + locations.TotalLocations, null);
+                Helpers.WriteToExtraLog("GeolocateTest Celltower 1Location point_raw: " + locations.LocationCollection[0].point_raw, null);
+                Helpers.WriteToExtraLog("GeolocateTest Celltower 1Location name: " + locations.LocationCollection[0].Name, null);
+            }
+            catch (Exception e) {
+                Helpers.WriteToExtraLog(e.Message, e);
+            }
+            Position position;
+            try {
+                position = GoogleMapsCellService.GetLocation(cellTower);
+                Helpers.WriteToExtraLog("GeolocateTest Position: " + position.Latitude + ", " + position.Longitude, null);
+            }
+            catch (Exception e) {
+                Helpers.WriteToExtraLog(e.Message, e);
             }
         }
 
@@ -784,7 +829,7 @@ namespace Hineini {
         }
 
         private void mobileWebsiteMenuItem_Click(object sender, EventArgs e) {
-            Process.Start("http://m.fireeagle.com", null);
+            Process.Start("http://m.fireeagle.yahoo.net", null);
         }
 
         private void noneMenuItem_Click(object sender, EventArgs e) {

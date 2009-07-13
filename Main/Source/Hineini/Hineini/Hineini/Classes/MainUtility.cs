@@ -15,6 +15,7 @@ namespace Hineini {
             Settings.Update();
             MenuItems.SetTowerLocationsMenuItemCheckmarks(towerLocationsMenuItem, yahooAlwaysMenuItem, googleSometimesMenuItem, googleAlwaysMenuItem);
             if (Boolean.TowersEnabled) {
+                MainForm.ResetLastPositionMarkers();
                 ReadyFireEagleProcessingTimerForNextUpdate();
             }
             if (showMessage) {
@@ -36,7 +37,9 @@ namespace Hineini {
             Settings.Update();
             MenuItems.SetGpsStationaryThresholdMenuItemCheckmarks(gpsStationaryThresholdMenuItem);
             MessagesForm.AddMessage(DateTime.Now, Messages.GpsStationaryThresholdMessage, Constants.MessageType.Info);
-            ReadyFireEagleProcessingTimerForNextUpdate();
+            if (Boolean.GpsEnabled) {
+                ReadyFireEagleProcessingTimerForNextUpdate();
+            }
         }
 
         public static void ReadyFireEagleProcessingTimerForNextUpdate() {
