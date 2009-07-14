@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
@@ -134,7 +135,7 @@ namespace Hineini {
             catch (Exception e) {
                 _verifyForm.Status = "Failed.  Try Again.";
                 Helpers.WriteToExtraLog("Verify failed...", e);
-                MessagesForm.AddMessage(DateTime.Now, Constants.GETTING_AUTH_TOKEN_MESSAGE, Constants.MessageType.Error);
+                Helpers.WriteToExtraLog(e.Message, e);
             }
         }
 
@@ -234,12 +235,12 @@ namespace Hineini {
                     locationUpdated = UpdateLocationDataByUserInput(_userUpdateLocation);
                 }
                 else {
-                    MessagesForm.AddMessage(DateTime.Now, "TLU: UpdateLocationDataByEnvironmentInput" + _userUpdateLocation, Constants.MessageType.Error);
+                    MessagesForm.AddMessage(DateTime.Now, "TLU: UpdateLocationDataByEnvironmentInput (" + _userUpdateLocation + ")", Constants.MessageType.Error);
                     locationUpdated = UpdateLocationDataByEnvironmentInput();
                 }
             }
             catch (Exception e) {
-                MessagesForm.AddMessage(DateTime.Now, "TLU: " + MainUtility.GetExceptionMessage(e), Constants.MessageType.Error);
+                Helpers.WriteToExtraLog(e.Message, e);
                 throw;
             }
             return locationUpdated;
@@ -433,7 +434,7 @@ namespace Hineini {
                 else {
                     message = string.Format("Pending map for: {0}, {1}", _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude);
                 }
-                MessagesForm.AddMessage(DateTime.Now, message, Constants.MessageType.Error);
+                Helpers.WriteToExtraLog(message, null);
                 _pendingMapImage = null;
             }
         }
@@ -510,7 +511,7 @@ namespace Hineini {
                 result = VersionManager.KnownRecommendedVersionDiffersFromCurrentVersion();
             }
             catch (Exception e) {
-                MessagesForm.AddMessage(DateTime.Now, "PVC: " + e.Message, Constants.MessageType.Error);
+                Helpers.WriteToExtraLog(e.Message, e);
             }
             return result;
         }
@@ -587,7 +588,7 @@ namespace Hineini {
             catch (Exception e) {
                 _pendingMapInfo = null;
                 _pendingMapImage = null;
-                MessagesForm.AddMessage(DateTime.Now, "UPMI: " + e.Message, Constants.MessageType.Error);
+                Helpers.WriteToExtraLog(e.Message, e);
                 MessagesForm.AddMessage(DateTime.Now, Constants.MAP_FETCH_FAILED_MESSAGE, Constants.MessageType.Error);
             }
         }
@@ -595,14 +596,14 @@ namespace Hineini {
         private string GetMapImageUrl() {
             string result = null;
             if (_pendingMapInfo == null) {
-                MessagesForm.AddMessage(DateTime.Now, "GMIU: no map info...", Constants.MessageType.Error);
+                Helpers.WriteToExtraLog("GMIU: no map info...", null);
             }
             else {
                 if (_pendingMapInfo.LocationLatLong == null) {
-                    MessagesForm.AddMessage(DateTime.Now, "GMIU: no lat/long...", Constants.MessageType.Error);
+                    Helpers.WriteToExtraLog("GMIU: no lat/long...", null);
                 }
                 else {
-                    result = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude, _pendingMapInfo.MapZoomLevel);
+                    result = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude.ToString(Constants.EnglishUnitedStatesFormatProvider), _pendingMapInfo.LocationLatLong.Longitude.ToString(Constants.EnglishUnitedStatesFormatProvider), _pendingMapInfo.MapZoomLevel);
                 }
             }
             return result;
@@ -669,9 +670,7 @@ namespace Hineini {
                 }
             }
             catch (Exception e1) {
-                string errorDescriptor = "PFEU: " + MainUtility.GetExceptionMessage(e1);
-                MessagesForm.AddMessage(DateTime.Now, errorDescriptor, Constants.MessageType.Error);
-                Helpers.WriteToExtraLog(errorDescriptor, e1);
+                Helpers.WriteToExtraLog(e1.Message, e1);
             }
             finally {
                 if (!(successfulUpdate || unsuccessfulUpdateWasHandled)) {

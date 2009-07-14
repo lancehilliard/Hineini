@@ -24,7 +24,7 @@ namespace Hineini {
                     }
                 }
                 if (!errorHandled) {
-                    MessagesForm.AddMessage(DateTime.Now, "HEE: " + MainUtility.GetExceptionMessage(e), Constants.MessageType.Error);
+                    Helpers.WriteToExtraLog(e.Message, e);
                     throw e;
                 }
             }

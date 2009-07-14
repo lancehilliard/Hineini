@@ -50,7 +50,7 @@ namespace Hineini {
                     result = Encryptor.Decrypt(encryptedToken, Encryptor.Password);
                 }
                 catch (Exception e) {
-                    MessagesForm.AddMessage(DateTime.Now, "GD: " + e.Message, Constants.MessageType.Error);
+                    Helpers.WriteToExtraLog(e.Message, e);
                 }
             }
             return result;
@@ -78,7 +78,7 @@ namespace Hineini {
                     result = Int32.Parse(_settings.Get("UpdateIntervalInMinutes"));
                 }
                 catch (Exception e) {
-                    MessagesForm.AddMessage(DateTime.Now, "UIIM: " + e.Message, Constants.MessageType.Error);
+                    Helpers.WriteToExtraLog(e.Message, e);
                 }
                 if (!validUpdateIntervalValues.Contains(result)) {
                     result = UPDATE_INTERVAL_IN_MINUTES_DEFAULT_VALUE;
@@ -95,7 +95,7 @@ namespace Hineini {
                     result = double.Parse(_settings.Get("GpsStationaryThresholdInMiles"));
                 }
                 catch (Exception e) {
-                    MessagesForm.AddMessage(DateTime.Now, "GSTIM: " + e.Message, Constants.MessageType.Error);
+                    Helpers.WriteToExtraLog(e.Message, e);
                 }
                 if (!validGpsStationaryThresholdValues.Contains(result)) {
                     result = GPS_STATIONARY_THRESHOLD_DEFAULT_VALUE;

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace Hineini.Utility {
     public class Constants {
@@ -10,7 +11,7 @@ namespace Hineini.Utility {
         public const string USER_MANUAL_FILENAME = "UserManual.html";
         public const string CLIENT_UPDATE_AVAILABLE_MENU_ITEM_TEXT = "Client Update Available";
         public const string CLIENT_UPDATE_AVAILABLE_MESSAGE = "An updated version of Hineini can be found at http://hineini.codeplex.com.";
-        public const string CURRENT_VERSION = "0.6.51";
+        public const string CURRENT_VERSION = "0.6.52";
         public const string RECOMMENDED_VERSION_HTML_DELIMITER_END = " --";
         public const string RECOMMENDED_VERSION_HTML_DELIMITER_START = "!-- Recommend ";
         public const string RECOMMENDED_VERSION_URL = "http://hineini.codeplex.com/Wiki/View.aspx?title=recommendedVersion";
@@ -68,6 +69,8 @@ namespace Hineini.Utility {
         public const string TOWER_LOCATIONS_YAHOO_THEN_GOOGLE = "Yahoo,Google";
         public const string TOWER_LOCATIONS_GOOGLE_ALWAYS = "Google";
         public const int UPDATE_INTERVAL_MANUAL_ONLY = -1;
+
+        public static readonly IFormatProvider EnglishUnitedStatesFormatProvider = new NumberFormatInfo() { NumberGroupSeparator = "." };
 
         public enum MessageType {
             Info = 0,

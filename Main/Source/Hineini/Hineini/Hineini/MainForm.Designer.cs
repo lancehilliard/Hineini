@@ -419,7 +419,7 @@ namespace Hineini {
             this.mostRecentInfoMessageLabel.Location = new System.Drawing.Point(-1, 227);
             this.mostRecentInfoMessageLabel.Name = "mostRecentInfoMessageLabel";
             this.mostRecentInfoMessageLabel.Size = new System.Drawing.Size(240, 18);
-            this.mostRecentInfoMessageLabel.Text = "Loading Hineini v0.6.51";
+            this.mostRecentInfoMessageLabel.Text = "Loading Hineini v0.6.52";
             // 
             // locationPictureBox
             // 

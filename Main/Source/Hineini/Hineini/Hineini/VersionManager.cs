@@ -43,7 +43,7 @@ namespace Hineini {
                 result = true;
             }
             catch (Exception e) {
-                MessagesForm.AddMessage(DateTime.Now, "IVVN: " + e.Message, Constants.MessageType.Error);
+                Helpers.WriteToExtraLog(e.Message, e);
             }
             return result;
         }
