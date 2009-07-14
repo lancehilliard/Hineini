@@ -4,7 +4,7 @@ using Hineini.Utility;
 
 namespace Hineini {
     public class ExceptionManager {
-        public static void HandleExpectedErrors(Exception e, ref Bitmap pendingMapImage) {
+        public static void HandleExpectedErrors(Exception e) {
             bool errorHandled = false;
             if (e != null) {
                 string exceptionMessage = MainUtility.GetExceptionMessage(e);
@@ -13,13 +13,18 @@ namespace Hineini {
                         MessagesForm.AddMessage(DateTime.Now, "Location updated (DESPITE EXCEPTION)", Constants.MessageType.Info);
                         errorHandled = true;
                     }
+                    else if (exceptionMessage.Contains("Invalid location query")) {
+                        MessagesForm.AddMessage(DateTime.Now, Constants.LOCATION_NOT_YET_IDENTIFIED, Constants.MessageType.Info);
+                        Helpers.WriteToExtraLog(e.Message, e);
+                        errorHandled = true;
+                    }
                     else if (exceptionMessage.Equals(Constants.UNABLE_TO_IDENTIFY_CELL_TOWERS_MESSAGE)) {
                         MessagesForm.AddMessage(DateTime.Now, Constants.UNABLE_TO_IDENTIFY_CELL_TOWERS_MESSAGE, Constants.MessageType.Info);
                         errorHandled = true;
                     }
                     else if (exceptionMessage.Contains("Place can't be identified")) {
                         MessagesForm.AddMessage(DateTime.Now, Constants.LOCATION_NOT_YET_IDENTIFIED, Constants.MessageType.Info);
-                        pendingMapImage = null;
+                        //pendingMapImage = null;
                         errorHandled = true;
                     }
                 }

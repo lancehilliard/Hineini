@@ -4,22 +4,26 @@ using System.Reflection;
 
 namespace Hineini.Utility {
     public class Helpers {
+        static readonly TextWriter textWriter = TextWriter.Synchronized(File.AppendText(GetWorkingDirectoryFileName("extra.log")));
+
         public static bool StringHasValue(string candidate) {
             return !String.IsNullOrEmpty(candidate);
         }
 
-        private static void WriteToFile(string errorDescriptor, Exception exception, string path, bool append) {
-            StreamWriter streamWriter = new StreamWriter(path, append);
-            streamWriter.WriteLine(errorDescriptor);
+        public static void Dispose() {
+            textWriter.Dispose();
+        }
+
+        private static void WriteToFile(string errorDescriptor, Exception exception) {
+            textWriter.WriteLine(errorDescriptor);
             if (exception != null) {
-                streamWriter.Write(exception);
+                textWriter.Write(exception);
             }
-            streamWriter.Flush();
-            streamWriter.Close();
+            textWriter.Flush();
         }
 
         public static void WriteToExtraLog(string message, Exception exception) {
-            WriteToFile(DateTime.Now + " | " + Constants.CURRENT_VERSION + " > " + message, exception, GetWorkingDirectoryFileName("extra.log"), true);
+            WriteToFile(Constants.CURRENT_VERSION + " | " + DateTime.Now + " > " + message, exception);
         }
 
         public static string GetWorkingDirectoryFileName(string fileName) {

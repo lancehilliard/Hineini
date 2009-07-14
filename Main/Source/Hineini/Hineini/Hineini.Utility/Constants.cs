@@ -11,7 +11,7 @@ namespace Hineini.Utility {
         public const string USER_MANUAL_FILENAME = "UserManual.html";
         public const string CLIENT_UPDATE_AVAILABLE_MENU_ITEM_TEXT = "Client Update Available";
         public const string CLIENT_UPDATE_AVAILABLE_MESSAGE = "An updated version of Hineini can be found at http://hineini.codeplex.com.";
-        public const string CURRENT_VERSION = "0.6.52";
+        public const string CURRENT_VERSION = "0.6.53";
         public const string RECOMMENDED_VERSION_HTML_DELIMITER_END = " --";
         public const string RECOMMENDED_VERSION_HTML_DELIMITER_START = "!-- Recommend ";
         public const string RECOMMENDED_VERSION_URL = "http://hineini.codeplex.com/Wiki/View.aspx?title=recommendedVersion";
@@ -24,6 +24,7 @@ namespace Hineini.Utility {
         public const string MAP_FETCH_FAILED_MESSAGE = "Map fetch failed...";
         public const string USER_SUPPLIED_ADDRESS_MUST_CONTAIN_ZIPCODE = "Address must contain zipcode...";
         public const int MAP_ZOOM_LEVEL_CLOSER = 16;
+        public const int MAP_ZOOM_LEVEL_MIDDLE = 15;
         public const int MAP_ZOOM_LEVEL_FARTHER = 11;
         public const string LOCATION_NOT_YET_IDENTIFIED = "Location not yet identified...";
         public const string LOADING_MAP_MESSAGE = "Loading map...";

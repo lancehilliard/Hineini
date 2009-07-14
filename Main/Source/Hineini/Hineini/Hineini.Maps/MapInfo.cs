@@ -1,4 +1,6 @@
+using System;
 using Hineini.FireEagle;
+using Hineini.Utility;
 
 namespace Hineini.Maps {
     public class MapInfo {
@@ -8,6 +10,11 @@ namespace Hineini.Maps {
             UpperCornerLatLong = upperCorner;
             LowerCornerLatLong = lowerCorner;
             MapZoomLevel = mapZoomLevel;
+        }
+
+        public string GetMapUrl(int height, int width) {
+            string result = String.Format(Constants.MAP_URL_TEMPLATE, width, height, LocationLatLong.Latitude.ToString(Constants.EnglishUnitedStatesFormatProvider), LocationLatLong.Longitude.ToString(Constants.EnglishUnitedStatesFormatProvider), MapZoomLevel);
+            return result;
         }
 
         private LatLong LowerCornerLatLong { get; set; }

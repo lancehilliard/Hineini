@@ -30,8 +30,8 @@ namespace Hineini {
         private int _mapHeight;
         private int _mapWidth;
         private Bitmap _pendingMapImage;
-        private bool _mapImageIsPending;
-        private MapInfo _pendingMapInfo;
+        //private bool _mapImageIsPending;
+        //private MapInfo _pendingMapInfo;
         private bool _needToHidePreAuthorizationFormAndShowMainForm;
         private bool _timerHasTicked;
         private bool _manualUpdateRequested;
@@ -40,6 +40,8 @@ namespace Hineini {
         private bool versionCheckPerformed;
         private bool _userShouldBeAdvisedAboutRecommendedVersion;
         private TagForm tagForm;
+        FireEagle.Location _mostRecentLocation;
+        private string _lastMappedUrl = string.Empty;
 
         #endregion
 
@@ -209,6 +211,7 @@ namespace Hineini {
             if (_processFireEagleWorkerThread != null) {
                 QuitFireEagleWorkerThread();
             }
+            Helpers.Dispose();
             Application.Exit();
         }
 
@@ -235,7 +238,6 @@ namespace Hineini {
                     locationUpdated = UpdateLocationDataByUserInput(_userUpdateLocation);
                 }
                 else {
-                    MessagesForm.AddMessage(DateTime.Now, "TLU: UpdateLocationDataByEnvironmentInput (" + _userUpdateLocation + ")", Constants.MessageType.Error);
                     locationUpdated = UpdateLocationDataByEnvironmentInput();
                 }
             }
@@ -397,15 +399,22 @@ namespace Hineini {
                 string locationMarker = MainUtility.GetLocationMarker(locationObject);
                 if (locationObject is string) {
                     _fireEagle.Update(LocationType.address, (string)locationObject);
+                    locationUpdated = true;
                 }
                 else if (locationObject is CellTower && (_manualUpdateRequested || LocationMarkerHasMoved(locationMarker))) {
                     _fireEagle.Update((CellTower)locationObject);
+                    locationUpdated = true;
                 }
                 else {
-                    _fireEagle.Update((Position)locationObject);
+                    Position position = (Position)locationObject;
+                    if (position.Latitude != 0 && position.Longitude != 0) {
+                        _fireEagle.Update(position);
+                        locationUpdated = true;
+                    }
                 }
-                locationUpdated = true;
-                UpdateRecentLocationData(locationMarker, locationMessagePrefix);
+                if (locationUpdated) {
+                    UpdateRecentLocationData(locationMarker, locationMessagePrefix);
+                }
             }
             return locationUpdated;
         }
@@ -416,28 +425,28 @@ namespace Hineini {
 
         private void UpdateRecentLocationData(string locationMarker, string locationMessagePrefix) {
             _lastLocationMarker = locationMarker;
-            FireEagle.Location mostRecentLocation = _fireEagle.User().LocationHierarchy.MostRecent;
-            DateTime mostRecentUpdate = mostRecentLocation == null ? DateTime.Now : mostRecentLocation.LocationDate;
-            MessagesForm.AddMessage(mostRecentUpdate, MainUtility.GetLocationMessage(locationMessagePrefix, mostRecentLocation), Constants.MessageType.Info);
-            UpdatePendingMapInfo(mostRecentLocation, MainUtility.GetMapZoomLevel(mostRecentLocation));
-            LogExtraInformation(mostRecentLocation);
+            _mostRecentLocation = _fireEagle.User().LocationHierarchy.MostRecent;
+            DateTime mostRecentUpdate = _mostRecentLocation == null ? DateTime.Now : _mostRecentLocation.LocationDate;
+            MessagesForm.AddMessage(mostRecentUpdate, MainUtility.GetLocationMessage(locationMessagePrefix, _mostRecentLocation), Constants.MessageType.Info);
+            //UpdatePendingMapInfo(_mostRecentLocation, MainUtility.GetMapZoomLevel(_mostRecentLocation));
+            LogExtraInformation(_mostRecentLocation);
         }
 
-        private void UpdatePendingMapInfo(FireEagle.Location mostRecentLocation, int mapZoomLevel) {
-            if (mostRecentLocation != null) {
-                _pendingMapInfo = new MapInfo(mostRecentLocation.ExactPoint, mostRecentLocation.UpperCorner, mostRecentLocation.LowerCorner, mapZoomLevel);
-                string message;
-                if (_pendingMapInfo.LocationLatLong == null) {
-                    message = "Pending map for: LAT/LONG MISSING!";
-                    Helpers.WriteToExtraLog("point_raw: " + mostRecentLocation.point_raw + "; box_raw: " + mostRecentLocation.box_raw + "; ExactPoint: " + mostRecentLocation.ExactPoint + "; UpperCorner: " + mostRecentLocation.UpperCorner + "; LowerCorner: " + mostRecentLocation.LowerCorner, null);
-                }
-                else {
-                    message = string.Format("Pending map for: {0}, {1}", _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude);
-                }
-                Helpers.WriteToExtraLog(message, null);
-                _pendingMapImage = null;
-            }
-        }
+        //private void UpdatePendingMapInfo(FireEagle.Location mostRecentLocation, int mapZoomLevel) {
+        //    if (mostRecentLocation != null) {
+        //        _pendingMapInfo = new MapInfo(mostRecentLocation.ExactPoint, mostRecentLocation.UpperCorner, mostRecentLocation.LowerCorner, mapZoomLevel);
+        //        string message;
+        //        if (_pendingMapInfo.LocationLatLong == null) {
+        //            message = "Pending map for: LAT/LONG MISSING!";
+        //            Helpers.WriteToExtraLog("point_raw: " + mostRecentLocation.point_raw + "; box_raw: " + mostRecentLocation.box_raw + "; ExactPoint: " + mostRecentLocation.ExactPoint + "; UpperCorner: " + mostRecentLocation.UpperCorner + "; LowerCorner: " + mostRecentLocation.LowerCorner, null);
+        //        }
+        //        else {
+        //            message = string.Format("Pending map for: {0}, {1}", _pendingMapInfo.LocationLatLong.Latitude, _pendingMapInfo.LocationLatLong.Longitude);
+        //        }
+        //        Helpers.WriteToExtraLog(message, null);
+        //        _pendingMapImage = null;
+        //    }
+        //}
 
         private void HandleFirstTick() {
             if (!_timerHasTicked) {
@@ -485,12 +494,40 @@ namespace Hineini {
             else if (_needToHidePreAuthorizationFormAndShowMainForm) {
                 ShowMainFormAfterPreAuthorization();
             }
+
             UpdateMostRecentInfoMessageLabel();
+            bool displayedAndPendingImagesAreEqual = locationPictureBox.Image != null && locationPictureBox.Image.Equals(_pendingMapImage);
+            locationPictureBox.Image = _pendingMapImage;
+            if (!displayedAndPendingImagesAreEqual && _pendingMapImage != null) {
+                ResetUpdateTextBoxAfterMapImageUpdate();
+            }
+
             ChangeToManualUpdateIntervalIfUserIsTypingLocation();
-            UpdateUserInterfaceWithPendingMapImage();
+
             if (_userShouldBeAdvisedAboutRecommendedVersion) {
                 ShowClientUpdateMenuItem();
                 _userShouldBeAdvisedAboutRecommendedVersion = false;
+            }
+        }
+
+        private void UpdateMapImage() {
+            try {
+                if (_mostRecentLocation == null) {
+                    _pendingMapImage = null;
+                }
+                else {
+                    int mapZoomLevel = MainUtility.GetMapZoomLevel(_mostRecentLocation);
+                    MapInfo mapInfo = new MapInfo(_mostRecentLocation.ExactPoint, _mostRecentLocation.UpperCorner, _mostRecentLocation.LowerCorner, mapZoomLevel);
+                    string mapUrl = mapInfo.GetMapUrl(_mapHeight, _mapWidth);
+                    if (!_lastMappedUrl.Equals(mapUrl)) {
+                        _pendingMapImage = MapManager.GetMapImage(mapUrl);
+                        _lastMappedUrl = mapUrl;
+                    }
+                }
+            }
+            catch (Exception e) {
+                Helpers.WriteToExtraLog(e.Message, e);
+                _pendingMapImage = null;
             }
         }
 
@@ -523,13 +560,13 @@ namespace Hineini {
             }
         }
 
-        private void UpdateUserInterfaceWithPendingMapImage() {
-            if (_mapImageIsPending) {
-                ResetUpdateTextBoxAfterMapImageUpdate();
-                UpdatePictureBoxWithPendingMapImage();
-                _pendingMapInfo = null;
-            }
-        }
+        //private void UpdateUserInterfaceWithPendingMapImage() {
+        //    if (_mapImageIsPending) {
+        //        ResetUpdateTextBoxAfterMapImageUpdate();
+        //        UpdatePictureBoxWithPendingMapImage();
+        //        _pendingMapInfo = null;
+        //    }
+        //}
 
         private void ResetUpdateTextBoxAfterMapImageUpdate() {
             updateTextBox.Text = string.Empty;
@@ -562,52 +599,51 @@ namespace Hineini {
             }
         }
 
-        private void UpdatePictureBoxWithPendingMapImage() {
-            _mapImageIsPending = false;
-            locationPictureBox.Image = _pendingMapImage;
-        }
+        //private void UpdatePictureBoxWithPendingMapImage() {
+        //    _mapImageIsPending = false;
+        //    locationPictureBox.Image = _pendingMapImage;
+        //}
 
-        private void UpdatePendingMapImage() {
-            try {
-                string imageUrl = GetMapImageUrl();
-                if (Helpers.StringHasValue(imageUrl)) {
-                    MessagesForm.AddMessage(DateTime.Now, Constants.RETRIEVED_MAP_URL_MESSAGE, Constants.MessageType.Error);
-                    _pendingMapImage = MapManager.GetMapImage(imageUrl);
-                    if (_pendingMapImage == null) {
-                        MessagesForm.AddMessage(DateTime.Now, Constants.GETTING_MAP_IMAGE_MESSAGE, Constants.MessageType.Error);
-                    }
-                    else {
-                        _mapImageIsPending = true;
-                    }
-                }
-                else {
-                    MessagesForm.AddMessage(DateTime.Now, Constants.IMAGE_URL_FETCH_FAILED_MESSAGE, Constants.MessageType.Error);
-                    _pendingMapImage = null;
-                }
-            }
-            catch (Exception e) {
-                _pendingMapInfo = null;
-                _pendingMapImage = null;
-                Helpers.WriteToExtraLog(e.Message, e);
-                MessagesForm.AddMessage(DateTime.Now, Constants.MAP_FETCH_FAILED_MESSAGE, Constants.MessageType.Error);
-            }
-        }
+        //private void UpdatePendingMapImage() {
+        //    try {
+        //        string imageUrl = GetMapImageUrl();
+        //        if (Helpers.StringHasValue(imageUrl)) {
+        //            _pendingMapImage = MapManager.GetMapImage(imageUrl);
+        //            if (_pendingMapImage == null) {
+        //                MessagesForm.AddMessage(DateTime.Now, Constants.GETTING_MAP_IMAGE_MESSAGE, Constants.MessageType.Error);
+        //            }
+        //            else {
+        //                _mapImageIsPending = true;
+        //            }
+        //        }
+        //        else {
+        //            MessagesForm.AddMessage(DateTime.Now, Constants.IMAGE_URL_FETCH_FAILED_MESSAGE, Constants.MessageType.Error);
+        //            _pendingMapImage = null;
+        //        }
+        //    }
+        //    catch (Exception e) {
+        //        //_pendingMapInfo = null;
+        //        _pendingMapImage = null;
+        //        Helpers.WriteToExtraLog(e.Message, e);
+        //        MessagesForm.AddMessage(DateTime.Now, Constants.MAP_FETCH_FAILED_MESSAGE, Constants.MessageType.Error);
+        //    }
+        //}
 
-        private string GetMapImageUrl() {
-            string result = null;
-            if (_pendingMapInfo == null) {
-                Helpers.WriteToExtraLog("GMIU: no map info...", null);
-            }
-            else {
-                if (_pendingMapInfo.LocationLatLong == null) {
-                    Helpers.WriteToExtraLog("GMIU: no lat/long...", null);
-                }
-                else {
-                    result = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude.ToString(Constants.EnglishUnitedStatesFormatProvider), _pendingMapInfo.LocationLatLong.Longitude.ToString(Constants.EnglishUnitedStatesFormatProvider), _pendingMapInfo.MapZoomLevel);
-                }
-            }
-            return result;
-        }
+        //private string GetMapImageUrl() {
+        //    string result = null;
+        //    if (_pendingMapInfo == null) {
+        //        Helpers.WriteToExtraLog("GMIU: no map info...", null);
+        //    }
+        //    else {
+        //        if (_pendingMapInfo.LocationLatLong == null) {
+        //            Helpers.WriteToExtraLog("GMIU: no lat/long...", null);
+        //        }
+        //        else {
+        //            result = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude.ToString(Constants.EnglishUnitedStatesFormatProvider), _pendingMapInfo.LocationLatLong.Longitude.ToString(Constants.EnglishUnitedStatesFormatProvider), _pendingMapInfo.MapZoomLevel);
+        //        }
+        //    }
+        //    return result;
+        //}
 
         private void FireEagleWorker() {
             while (true) {
@@ -616,11 +652,6 @@ namespace Hineini {
                     if (!versionCheckPerformed) {
                         versionCheckPerformed = true;
                         _userShouldBeAdvisedAboutRecommendedVersion = UserShouldBeAdvisedAboutRecommendedVersion();
-                    }
-                }
-                if (Boolean.IsActiveApplication) {
-                    if (_pendingMapInfo != null && _pendingMapImage == null) {
-                        UpdatePendingMapImage();
                     }
                 }
                 Thread.Sleep(1000);
@@ -664,9 +695,13 @@ namespace Hineini {
                     }
                 }
                 catch (Exception e) {
-                    ExceptionManager.HandleExpectedErrors(e, ref _pendingMapImage);
+                    ExceptionManager.HandleExpectedErrors(e);
+                    ResetRecentLocationData();
                     MainUtility.SetTimerPerSuccessfulOrHandledUpdate();
                     unsuccessfulUpdateWasHandled = true;
+                }
+                finally {
+                    UpdateMapImage();
                 }
             }
             catch (Exception e1) {
@@ -679,7 +714,12 @@ namespace Hineini {
             }
         }
 
-        private void LogExtraInformation(FireEagle.Location location) {
+        private void ResetRecentLocationData() {
+            _mostRecentLocation = null;
+            _lastMappedUrl = string.Empty;
+        }
+
+        private static void LogExtraInformation(FireEagle.Location location) {
             Helpers.WriteToExtraLog("Using Cell Towers: " + LocationManager.UseTowers, null);
             Helpers.WriteToExtraLog("Using GPS: " + LocationManager.UseGps, null);
             Helpers.WriteToExtraLog("CellTowerInfo: " + LocationManager.CellTowerInfoString, null);
@@ -951,9 +991,9 @@ namespace Hineini {
                     }
                     PerformActiveApplicationUserInterfaceUpdates();
                 }
-                if (locationPictureBox.Image != null && _pendingMapImage == null) {
-                    locationPictureBox.Image = null;
-                }
+                //if (locationPictureBox.Image != null && _pendingMapImage == null) {
+                //    locationPictureBox.Image = null;
+                //}
             }
             finally {
                 timer1.Enabled = true;
