@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Hineini {
+namespace Hineini.Utility {
     public class Beep {
         #region PlaySoundFlags enum
 

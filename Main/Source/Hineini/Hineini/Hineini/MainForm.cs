@@ -42,6 +42,7 @@ namespace Hineini {
         private TagForm tagForm;
         FireEagle.Location _mostRecentLocation;
         private string _lastMappedUrl = string.Empty;
+        private string _pendingMapUrl;
 
         #endregion
 
@@ -250,11 +251,15 @@ namespace Hineini {
 
         private bool UpdateLocationDataByEnvironmentInput() {
             bool locationUpdated = false;
+            bool stationaryThresholdPreventedUpdate = false;
             if (Boolean.GpsEnabled) {
                 Position? currentGpsPosition = GetCurrentGpsPosition();
-                locationUpdated = UpdateLocationDataByCurrentGpsPosition(currentGpsPosition);
+                locationUpdated = UpdateLocationDataByCurrentGpsPosition(currentGpsPosition, ref stationaryThresholdPreventedUpdate);
             }
-            if (!locationUpdated && LocationManager.UseTowers) {
+            if (stationaryThresholdPreventedUpdate) {
+                MessagesForm.AddMessage(DateTime.Now, _mostRecentLocation.Name, Constants.MessageType.Info);
+            }
+            else if (!locationUpdated && LocationManager.UseTowers) {
                 locationUpdated = UpdateLocationDataByCellTower();
             }
             return locationUpdated;
@@ -299,9 +304,9 @@ namespace Hineini {
             return locationUpdated;
         }
 
-        private bool UpdateLocationDataByCurrentGpsPosition(Position? currentGpsPosition) {
+        private bool UpdateLocationDataByCurrentGpsPosition(Position? currentGpsPosition, ref bool stationaryThresholdPreventedUpdate) {
             bool locationUpdated = false;
-            bool gpsUpdateShouldProceed = GpsUpdateShouldProceed(currentGpsPosition);
+            bool gpsUpdateShouldProceed = GpsUpdateShouldProceed(currentGpsPosition, ref stationaryThresholdPreventedUpdate);
             if (gpsUpdateShouldProceed) {
                 locationUpdated = UpdateLocationData(currentGpsPosition.Value, Constants.LOCATION_DESCRIPTION_PREFIX_GPS);
                 _lastUpdatedPosition = currentGpsPosition.Value;
@@ -369,14 +374,16 @@ namespace Hineini {
             return !Constants.TOWER_LOCATIONS_GOOGLE_ALWAYS.Equals(Settings.TowerLocationProvidersList);
         }
 
-        private bool GpsUpdateShouldProceed(Position? currentGpsPosition) {
+        private bool GpsUpdateShouldProceed(Position? currentGpsPosition, ref bool stationaryThresholdPreventedUpdate) {
             bool updateShouldProceed = false;
             if (currentGpsPosition.HasValue) {
                 Position position = currentGpsPosition.Value;
                 bool positionIsValid = position.Latitude != 0 && position.Longitude != 0;
                 if (positionIsValid) {
-                    updateShouldProceed = _manualUpdateRequested || DistanceInMilesExceedsGpsStationaryThreshold(position);
+                    bool distanceInMilesExceedsGpsStationaryThreshold = DistanceInMilesExceedsGpsStationaryThreshold(position);
+                    updateShouldProceed = _manualUpdateRequested || distanceInMilesExceedsGpsStationaryThreshold;
                     if (!updateShouldProceed) {
+                        stationaryThresholdPreventedUpdate = true;
                         MessagesForm.AddMessage(DateTime.Now, Constants.UPDATE_SKIPPED_GPS_THRESHOLD, Constants.MessageType.Error);
                     }
                 }
@@ -495,9 +502,9 @@ namespace Hineini {
                 ShowMainFormAfterPreAuthorization();
             }
 
-            UpdateMostRecentInfoMessageLabel();
             bool displayedAndPendingImagesAreEqual = locationPictureBox.Image != null && locationPictureBox.Image.Equals(_pendingMapImage);
             locationPictureBox.Image = _pendingMapImage;
+            UpdateMostRecentInfoMessageLabel();
             if (!displayedAndPendingImagesAreEqual && _pendingMapImage != null) {
                 ResetUpdateTextBoxAfterMapImageUpdate();
             }
@@ -510,7 +517,7 @@ namespace Hineini {
             }
         }
 
-        private void UpdateMapImage() {
+        private void UpdatePendingMapUrl() {
             try {
                 if (_mostRecentLocation == null) {
                     _pendingMapImage = null;
@@ -518,11 +525,7 @@ namespace Hineini {
                 else {
                     int mapZoomLevel = MainUtility.GetMapZoomLevel(_mostRecentLocation);
                     MapInfo mapInfo = new MapInfo(_mostRecentLocation.ExactPoint, _mostRecentLocation.UpperCorner, _mostRecentLocation.LowerCorner, mapZoomLevel);
-                    string mapUrl = mapInfo.GetMapUrl(_mapHeight, _mapWidth);
-                    if (!_lastMappedUrl.Equals(mapUrl)) {
-                        _pendingMapImage = MapManager.GetMapImage(mapUrl);
-                        _lastMappedUrl = mapUrl;
-                    }
+                    _pendingMapUrl = mapInfo.GetMapUrl(_mapHeight, _mapWidth);
                 }
             }
             catch (Exception e) {
@@ -654,6 +657,16 @@ namespace Hineini {
                         _userShouldBeAdvisedAboutRecommendedVersion = UserShouldBeAdvisedAboutRecommendedVersion();
                     }
                 }
+                if (_pendingMapUrl != null && !_pendingMapUrl.Equals(_lastMappedUrl)) {
+                    if (Boolean.IsActiveApplication) {
+                        _pendingMapImage = MapManager.GetMapImage(_pendingMapUrl);
+                        _lastMappedUrl = _pendingMapUrl;
+                        _pendingMapUrl = null;
+                    }
+                    else {
+                        _pendingMapImage = null;
+                    }
+                }
                 Thread.Sleep(1000);
                 if (SecondsBeforeNextFireEagleProcessing > 0) {
                     SecondsBeforeNextFireEagleProcessing--;
@@ -701,7 +714,7 @@ namespace Hineini {
                     unsuccessfulUpdateWasHandled = true;
                 }
                 finally {
-                    UpdateMapImage();
+                    UpdatePendingMapUrl();
                 }
             }
             catch (Exception e1) {

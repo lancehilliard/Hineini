@@ -1,3 +1,7 @@
+0.6.6
+
+* Improved: GPS stationary threshold reliability
+
 0.6.54
 
 * Improved: settings persistence stability
