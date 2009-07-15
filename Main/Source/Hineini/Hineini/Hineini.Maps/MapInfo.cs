@@ -13,7 +13,7 @@ namespace Hineini.Maps {
         }
 
         public string GetMapUrl(int height, int width) {
-            string result = String.Format(Constants.MAP_URL_TEMPLATE, width, height, LocationLatLong.Latitude.ToString(Constants.EnglishUnitedStatesFormatProvider), LocationLatLong.Longitude.ToString(Constants.EnglishUnitedStatesFormatProvider), MapZoomLevel);
+            string result = String.Format(Constants.MAP_URL_TEMPLATE, width, height, LocationLatLong.Latitude.ToString(Constants.EnglishUnitedStatesNumberFormatInfo), LocationLatLong.Longitude.ToString(Constants.EnglishUnitedStatesNumberFormatInfo), MapZoomLevel);
             return result;
         }
 

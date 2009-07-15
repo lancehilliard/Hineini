@@ -639,7 +639,7 @@ namespace Hineini {
         //            Helpers.WriteToExtraLog("GMIU: no lat/long...", null);
         //        }
         //        else {
-        //            result = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude.ToString(Constants.EnglishUnitedStatesFormatProvider), _pendingMapInfo.LocationLatLong.Longitude.ToString(Constants.EnglishUnitedStatesFormatProvider), _pendingMapInfo.MapZoomLevel);
+        //            result = String.Format(Constants.MAP_URL_TEMPLATE, _mapWidth, _mapHeight, _pendingMapInfo.LocationLatLong.Latitude.ToString(Constants.EnglishUnitedStatesNumberFormatInfo), _pendingMapInfo.LocationLatLong.Longitude.ToString(Constants.EnglishUnitedStatesNumberFormatInfo), _pendingMapInfo.MapZoomLevel);
         //        }
         //    }
         //    return result;

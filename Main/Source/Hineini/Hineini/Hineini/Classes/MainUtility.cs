@@ -173,7 +173,8 @@ namespace Hineini {
 
         public static int GetMapZoomLevel(FireEagle.Location location) {
             List<LocationType> granularLocationTypes = new List<LocationType> {LocationType.exact, LocationType.address};
-            int result = granularLocationTypes.Contains(location.LevelName) ? Constants.MAP_ZOOM_LEVEL_CLOSER : Constants.MAP_ZOOM_LEVEL_FARTHER;
+            //int result = granularLocationTypes.Contains(location.LevelName) ? Constants.MAP_ZOOM_LEVEL_CLOSER : Constants.MAP_ZOOM_LEVEL_FARTHER;
+            int result = Constants.MAP_ZOOM_LEVEL_MIDDLE;
             //MessagesForm.AddMessage(DateTime.Now, location.LevelName + " = " + result, Constants.MessageType.Error);
             return result;
         }

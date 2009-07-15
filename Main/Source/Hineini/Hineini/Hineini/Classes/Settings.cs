@@ -92,17 +92,18 @@ namespace Hineini {
             get {
                 double result = 0.0;
                 try {
-                    result = double.Parse(_settings.Get("GpsStationaryThresholdInMiles"));
+                    result = double.Parse(_settings.Get("GpsStationaryThresholdInMiles"), Constants.EnglishUnitedStatesNumberFormatInfo);
                 }
                 catch (Exception e) {
                     Helpers.WriteToExtraLog(e.Message, e);
+                    GpsStationaryThresholdInMiles = result;
                 }
                 if (!validGpsStationaryThresholdValues.Contains(result)) {
                     result = GPS_STATIONARY_THRESHOLD_DEFAULT_VALUE;
                 }
                 return result;
             }
-            set { _settings.Set("GpsStationaryThresholdInMiles", value.ToString()); }
+            set { _settings.Set("GpsStationaryThresholdInMiles", value.ToString(Constants.EnglishUnitedStatesNumberFormatInfo)); }
         }
 
         public static string LocateViaList {
