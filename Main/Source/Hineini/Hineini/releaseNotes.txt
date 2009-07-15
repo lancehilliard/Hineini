@@ -1,3 +1,7 @@
+0.6.61
+
+* Improved: GPS stationary threshold reliability
+
 0.6.6
 
 * Improved: GPS stationary threshold reliability

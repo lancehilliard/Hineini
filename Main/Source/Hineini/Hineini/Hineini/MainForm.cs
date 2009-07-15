@@ -232,14 +232,14 @@ namespace Hineini {
             _lastUpdatedPosition = new Position();
         }
 
-        private bool UpdateLocationData() {
+        private bool UpdateLocationData(ref bool stationaryThresholdPreventedUpdate) {
             bool locationUpdated;
             try {
                 if (Helpers.StringHasValue(_userUpdateLocation)) {
                     locationUpdated = UpdateLocationDataByUserInput(_userUpdateLocation);
                 }
                 else {
-                    locationUpdated = UpdateLocationDataByEnvironmentInput();
+                    locationUpdated = UpdateLocationDataByEnvironmentInput(ref stationaryThresholdPreventedUpdate);
                 }
             }
             catch (Exception e) {
@@ -249,14 +249,14 @@ namespace Hineini {
             return locationUpdated;
         }
 
-        private bool UpdateLocationDataByEnvironmentInput() {
+        private bool UpdateLocationDataByEnvironmentInput(ref bool stationaryThresholdPreventedUpdate) {
             bool locationUpdated = false;
-            bool stationaryThresholdPreventedUpdate = false;
             if (Boolean.GpsEnabled) {
                 Position? currentGpsPosition = GetCurrentGpsPosition();
                 locationUpdated = UpdateLocationDataByCurrentGpsPosition(currentGpsPosition, ref stationaryThresholdPreventedUpdate);
             }
             if (stationaryThresholdPreventedUpdate) {
+                Thread.Sleep(2000);
                 MessagesForm.AddMessage(DateTime.Now, _mostRecentLocation.Name, Constants.MessageType.Info);
             }
             else if (!locationUpdated && LocationManager.UseTowers) {
@@ -433,10 +433,14 @@ namespace Hineini {
         private void UpdateRecentLocationData(string locationMarker, string locationMessagePrefix) {
             _lastLocationMarker = locationMarker;
             _mostRecentLocation = _fireEagle.User().LocationHierarchy.MostRecent;
-            DateTime mostRecentUpdate = _mostRecentLocation == null ? DateTime.Now : _mostRecentLocation.LocationDate;
-            MessagesForm.AddMessage(mostRecentUpdate, MainUtility.GetLocationMessage(locationMessagePrefix, _mostRecentLocation), Constants.MessageType.Info);
-            //UpdatePendingMapInfo(_mostRecentLocation, MainUtility.GetMapZoomLevel(_mostRecentLocation));
-            LogExtraInformation(_mostRecentLocation);
+            if (_mostRecentLocation == null) {
+                MessagesForm.AddMessage(DateTime.Now, Constants.UNKNOWN_LOCATION_MESSAGE, Constants.MessageType.Error);
+            }
+            else {
+                _mostRecentLocation.Name = MainUtility.GetLocationMessage(locationMessagePrefix, _mostRecentLocation);
+                MessagesForm.AddMessage(_mostRecentLocation.LocationDate, _mostRecentLocation.Name, Constants.MessageType.Info);
+                LogExtraInformation(_mostRecentLocation);
+            }
         }
 
         //private void UpdatePendingMapInfo(FireEagle.Location mostRecentLocation, int mapZoomLevel) {
@@ -699,9 +703,10 @@ namespace Hineini {
         private void ProcessFireEagleUpdate() {
             bool successfulUpdate = false;
             bool unsuccessfulUpdateWasHandled = false;
+            bool stationaryThresholdPreventedUpdate = false;
             try {
                 try {
-                    if (UpdateLocationData()) {
+                    if (UpdateLocationData(ref stationaryThresholdPreventedUpdate)) {
                         MainUtility.SetTimerPerSuccessfulOrHandledUpdate();
                         successfulUpdate = true;
                         _manualUpdateRequested = false;
@@ -722,7 +727,7 @@ namespace Hineini {
             }
             finally {
                 if (!(successfulUpdate || unsuccessfulUpdateWasHandled)) {
-                    MainUtility.HandleFailedUpdate();
+                    MainUtility.HandleFailedUpdate(stationaryThresholdPreventedUpdate);
                 }
             }
         }

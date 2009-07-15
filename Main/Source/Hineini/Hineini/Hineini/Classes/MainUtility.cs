@@ -60,7 +60,7 @@ namespace Hineini {
             return message;
         }
 
-        public static void HandleFailedUpdate() {
+        public static void HandleFailedUpdate(bool stationaryThresholdPreventedUpdate) {
             string message;
             if (Constants.UPDATE_INTERVAL_MANUAL_ONLY.Equals(Settings.UpdateIntervalInMinutes)) {
                 message = Constants.FAILED_UPDATE_MESSAGE_IDLE;
@@ -70,7 +70,8 @@ namespace Hineini {
             else {
                 message = String.Format(Constants.FAILED_UPDATE_MESSAGE_AUTOMATIC_TEMPLATE, Descriptions.LocateViaDescription);
                 MessagesForm.AddMessage(DateTime.Now, message, Constants.MessageType.Error);
-                MainForm.SecondsBeforeNextFireEagleProcessing = 2;
+                int secondsBeforeNextFireEagleProcessing = stationaryThresholdPreventedUpdate ? 90 : 2;
+                MainForm.SecondsBeforeNextFireEagleProcessing = secondsBeforeNextFireEagleProcessing;
             }
         }
 
@@ -92,7 +93,7 @@ namespace Hineini {
         }
 
         public static string GetLocationMessage(string locationMessagePrefix, FireEagle.Location location) {
-            string locationName = (!Helpers.StringHasValue(locationMessagePrefix) ? String.Empty : locationMessagePrefix) + (location == null ? "Unnamed location" : location.Name);
+            string locationName = (!Helpers.StringHasValue(locationMessagePrefix) ? String.Empty : locationMessagePrefix) + (location == null ? Constants.UNKNOWN_LOCATION_MESSAGE : location.Name);
             string result = locationName;
             return result;
         }
