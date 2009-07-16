@@ -1,3 +1,9 @@
+0.6.7
+
+* Added: bounding box support to mapping
+* Improved: Error Log messages in application
+* Improved: error logging
+
 0.6.61
 
 * Improved: GPS stationary threshold reliability

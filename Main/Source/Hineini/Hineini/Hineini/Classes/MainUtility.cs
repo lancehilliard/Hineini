@@ -63,7 +63,7 @@ namespace Hineini {
         public static void HandleFailedUpdate(bool stationaryThresholdPreventedUpdate) {
             string message;
             if (Constants.UPDATE_INTERVAL_MANUAL_ONLY.Equals(Settings.UpdateIntervalInMinutes)) {
-                message = Constants.FAILED_UPDATE_MESSAGE_IDLE;
+                message = Constants.UPDATE_INTERVAL_MESSAGE_MANUAL;
                 MessagesForm.AddMessage(DateTime.Now, message, Constants.MessageType.Info);
                 MainForm.SecondsBeforeNextFireEagleProcessing = Settings.UpdateIntervalInMinutes;
             }

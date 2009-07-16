@@ -198,7 +198,9 @@ namespace Hineini {
             MessagesForm.AddMessage(now, Descriptions.TowerProviders, Constants.MessageType.Info);
             MessagesForm.AddMessage(now, Messages.LocateViaMessage, Constants.MessageType.Info);
             MessagesForm.AddMessage(now, Messages.BacklightMessage, Constants.MessageType.Info);
-            MessagesForm.AddMessage(DateTime.Now, Constants.LOCATION_NOT_YET_IDENTIFIED, Constants.MessageType.Info);
+            if (!Constants.UPDATE_INTERVAL_MANUAL_ONLY.Equals(Settings.UpdateIntervalInMinutes)) {
+                MessagesForm.AddMessage(DateTime.Now, Constants.LOCATION_NOT_YET_IDENTIFIED, Constants.MessageType.Info);
+            }
             NeedToShowIntroductionMessage = false;
         }
 
@@ -527,8 +529,7 @@ namespace Hineini {
                     _pendingMapImage = null;
                 }
                 else {
-                    int mapZoomLevel = MainUtility.GetMapZoomLevel(_mostRecentLocation);
-                    MapInfo mapInfo = new MapInfo(_mostRecentLocation.ExactPoint, _mostRecentLocation.UpperCorner, _mostRecentLocation.LowerCorner, mapZoomLevel);
+                    MapInfo mapInfo = new MapInfo(_mostRecentLocation.ExactPoint, _mostRecentLocation.UpperCorner, _mostRecentLocation.LowerCorner);
                     _pendingMapUrl = mapInfo.GetMapUrl(_mapHeight, _mapWidth);
                 }
             }

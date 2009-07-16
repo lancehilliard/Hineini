@@ -11,11 +11,11 @@ namespace Hineini.Utility {
         public const string USER_MANUAL_FILENAME = "UserManual.html";
         public const string CLIENT_UPDATE_AVAILABLE_MENU_ITEM_TEXT = "Client Update Available";
         public const string CLIENT_UPDATE_AVAILABLE_MESSAGE = "An updated version of Hineini can be found at http://hineini.codeplex.com.";
-        public const string CURRENT_VERSION = "0.6.61";
+        public const string CURRENT_VERSION = "0.6.7";
         public const string RECOMMENDED_VERSION_HTML_DELIMITER_END = " --";
         public const string RECOMMENDED_VERSION_HTML_DELIMITER_START = "!-- Recommend ";
         public const string RECOMMENDED_VERSION_URL = "http://hineini.codeplex.com/Wiki/View.aspx?title=recommendedVersion";
-        public const string MAP_URL_TEMPLATE = "http://maps.google.com/staticmap?size={0}x{1}&maptype=mobile&key=ABQIAAAAu-YXjAmyKTn4bLyq60KPJxRCmR3BMzCOmnDxzV__D6GogjP-bxS2YsxdOmDDPViifiljA1OCCzYkPQ&sensor=false&center={2},{3}&zoom={4}";
+        public const string MAP_URL_TEMPLATE = "http://maps.google.com/staticmap?format=jpg-baseline&size={0}x{1}&maptype=mobile&key=ABQIAAAAu-YXjAmyKTn4bLyq60KPJxRCmR3BMzCOmnDxzV__D6GogjP-bxS2YsxdOmDDPViifiljA1OCCzYkPQ&sensor=false&center={2},{3}";
         public const string FETCHING_MAP_MESSAGE = "Fetching map...";
         public const double DISTANCE_UNKNOWN = -1;
         public const string GETTING_AUTH_TOKEN_MESSAGE = "Getting auth token...";
@@ -48,7 +48,7 @@ namespace Hineini.Utility {
         public const string UPDATE_INTERVAL_MESSAGE_AUTOMATIC_TEMPLATE = "Locate every: {0} {1}";
         public const string SHOW_MESSAGES_NEXT_MESSAGE_TEMPLATE = "{0}\r\n{1}";
         public const string AUTHORIZATION_REQUEST_TEMPLATE = "Visit the URL below to authorize Hineini.  Part of the authorization is a verification code.  Press 'Verify' when you have it.\r\n\r\n{0}";
-        public const string FAILED_UPDATE_MESSAGE_IDLE = "Won't update until you choose 'Update'.";
+        //public const string FAILED_UPDATE_MESSAGE_IDLE = "Won't update until you choose 'Update'.";
         public const string LOADING_REQUEST_AUTHORIZATION_MESSAGE = "Starting Fire Eagle authorization setup...";
         public const string MANUAL_UPDATE_STARTED_MESSAGE = "Manual update started...";
         public const string UNABLE_TO_IDENTIFY_CELL_TOWERS_DEBUG_MESSAGE = "Unable to get cell tower info string...";
@@ -72,6 +72,9 @@ namespace Hineini.Utility {
         public const int UPDATE_INTERVAL_MANUAL_ONLY = -1;
 
         public static readonly IFormatProvider EnglishUnitedStatesNumberFormatInfo = new NumberFormatInfo() { NumberGroupSeparator = "." };
+        public static string YAHOO_FAILED_GEOLOCATION = "Yahoo failed geolocation...";
+        public static string TOWER_GEOLOCATION_FAILED = "Geolocation failed...";
+        public const string LOCATION_INVALID = "Invalid location update...";
         public const string UNKNOWN_LOCATION_MESSAGE = "Unknown location";
 
         public enum MessageType {
