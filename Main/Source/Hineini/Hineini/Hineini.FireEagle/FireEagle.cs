@@ -472,8 +472,8 @@ namespace Hineini.FireEagle {
         public void Update(Position pos)
         {
             List<string> parameters = new List<string>();
-            string latitude = pos.Latitude.ToString();
-            string longitude = pos.Longitude.ToString();
+            string latitude = pos.Latitude.ToString(Constants.EnglishUnitedStatesNumberFormatInfo);
+            string longitude = pos.Longitude.ToString(Constants.EnglishUnitedStatesNumberFormatInfo);
             Helpers.WriteToExtraLog("Updating Fire Eagle position with lat/long: '" + latitude + "', '" + longitude + "'", null);
             parameters.Add("lat=" + OAuth.UrlEncode(latitude));
             parameters.Add("lon=" + OAuth.UrlEncode(longitude));

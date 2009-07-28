@@ -1,3 +1,7 @@
+0.6.8
+
+* Improved: Fire Eagle location update precision
+
 0.6.7
 
 * Added: bounding box support to mapping
