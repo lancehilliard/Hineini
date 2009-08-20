@@ -6,5 +6,9 @@
     <add key="LocateViaList" value="GPS,Towers" />
     <add key="Backlight" value="SystemManaged" />
     <add key="GpsStationaryThresholdInMiles" value="0.25" />
+    <add key="MapEnabled" value="True" />
+    <add key="MapCenterMarkerSize" value="5" />
+    <add key="MapZoomLevel" value="15" />
+    <add key="ExtraLogEnabled" value="False" />
   </appSettings>
 </configuration>

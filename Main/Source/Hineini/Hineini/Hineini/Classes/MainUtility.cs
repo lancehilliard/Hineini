@@ -5,41 +5,18 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Hineini.Classes;
 using Hineini.FireEagle;
 using Hineini.Utility;
 
 namespace Hineini {
     public class MainUtility {
-        public static void ChangeTowerLocationsSetting(string towerLocationsProvidersList, bool showMessage, MenuItem towerLocationsMenuItem, MenuItem yahooAlwaysMenuItem, MenuItem googleSometimesMenuItem, MenuItem googleAlwaysMenuItem) {
-            Settings.TowerLocationProvidersList = towerLocationsProvidersList;
-            Settings.Update();
-            MenuItems.SetTowerLocationsMenuItemCheckmarks(towerLocationsMenuItem, yahooAlwaysMenuItem, googleSometimesMenuItem, googleAlwaysMenuItem);
-            if (Boolean.TowersEnabled) {
-                MainForm.ResetLastPositionMarkers();
-                ReadyFireEagleProcessingTimerForNextUpdate();
-            }
-            if (showMessage) {
-                MessagesForm.AddMessage(DateTime.Now, Descriptions.TowerProviders, Constants.MessageType.Info);
-                MessagesForm.AddMessage(DateTime.Now, Messages.LocateViaMessage, Constants.MessageType.Info);
-            }
-        }
-
         public static void ChangeUpdateIntervalSetting(int updateIntervalInMinutes, MenuItem updateIntervalMenuItem, MenuItem manuallyMenuItem) {
             Settings.UpdateIntervalInMinutes = updateIntervalInMinutes;
             Settings.Update();
             MenuItems.SetUpdateIntervalMenuItemCheckmarks(updateIntervalMenuItem, manuallyMenuItem);
             MessagesForm.AddMessage(DateTime.Now, Messages.UpdateIntervalMessage, Constants.MessageType.Info);
             ReadyFireEagleProcessingTimerForNextUpdate();
-        }
-
-        public static void ChangeGpsStationaryThresholdSetting(double gpsStationaryThresholdInMiles, MenuItem gpsStationaryThresholdMenuItem) {
-            Settings.GpsStationaryThresholdInMiles = gpsStationaryThresholdInMiles;
-            Settings.Update();
-            MenuItems.SetGpsStationaryThresholdMenuItemCheckmarks(gpsStationaryThresholdMenuItem);
-            MessagesForm.AddMessage(DateTime.Now, Messages.GpsStationaryThresholdMessage, Constants.MessageType.Info);
-            if (Boolean.GpsEnabled) {
-                ReadyFireEagleProcessingTimerForNextUpdate();
-            }
         }
 
         public static void ReadyFireEagleProcessingTimerForNextUpdate() {
@@ -172,19 +149,78 @@ namespace Hineini {
         private const uint EM_SETEXTENDEDSTYLE = 0x00E0;
         private const uint ES_EX_FOCUSBORDERDISABLED = 0x00000002;
 
-        public static int GetMapZoomLevel(FireEagle.Location location) {
-            List<LocationType> granularLocationTypes = new List<LocationType> {LocationType.exact, LocationType.address};
-            //int result = granularLocationTypes.Contains(location.LevelName) ? Constants.MAP_ZOOM_LEVEL_CLOSER : Constants.MAP_ZOOM_LEVEL_FARTHER;
-            int result = Constants.MAP_ZOOM_LEVEL_MIDDLE;
-            //MessagesForm.AddMessage(DateTime.Now, location.LevelName + " = " + result, Constants.MessageType.Error);
-            return result;
+        //public static int GetMapZoomLevel(FireEagle.Location location) {
+        //    List<LocationType> granularLocationTypes = new List<LocationType> {LocationType.exact, LocationType.address};
+        //    //int result = granularLocationTypes.Contains(location.LevelName) ? Constants.MAP_ZOOM_LEVEL_CLOSER : Constants.MAP_ZOOM_LEVEL_FARTHER;
+        //    int result = Constants.MAP_ZOOM_LEVEL_MIDDLE;
+        //    //MessagesForm.AddMessage(DateTime.Now, location.LevelName + " = " + result, Constants.MessageType.Error);
+        //    return result;
+        //}
+
+        public static void ResizeLabel(Label label, Graphics graphics, int maxWidth) {
+            AdjustLabelWidth(graphics, label);
+            if (label.Size.Width > maxWidth) {
+                label.Size = new Size(maxWidth, label.Size.Height);
+                AutoSizeLabel.AutoSizeLabelHeight(label);
+            }
         }
 
-        public static void ResizeLabel(Label label, Graphics graphics) {
+        private static void AdjustLabelWidth(Graphics graphics, Label label) {
             SizeF size = graphics.MeasureString(label.Text, label.Font);
             int width = (int)size.Width;
             width = (int) (width*1.03);
-            label.Size = new Size(width, label.Size.Height);
+            label.Size = new Size(width, 18);
+        }
+
+        public static void ChangeMapEnabledSetting(bool mapEnabled, bool showMessage, MenuItem mapEnabledMenuItem) {
+            Settings.MapEnabled = mapEnabled;
+            Settings.Update();
+            if (showMessage) {
+                MessagesForm.AddMessage(DateTime.Now, "Map " + (mapEnabled ? "Enabled for next update" : "Disabled"), Constants.MessageType.Info);
+            }
+        }
+
+        public static void ChangeTowerLocationsSetting(string towerLocationsProvidersList, bool showMessage, MenuItem towerLocationsMenuItem, MenuItem yahooAlwaysMenuItem, MenuItem googleSometimesMenuItem, MenuItem googleAlwaysMenuItem) {
+            Settings.TowerLocationProvidersList = towerLocationsProvidersList;
+            Settings.Update();
+            MenuItems.SetTowerLocationsMenuItemCheckmarks(towerLocationsMenuItem, yahooAlwaysMenuItem, googleSometimesMenuItem, googleAlwaysMenuItem);
+            if (Boolean.TowersEnabled) {
+                MainForm.ResetLastPositionMarkers();
+                ReadyFireEagleProcessingTimerForNextUpdate();
+            }
+            if (showMessage) {
+                MessagesForm.AddMessage(DateTime.Now, Descriptions.TowerProviders, Constants.MessageType.Info);
+                MessagesForm.AddMessage(DateTime.Now, Messages.LocateViaMessage, Constants.MessageType.Info);
+            }
+        }
+        
+        public static void ChangeGpsStationaryThresholdSetting(double gpsStationaryThresholdInMiles, MenuItem gpsStationaryThresholdMenuItem) {
+            Settings.GpsStationaryThresholdInMiles = gpsStationaryThresholdInMiles;
+            Settings.Update();
+            MenuItems.SetGpsStationaryThresholdMenuItemCheckmarks(gpsStationaryThresholdMenuItem);
+            MessagesForm.AddMessage(DateTime.Now, Messages.GpsStationaryThresholdMessage, Constants.MessageType.Info);
+            if (Boolean.GpsEnabled) {
+                ReadyFireEagleProcessingTimerForNextUpdate();
+            }
+        }
+
+        public static void ChangeMapCenterMarkerSizeSetting(int markerSize, MenuItem centerMarkerMenuItem) {
+            Settings.MapCenterMarkerSize = markerSize;
+            Settings.Update();
+            MenuItems.SetMapCenterMarkerSizeCheckmarks(centerMarkerMenuItem);
+        }
+
+        public static void ChangeMapZoomLevelSetting(int mapZoomLevel, MenuItem zoomLevelMenuItem) {
+            Settings.MapZoomLevel = mapZoomLevel;
+            Settings.Update();
+            MenuItems.SetMapZoomLevelCheckmarks(zoomLevelMenuItem);
+        }
+
+        public static void ChangeExtraLogEnabledSetting(bool extraLogEnabled, MenuItem extraLogMenuItem) {
+            Settings.ExtraLogEnabled = extraLogEnabled;
+            Settings.Update();
+            Helpers.ExtraLogEnabled = extraLogEnabled;
+            extraLogMenuItem.Checked = extraLogEnabled;
         }
     }
 }

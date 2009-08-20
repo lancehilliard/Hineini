@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Globalization;
 
 namespace Hineini.Utility {
@@ -11,7 +12,7 @@ namespace Hineini.Utility {
         public const string USER_MANUAL_FILENAME = "UserManual.html";
         public const string CLIENT_UPDATE_AVAILABLE_MENU_ITEM_TEXT = "Client Update Available";
         public const string CLIENT_UPDATE_AVAILABLE_MESSAGE = "An updated version of Hineini can be found at http://hineini.codeplex.com.";
-        public const string CURRENT_VERSION = "0.6.8";
+        public const string CURRENT_VERSION = "0.6.9";
         public const string RECOMMENDED_VERSION_HTML_DELIMITER_END = " --";
         public const string RECOMMENDED_VERSION_HTML_DELIMITER_START = "!-- Recommend ";
         public const string RECOMMENDED_VERSION_URL = "http://hineini.codeplex.com/Wiki/View.aspx?title=recommendedVersion";
@@ -23,9 +24,6 @@ namespace Hineini.Utility {
         public const string GETTING_MAP_IMAGE_MESSAGE = "Getting map image...";
         public const string MAP_FETCH_FAILED_MESSAGE = "Map fetch failed...";
         public const string USER_SUPPLIED_ADDRESS_MUST_CONTAIN_ZIPCODE = "Address must contain zipcode...";
-        public const int MAP_ZOOM_LEVEL_CLOSER = 16;
-        public const int MAP_ZOOM_LEVEL_MIDDLE = 15;
-        public const int MAP_ZOOM_LEVEL_FARTHER = 11;
         public const string LOCATION_NOT_YET_IDENTIFIED = "Location not yet identified...";
         public const string LOADING_MAP_MESSAGE = "Loading map...";
         public const string HINEINI_CONSUMER_KEY = "GaAkDhCTfNsa";
@@ -50,7 +48,6 @@ namespace Hineini.Utility {
         public const string AUTHORIZATION_REQUEST_TEMPLATE = "Visit the URL below to authorize Hineini.  Part of the authorization is a verification code.  Press 'Verify' when you have it.\r\n\r\n{0}";
         //public const string FAILED_UPDATE_MESSAGE_IDLE = "Won't update until you choose 'Update'.";
         public const string LOADING_REQUEST_AUTHORIZATION_MESSAGE = "Starting Fire Eagle authorization setup...";
-        public const string MANUAL_UPDATE_STARTED_MESSAGE = "Manual update started...";
         public const string UNABLE_TO_IDENTIFY_CELL_TOWERS_DEBUG_MESSAGE = "Unable to get cell tower info string...";
         public const string UNABLE_TO_IDENTIFY_CELL_TOWERS_MESSAGE = "Trying to identify cell towers...";
         public const string UNABLE_TO_IDENTIFY_CELL_TOWERS_WITH_CELL_TOWERS_DISABLED_DEBUG_MESSAGE = "Locate via Cell Towers to see cell info...";
@@ -72,8 +69,28 @@ namespace Hineini.Utility {
         public const int UPDATE_INTERVAL_MANUAL_ONLY = -1;
 
         public static readonly IFormatProvider EnglishUnitedStatesNumberFormatInfo = new NumberFormatInfo() { NumberGroupSeparator = "." };
-        public static string YAHOO_FAILED_GEOLOCATION = "Yahoo failed geolocation...";
-        public static string TOWER_GEOLOCATION_FAILED = "Geolocation failed...";
+        public static Color MOST_RECENT_INFO_LABEL_BACKCOLOR_NORMAL = Color.FromArgb(192, 224, 255);
+        public static Color MOST_RECENT_INFO_LABEL_BACKCOLOR_UPDATE_IN_PROGRESS = Color.FromArgb(255, 255, 192);
+
+        public const string YAHOO_FAILED_GEOLOCATION = "Yahoo failed geolocation...";
+        public const string TOWER_GEOLOCATION_FAILED = "Geolocation failed...";
+        public const string UNKNOWN_ERROR_MESSAGE = "Unknown error.";
+        public const string UPDATE_STARTED_MESSAGE = "Update started...";
+        public const int MAP_ZOOM_LEVEL_LEAST = 6;
+        public const int MAP_ZOOM_LEVEL_LESS = 9;
+        public const int MAP_ZOOM_LEVEL_MORE = 12;
+        public const int MAP_ZOOM_LEVEL_MOST = 15;
+        public const int CENTER_MARKER_SIZE_DISABLED = 0;
+        public const int CENTER_MARKER_SIZE_SMALL = 5;
+        public const int CENTER_MARKER_SIZE_MEDIUM = 11;
+        public const int CENTER_MARKER_SIZE_LARGE = 21;
+        public const double GPS_STATIONARY_THRESHOLD_MILE = 1.0;
+        public const double GPS_STATIONARY_THRESHOLD_HALF_MILE = 0.5;
+        public const double GPS_STATIONARY_THRESHOLD_QUARTER_MILE = 0.25;
+        public const double GPS_STATIONARY_THRESHOLD_300_FEET = 0.056;
+        public const double GPS_STATIONARY_THRESHOLD_60_FEET = 0.011;
+        public const double GPS_STATIONARY_THRESHOLD_DISABLED = 0.0;
+        public const double GPS_STATIONARY_THRESHOLD_30_FEET = 0.005;
         public const string LOCATION_INVALID = "Invalid location update...";
         public const string UNKNOWN_LOCATION_MESSAGE = "Unknown location";
 

@@ -11,9 +11,9 @@ namespace Hineini.Maps {
             LowerCornerLatLong = lowerCorner;
         }
 
-        public string GetMapUrl(int height, int width) {
+        public string GetMapUrl(int height, int width, int mapZoomLevel) {
             string mapPath = MapPath;
-            string zoomedCenter = "center=" + LocationLatLong.Latitude.ToString(Constants.EnglishUnitedStatesNumberFormatInfo) + "," + LocationLatLong.Longitude.ToString(Constants.EnglishUnitedStatesNumberFormatInfo) + "&zoom=" + Constants.MAP_ZOOM_LEVEL_MIDDLE;
+            string zoomedCenter = "center=" + LocationLatLong.Latitude.ToString(Constants.EnglishUnitedStatesNumberFormatInfo) + "," + LocationLatLong.Longitude.ToString(Constants.EnglishUnitedStatesNumberFormatInfo) + "&zoom=" + mapZoomLevel;
             string location = mapPath.Length > 0 ? mapPath : zoomedCenter;
             string result = string.Format("http://maps.google.com/staticmap?format=jpg-baseline&size={0}x{1}&maptype=mobile&key=ABQIAAAAu-YXjAmyKTn4bLyq60KPJxRCmR3BMzCOmnDxzV__D6GogjP-bxS2YsxdOmDDPViifiljA1OCCzYkPQ&sensor=false&{2}", width, height, location);
             return result;

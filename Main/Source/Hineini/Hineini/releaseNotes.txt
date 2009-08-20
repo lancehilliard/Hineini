@@ -1,3 +1,15 @@
+0.6.9
+
+* Improved: mapping accuracy
+* Improved: mapping stability
+* Improved: info label display
+* Added: enable/disable extra log
+* Added: new "GPS Stationary Threshold" options
+* Added: center marker option
+* Added: map zoom options
+* Added: network activity indicator
+* Added: map display toggle option
+
 0.6.8
 
 * Improved: Fire Eagle location update precision

@@ -27,9 +27,6 @@ namespace Hineini {
         private System.Windows.Forms.MenuItem towersSometimesMenuItem;
         private System.Windows.Forms.MenuItem towersOnlyMenuItem;
         private System.Windows.Forms.MenuItem manuallyMenuItem;
-        private System.Windows.Forms.MenuItem backlightMenuItem;
-        private System.Windows.Forms.MenuItem systemManagedMenuItem;
-        private System.Windows.Forms.MenuItem alwaysOnMenuItem;
         private System.Windows.Forms.MenuItem accountSetupMenuItem;
         private System.Windows.Forms.MenuItem undoHineiniAuthorizationMenuItem;
         private System.Windows.Forms.MenuItem UndoHineiniAuthorizationConfirmMenuItem;
@@ -60,6 +57,9 @@ namespace Hineini {
             this.towersOnlyMenuItem = new System.Windows.Forms.MenuItem();
             this.gpsStationaryThresholdMenuItem = new System.Windows.Forms.MenuItem();
             this.noneMenuItem = new System.Windows.Forms.MenuItem();
+            this.thirtyFeetMenuItem = new System.Windows.Forms.MenuItem();
+            this.sixtyFeetMenuItem = new System.Windows.Forms.MenuItem();
+            this.threeHundredFeetMenuItem = new System.Windows.Forms.MenuItem();
             this.quarterMileMenuItem = new System.Windows.Forms.MenuItem();
             this.halfMileMenuItem = new System.Windows.Forms.MenuItem();
             this.oneMileMenuItem = new System.Windows.Forms.MenuItem();
@@ -74,9 +74,22 @@ namespace Hineini {
             this.yahooAlwaysMenuItem = new System.Windows.Forms.MenuItem();
             this.googleSometimesMenuItem = new System.Windows.Forms.MenuItem();
             this.googleAlwaysMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
             this.backlightMenuItem = new System.Windows.Forms.MenuItem();
             this.systemManagedMenuItem = new System.Windows.Forms.MenuItem();
             this.alwaysOnMenuItem = new System.Windows.Forms.MenuItem();
+            this.mapMenuItem = new System.Windows.Forms.MenuItem();
+            this.mapEnabledMenuItem = new System.Windows.Forms.MenuItem();
+            this.centerMarkerMenuItem = new System.Windows.Forms.MenuItem();
+            this.centerMarkerDisabledMenuItem = new System.Windows.Forms.MenuItem();
+            this.centerMarkerSmallMenuItem = new System.Windows.Forms.MenuItem();
+            this.centerMarkerMediumMenuItem = new System.Windows.Forms.MenuItem();
+            this.centerMarkerLargeMenuItem = new System.Windows.Forms.MenuItem();
+            this.zoomLevelMenuItem = new System.Windows.Forms.MenuItem();
+            this.zoomLeastMenuItem = new System.Windows.Forms.MenuItem();
+            this.zoomLessMenuItem = new System.Windows.Forms.MenuItem();
+            this.zoomMoreMenuItem = new System.Windows.Forms.MenuItem();
+            this.zoomMostMenuItem = new System.Windows.Forms.MenuItem();
             this.accountSetupMenuItem = new System.Windows.Forms.MenuItem();
             this.undoHineiniAuthorizationMenuItem = new System.Windows.Forms.MenuItem();
             this.UndoHineiniAuthorizationConfirmMenuItem = new System.Windows.Forms.MenuItem();
@@ -84,6 +97,7 @@ namespace Hineini {
             this.logsMenuItem = new System.Windows.Forms.MenuItem();
             this.infoMenuItem = new System.Windows.Forms.MenuItem();
             this.errorMenuItem = new System.Windows.Forms.MenuItem();
+            this.extraLogMenuItem = new System.Windows.Forms.MenuItem();
             this.helpMenuItem = new System.Windows.Forms.MenuItem();
             this.aboutMenuItem = new System.Windows.Forms.MenuItem();
             this.userManualMenuItem = new System.Windows.Forms.MenuItem();
@@ -117,7 +131,7 @@ namespace Hineini {
             this.mainMenu.MenuItems.Add(this.locateViaMenuItem);
             this.mainMenu.MenuItems.Add(this.updateIntervalMenuItem);
             this.mainMenu.MenuItems.Add(this.towerLocationsMenuItem);
-            this.mainMenu.MenuItems.Add(this.backlightMenuItem);
+            this.mainMenu.MenuItems.Add(this.menuItem2);
             this.mainMenu.MenuItems.Add(this.accountSetupMenuItem);
             this.mainMenu.MenuItems.Add(this.logsMenuItem);
             this.mainMenu.MenuItems.Add(this.helpMenuItem);
@@ -149,6 +163,9 @@ namespace Hineini {
             // gpsStationaryThresholdMenuItem
             // 
             this.gpsStationaryThresholdMenuItem.MenuItems.Add(this.noneMenuItem);
+            this.gpsStationaryThresholdMenuItem.MenuItems.Add(this.thirtyFeetMenuItem);
+            this.gpsStationaryThresholdMenuItem.MenuItems.Add(this.sixtyFeetMenuItem);
+            this.gpsStationaryThresholdMenuItem.MenuItems.Add(this.threeHundredFeetMenuItem);
             this.gpsStationaryThresholdMenuItem.MenuItems.Add(this.quarterMileMenuItem);
             this.gpsStationaryThresholdMenuItem.MenuItems.Add(this.halfMileMenuItem);
             this.gpsStationaryThresholdMenuItem.MenuItems.Add(this.oneMileMenuItem);
@@ -158,6 +175,21 @@ namespace Hineini {
             // 
             this.noneMenuItem.Text = "None";
             this.noneMenuItem.Click += new System.EventHandler(this.noneMenuItem_Click);
+            // 
+            // thirtyFeetMenuItem
+            // 
+            this.thirtyFeetMenuItem.Text = "30 feet";
+            this.thirtyFeetMenuItem.Click += new System.EventHandler(this.thirtyFeetMenuItem_Click);
+            // 
+            // sixtyFeetMenuItem
+            // 
+            this.sixtyFeetMenuItem.Text = "60 feet";
+            this.sixtyFeetMenuItem.Click += new System.EventHandler(this.sixtyFeetMenuItem_Click);
+            // 
+            // threeHundredFeetMenuItem
+            // 
+            this.threeHundredFeetMenuItem.Text = "300 feet";
+            this.threeHundredFeetMenuItem.Click += new System.EventHandler(this.threeHundredFeetMenuItem_Click);
             // 
             // quarterMileMenuItem
             // 
@@ -236,6 +268,12 @@ namespace Hineini {
             this.googleAlwaysMenuItem.Text = "Google always";
             this.googleAlwaysMenuItem.Click += new System.EventHandler(this.googleAlwaysMenuItem_Click);
             // 
+            // menuItem2
+            // 
+            this.menuItem2.MenuItems.Add(this.backlightMenuItem);
+            this.menuItem2.MenuItems.Add(this.mapMenuItem);
+            this.menuItem2.Text = "Display";
+            // 
             // backlightMenuItem
             // 
             this.backlightMenuItem.MenuItems.Add(this.systemManagedMenuItem);
@@ -251,6 +289,75 @@ namespace Hineini {
             // 
             this.alwaysOnMenuItem.Text = "Always On";
             this.alwaysOnMenuItem.Click += new System.EventHandler(this.alwaysOnMenuItem_Click);
+            // 
+            // mapMenuItem
+            // 
+            this.mapMenuItem.MenuItems.Add(this.mapEnabledMenuItem);
+            this.mapMenuItem.MenuItems.Add(this.centerMarkerMenuItem);
+            this.mapMenuItem.MenuItems.Add(this.zoomLevelMenuItem);
+            this.mapMenuItem.Text = "Map";
+            // 
+            // mapEnabledMenuItem
+            // 
+            this.mapEnabledMenuItem.Checked = true;
+            this.mapEnabledMenuItem.Text = "Enabled";
+            this.mapEnabledMenuItem.Click += new System.EventHandler(this.mapEnabledMenuItem_Click);
+            // 
+            // centerMarkerMenuItem
+            // 
+            this.centerMarkerMenuItem.MenuItems.Add(this.centerMarkerDisabledMenuItem);
+            this.centerMarkerMenuItem.MenuItems.Add(this.centerMarkerSmallMenuItem);
+            this.centerMarkerMenuItem.MenuItems.Add(this.centerMarkerMediumMenuItem);
+            this.centerMarkerMenuItem.MenuItems.Add(this.centerMarkerLargeMenuItem);
+            this.centerMarkerMenuItem.Text = "Center Marker";
+            // 
+            // centerMarkerDisabledMenuItem
+            // 
+            this.centerMarkerDisabledMenuItem.Text = "Disabled";
+            this.centerMarkerDisabledMenuItem.Click += new System.EventHandler(this.centerMarkerDisabledMenuItem_Click);
+            // 
+            // centerMarkerSmallMenuItem
+            // 
+            this.centerMarkerSmallMenuItem.Text = "Small";
+            this.centerMarkerSmallMenuItem.Click += new System.EventHandler(this.centerMarkerSmallMenuItem_Click);
+            // 
+            // centerMarkerMediumMenuItem
+            // 
+            this.centerMarkerMediumMenuItem.Text = "Medium";
+            this.centerMarkerMediumMenuItem.Click += new System.EventHandler(this.centerMarkerMediumMenuItem_Click);
+            // 
+            // centerMarkerLargeMenuItem
+            // 
+            this.centerMarkerLargeMenuItem.Text = "Large";
+            this.centerMarkerLargeMenuItem.Click += new System.EventHandler(this.centerMarkerLargeMenuItem_Click);
+            // 
+            // zoomLevelMenuItem
+            // 
+            this.zoomLevelMenuItem.MenuItems.Add(this.zoomLeastMenuItem);
+            this.zoomLevelMenuItem.MenuItems.Add(this.zoomLessMenuItem);
+            this.zoomLevelMenuItem.MenuItems.Add(this.zoomMoreMenuItem);
+            this.zoomLevelMenuItem.MenuItems.Add(this.zoomMostMenuItem);
+            this.zoomLevelMenuItem.Text = "Zoom Level";
+            // 
+            // zoomLeastMenuItem
+            // 
+            this.zoomLeastMenuItem.Text = "Least";
+            this.zoomLeastMenuItem.Click += new System.EventHandler(this.zoomLeastMenuItem_Click);
+            // 
+            // zoomLessMenuItem
+            // 
+            this.zoomLessMenuItem.Text = "Less";
+            this.zoomLessMenuItem.Click += new System.EventHandler(this.zoomLessMenuItem_Click);
+            // 
+            // zoomMoreMenuItem
+            // 
+            this.zoomMoreMenuItem.Text = "More";
+            this.zoomMoreMenuItem.Click += new System.EventHandler(this.zoomMoreMenuItem_Click);
+            // 
+            // zoomMostMenuItem
+            // 
+            this.zoomMostMenuItem.Text = "Most";
+            this.zoomMostMenuItem.Click += new System.EventHandler(this.zoomMostMenuItem_Click);
             // 
             // accountSetupMenuItem
             // 
@@ -277,17 +384,23 @@ namespace Hineini {
             // 
             this.logsMenuItem.MenuItems.Add(this.infoMenuItem);
             this.logsMenuItem.MenuItems.Add(this.errorMenuItem);
+            this.logsMenuItem.MenuItems.Add(this.extraLogMenuItem);
             this.logsMenuItem.Text = "Logs";
             // 
             // infoMenuItem
             // 
-            this.infoMenuItem.Text = "Info";
+            this.infoMenuItem.Text = "Show Info Log";
             this.infoMenuItem.Click += new System.EventHandler(this.infoMenuItem_Click);
             // 
             // errorMenuItem
             // 
-            this.errorMenuItem.Text = "Error";
+            this.errorMenuItem.Text = "Show Error Log";
             this.errorMenuItem.Click += new System.EventHandler(this.errorMenuItem_Click);
+            // 
+            // extraLogMenuItem
+            // 
+            this.extraLogMenuItem.Text = "Log Extra/Debug Information";
+            this.extraLogMenuItem.Click += new System.EventHandler(this.extraLogMenuItem_Click);
             // 
             // helpMenuItem
             // 
@@ -419,7 +532,7 @@ namespace Hineini {
             this.mostRecentInfoMessageLabel.Location = new System.Drawing.Point(-1, 227);
             this.mostRecentInfoMessageLabel.Name = "mostRecentInfoMessageLabel";
             this.mostRecentInfoMessageLabel.Size = new System.Drawing.Size(240, 18);
-            this.mostRecentInfoMessageLabel.Text = "Loading Hineini v0.6.8";
+            this.mostRecentInfoMessageLabel.Text = "Loading Hineini v0.6.9";
             // 
             // locationPictureBox
             // 
@@ -478,6 +591,26 @@ namespace Hineini {
         private MenuItem showTagMenuItem;
         private MenuItem menuItem1;
         private MenuItem whatIsTagMenuItem;
+        private MenuItem thirtyFeetMenuItem;
+        private MenuItem sixtyFeetMenuItem;
+        private MenuItem threeHundredFeetMenuItem;
+        private MenuItem menuItem2;
+        private MenuItem backlightMenuItem;
+        private MenuItem systemManagedMenuItem;
+        private MenuItem alwaysOnMenuItem;
+        private MenuItem mapMenuItem;
+        private MenuItem zoomLevelMenuItem;
+        private MenuItem zoomLeastMenuItem;
+        private MenuItem zoomLessMenuItem;
+        private MenuItem zoomMoreMenuItem;
+        private MenuItem zoomMostMenuItem;
+        private MenuItem mapEnabledMenuItem;
+        private MenuItem centerMarkerMenuItem;
+        private MenuItem centerMarkerDisabledMenuItem;
+        private MenuItem centerMarkerSmallMenuItem;
+        private MenuItem centerMarkerMediumMenuItem;
+        private MenuItem centerMarkerLargeMenuItem;
+        private MenuItem extraLogMenuItem;
     }
 }
 

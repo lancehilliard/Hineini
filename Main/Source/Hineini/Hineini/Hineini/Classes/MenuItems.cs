@@ -1,3 +1,4 @@
+using System;
 using System.Windows.Forms;
 using Hineini.Utility;
 
@@ -19,16 +20,25 @@ namespace Hineini {
         private static bool GpsStationaryThresholdMenuItemMatchesSetting(MenuItem menuItem) {
             bool result = false;
             if (menuItem.Text.StartsWith("None")) {
-                result = 0.0.Equals(Settings.GpsStationaryThresholdInMiles);
+                result = Constants.GPS_STATIONARY_THRESHOLD_DISABLED.Equals(Settings.GpsStationaryThresholdInMiles);
+            }
+            else if (menuItem.Text.StartsWith("30 ")) {
+                result = Constants.GPS_STATIONARY_THRESHOLD_30_FEET.Equals(Settings.GpsStationaryThresholdInMiles);
+            }
+            else if (menuItem.Text.StartsWith("60 ")) {
+                result = Constants.GPS_STATIONARY_THRESHOLD_60_FEET.Equals(Settings.GpsStationaryThresholdInMiles);
+            }
+            else if (menuItem.Text.StartsWith("300 ")) {
+                result = Constants.GPS_STATIONARY_THRESHOLD_300_FEET.Equals(Settings.GpsStationaryThresholdInMiles);
             }
             else if (menuItem.Text.StartsWith("1/4 ")) {
-                result = 0.25.Equals(Settings.GpsStationaryThresholdInMiles);
+                result = Constants.GPS_STATIONARY_THRESHOLD_QUARTER_MILE.Equals(Settings.GpsStationaryThresholdInMiles);
             }
             else if (menuItem.Text.StartsWith("1/2 ")) {
-                result = 0.5.Equals(Settings.GpsStationaryThresholdInMiles);
+                result = Constants.GPS_STATIONARY_THRESHOLD_HALF_MILE.Equals(Settings.GpsStationaryThresholdInMiles);
             }
             else if (menuItem.Text.StartsWith("1 ")) {
-                result = 1.0.Equals(Settings.GpsStationaryThresholdInMiles);
+                result = Constants.GPS_STATIONARY_THRESHOLD_MILE.Equals(Settings.GpsStationaryThresholdInMiles);
             }
             return result;
         }
@@ -95,5 +105,50 @@ namespace Hineini {
             }
         }
 
+        public static void SetMapCenterMarkerSizeCheckmarks(MenuItem centerMarkerMenuItem) {
+            foreach (MenuItem menuItem in centerMarkerMenuItem.MenuItems) {
+                menuItem.Checked = MapCenterMarkerSizeMenuItemMatchesSetting(menuItem);
+            }
+        }
+
+        private static bool MapCenterMarkerSizeMenuItemMatchesSetting(MenuItem menuItem) {
+            bool result = false;
+            if (menuItem.Text.StartsWith("Disabled")) {
+                result = Constants.CENTER_MARKER_SIZE_DISABLED.Equals(Settings.MapCenterMarkerSize);
+            }
+            else if (menuItem.Text.StartsWith("Small")) {
+                result = Constants.CENTER_MARKER_SIZE_SMALL.Equals(Settings.MapCenterMarkerSize);
+            }
+            else if (menuItem.Text.StartsWith("Medium")) {
+                result = Constants.CENTER_MARKER_SIZE_MEDIUM.Equals(Settings.MapCenterMarkerSize);
+            }
+            else if (menuItem.Text.StartsWith("Large")) {
+                result = Constants.CENTER_MARKER_SIZE_LARGE.Equals(Settings.MapCenterMarkerSize);
+            }
+            return result;
+        }
+
+        public static void SetMapZoomLevelCheckmarks(MenuItem mapZoomLevelMenuItem) {
+            foreach (MenuItem menuItem in mapZoomLevelMenuItem.MenuItems) {
+                menuItem.Checked = MapZoomLevelMatchesSetting(menuItem);
+            }
+        }
+
+        private static bool MapZoomLevelMatchesSetting(MenuItem menuItem) {
+            bool result = false;
+            if (menuItem.Text.StartsWith("Least")) {
+                result = Constants.MAP_ZOOM_LEVEL_LEAST.Equals(Settings.MapZoomLevel);
+            }
+            else if (menuItem.Text.StartsWith("Less")) {
+                result = Constants.MAP_ZOOM_LEVEL_LESS.Equals(Settings.MapZoomLevel);
+            }
+            else if (menuItem.Text.StartsWith("More")) {
+                result = Constants.MAP_ZOOM_LEVEL_MORE.Equals(Settings.MapZoomLevel);
+            }
+            else if (menuItem.Text.StartsWith("Most")) {
+                result = Constants.MAP_ZOOM_LEVEL_MOST.Equals(Settings.MapZoomLevel);
+            }
+            return result;
+        }
     }
 }

@@ -17,11 +17,13 @@ namespace Hineini {
         private static readonly NameValueCollection _settings;
         private static readonly string _settingsPath;
         private static readonly List<int> validUpdateIntervalValues = new List<int> { -1, 1, 5, 15, 30, 60 };
-        private static readonly List<double> validGpsStationaryThresholdValues = new List<double> { 0.0, 0.25, 0.5, 1.0 };
+        private static readonly List<int> validMapZoomLevels = new List<int> { Constants.MAP_ZOOM_LEVEL_LEAST, Constants.MAP_ZOOM_LEVEL_LESS, Constants.MAP_ZOOM_LEVEL_MORE, Constants.MAP_ZOOM_LEVEL_MOST };
+        private static readonly List<double> validGpsStationaryThresholdValues = new List<double> { Constants.GPS_STATIONARY_THRESHOLD_DISABLED, Constants.GPS_STATIONARY_THRESHOLD_30_FEET, Constants.GPS_STATIONARY_THRESHOLD_60_FEET, Constants.GPS_STATIONARY_THRESHOLD_300_FEET, Constants.GPS_STATIONARY_THRESHOLD_QUARTER_MILE, Constants.GPS_STATIONARY_THRESHOLD_HALF_MILE, Constants.GPS_STATIONARY_THRESHOLD_MILE };
         private static string _fireEagleToken;
         private static string _fireEagleSecret;
         private const int UPDATE_INTERVAL_IN_MINUTES_DEFAULT_VALUE = 5;
-        private const double GPS_STATIONARY_THRESHOLD_DEFAULT_VALUE = 0.25;
+        private const int MAP_ZOOM_LEVEL_DEFAULT_VALUE = Constants.MAP_ZOOM_LEVEL_MORE;
+        private const double GPS_STATIONARY_THRESHOLD_DEFAULT_VALUE = Constants.GPS_STATIONARY_THRESHOLD_QUARTER_MILE;
         
         static Settings() {
             _settingsPath = Helpers.GetWorkingDirectoryFileName("Settings.xml");
@@ -40,6 +42,10 @@ namespace Hineini {
             _settings.Add("LocateViaList", nodeList.Item(2).Attributes["value"].Value);
             _settings.Add("Backlight", nodeList.Item(3).Attributes["value"].Value);
             _settings.Add("GpsStationaryThresholdInMiles", nodeList.Item(4).Attributes["value"].Value);
+            _settings.Add("MapEnabled", nodeList.Item(5).Attributes["value"].Value);
+            _settings.Add("MapCenterMarkerSize", nodeList.Item(6).Attributes["value"].Value);
+            _settings.Add("MapZoomLevel", nodeList.Item(7).Attributes["value"].Value);
+            _settings.Add("ExtraLogEnabled", nodeList.Item(8).Attributes["value"].Value);
         }
 
         private static string GetDecrypted(string which) {
@@ -71,23 +77,6 @@ namespace Hineini {
             set { _settings.Set("TowerLocationProvidersList", value); }
         }
 
-        public static int UpdateIntervalInMinutes {
-            get {
-                int result = 0;
-                try {
-                    result = Int32.Parse(_settings.Get("UpdateIntervalInMinutes"));
-                }
-                catch (Exception e) {
-                    Helpers.WriteToExtraLog(e.Message, e);
-                }
-                if (!validUpdateIntervalValues.Contains(result)) {
-                    result = UPDATE_INTERVAL_IN_MINUTES_DEFAULT_VALUE;
-                }
-                return result;
-            }
-            set { _settings.Set("UpdateIntervalInMinutes", value.ToString()); }
-        }
-
         public static double GpsStationaryThresholdInMiles {
             get {
                 double result = 0.0;
@@ -104,6 +93,11 @@ namespace Hineini {
                 return result;
             }
             set { _settings.Set("GpsStationaryThresholdInMiles", value.ToString(Constants.EnglishUnitedStatesNumberFormatInfo)); }
+        }
+
+        public static bool MapEnabled {
+            get { return System.Boolean.TrueString.Equals(_settings.Get("MapEnabled")); }
+            set { _settings.Set("MapEnabled", value.ToString()); }
         }
 
         public static string LocateViaList {
@@ -178,6 +172,59 @@ namespace Hineini {
                 FireEagleToken = value.PublicToken;
                 FireEagleSecret = value.SecretToken;
             }
+        }
+
+        public static int MapCenterMarkerSize {
+            get {
+                int result = 5;
+                try {
+                    result = Int32.Parse(_settings.Get("MapCenterMarkerSize"));
+                }
+                catch (Exception e) {
+                    Helpers.WriteToExtraLog(e.Message, e);
+                }
+                return result;
+            }
+            set { _settings.Set("MapCenterMarkerSize", value.ToString()); }
+        }
+
+        public static int MapZoomLevel {
+            get {
+                int result = 0;
+                try {
+                    result = Int32.Parse(_settings.Get("MapZoomLevel"));
+                }
+                catch (Exception e) {
+                    Helpers.WriteToExtraLog(e.Message, e);
+                }
+                if (!validMapZoomLevels.Contains(result)) {
+                    result = MAP_ZOOM_LEVEL_DEFAULT_VALUE;
+                }
+                return result;
+            }
+            set { _settings.Set("MapZoomLevel", value.ToString()); }
+        }
+
+        public static int UpdateIntervalInMinutes {
+            get {
+                int result = 0;
+                try {
+                    result = Int32.Parse(_settings.Get("UpdateIntervalInMinutes"));
+                }
+                catch (Exception e) {
+                    Helpers.WriteToExtraLog(e.Message, e);
+                }
+                if (!validUpdateIntervalValues.Contains(result)) {
+                    result = UPDATE_INTERVAL_IN_MINUTES_DEFAULT_VALUE;
+                }
+                return result;
+            }
+            set { _settings.Set("UpdateIntervalInMinutes", value.ToString()); }
+        }
+
+        public static bool ExtraLogEnabled {
+            get { return System.Boolean.TrueString.Equals(_settings.Get("ExtraLogEnabled")); }
+            set { _settings.Set("ExtraLogEnabled", value.ToString()); }
         }
     }
 }

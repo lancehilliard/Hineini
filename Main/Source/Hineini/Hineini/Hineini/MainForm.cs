@@ -43,6 +43,7 @@ namespace Hineini {
         FireEagle.Location _mostRecentLocation;
         private string _lastMappedUrl = string.Empty;
         private string _pendingMapUrl;
+        private bool _attemptingUpdate;
 
         #endregion
 
@@ -148,7 +149,7 @@ namespace Hineini {
         }
 
         private void InitializeUpdateControls() {
-            MainUtility.ResizeLabel(updateLinkLabel, CreateGraphics());
+            MainUtility.ResizeLabel(updateLinkLabel, CreateGraphics(), locationPictureBox.Width);
             updateLinkLabel.Width += 4;
             MainUtility.SetBorders(updateTextBox, false, false);
         }
@@ -163,7 +164,10 @@ namespace Hineini {
             MainUtility.ChangeTowerLocationsSetting(Settings.TowerLocationProvidersList, false, towerLocationsMenuItem, yahooAlwaysMenuItem, googleSometimesMenuItem, googleAlwaysMenuItem);
             MainUtility.ChangeLocateViaSetting(Settings.LocateViaList, false, locateViaMenuItem, gpsOnlyMenuItem, towersSometimesMenuItem, towersOnlyMenuItem);
             MainUtility.ChangeBacklightSetting(Settings.Backlight, false, backlightMenuItem, systemManagedMenuItem, alwaysOnMenuItem);
-            
+            MainUtility.ChangeMapEnabledSetting(Settings.MapEnabled, false, mapEnabledMenuItem);
+            MainUtility.ChangeMapCenterMarkerSizeSetting(Settings.MapCenterMarkerSize, centerMarkerMenuItem);
+            MainUtility.ChangeMapZoomLevelSetting(Settings.MapZoomLevel, zoomLevelMenuItem);
+            MainUtility.ChangeExtraLogEnabledSetting(Settings.ExtraLogEnabled, extraLogMenuItem);
         }
 
         private void SetupMainFormObjects(bool authorizedForFireEagle) {
@@ -259,7 +263,7 @@ namespace Hineini {
             }
             if (stationaryThresholdPreventedUpdate) {
                 Thread.Sleep(2000);
-                MessagesForm.AddMessage(DateTime.Now, _mostRecentLocation.Name, Constants.MessageType.Info);
+                MessagesForm.AddMessage(_mostRecentLocation.LocationDate, _mostRecentLocation.Name + Constants.LOCATION_DESCRIPTION_PREFIX_GPS, Constants.MessageType.Info);
             }
             else if (!locationUpdated && LocationManager.UseTowers) {
                 locationUpdated = UpdateLocationDataByCellTower();
@@ -406,19 +410,31 @@ namespace Hineini {
             bool locationUpdated = false;
             if (locationObject != null) {
                 string locationMarker = MainUtility.GetLocationMarker(locationObject);
+                bool locationMarkerHasMoved = LocationMarkerHasMoved(locationMarker);
                 if (locationObject is string) {
+                    _attemptingUpdate = true;
                     _fireEagle.Update(LocationType.address, (string)locationObject);
-                    locationUpdated = true;
-                }
-                else if (locationObject is CellTower && (_manualUpdateRequested || LocationMarkerHasMoved(locationMarker))) {
-                    _fireEagle.Update((CellTower)locationObject);
+                    _attemptingUpdate = false;
                     locationUpdated = true;
                 }
                 else {
-                    Position position = (Position)locationObject;
-                    if (position.Latitude != 0 && position.Longitude != 0) {
-                        _fireEagle.Update(position);
+                    if (locationObject is CellTower && (_manualUpdateRequested || locationMarkerHasMoved)) {
+                        _attemptingUpdate = true;
+                        _fireEagle.Update((CellTower)locationObject);
+                        _attemptingUpdate = false;
                         locationUpdated = true;
+                    }
+                    else {
+                        bool positionIsGoogleCellTower = Constants.LOCATION_DESCRIPTION_PREFIX_GOOGLE.Equals(locationMessagePrefix);
+                        if (_manualUpdateRequested || !positionIsGoogleCellTower || locationMarkerHasMoved) {
+                            Position position = (Position)locationObject;
+                            if (position.Latitude != 0 && position.Longitude != 0) {
+                                _attemptingUpdate = true;
+                                _fireEagle.Update(position);
+                                _attemptingUpdate = false;
+                                locationUpdated = true;
+                            }
+                        }
                     }
                 }
                 if (locationUpdated) {
@@ -429,7 +445,14 @@ namespace Hineini {
         }
 
         private static bool LocationMarkerHasMoved(string locationMarker) {
-            return !Helpers.StringHasValue(locationMarker) || !locationMarker.Equals(_lastLocationMarker);
+            bool locationMarkerHasValue = Helpers.StringHasValue(locationMarker);
+            bool result = !locationMarkerHasValue;
+            if (!result) {
+                bool locationMarkerHasChanged = !locationMarker.Equals(_lastLocationMarker);
+                result = locationMarkerHasChanged;
+            }
+            Helpers.WriteToExtraLog("Location markers: '" + locationMarker + "' & '" + _lastLocationMarker + "'", null);
+            return result;
         }
 
         private void UpdateRecentLocationData(string locationMarker, string locationMessagePrefix) {
@@ -478,6 +501,26 @@ namespace Hineini {
             }
         }
 
+        private void DrawMapCenterMarker() {
+            if (locationPictureBox.Image != null && Settings.MapCenterMarkerSize > 0 && _mostRecentLocation.ExactPoint != null && _mostRecentLocation.ExactPoint.Valid()) {
+                Graphics graphics = Graphics.FromImage(locationPictureBox.Image);
+                Bitmap myBitmap = new Bitmap(locationPictureBox.Image);
+                Rectangle rectangle = new Rectangle(locationPictureBox.Left, locationPictureBox.Top, myBitmap.Width, myBitmap.Height);
+                graphics.DrawImage(myBitmap, rectangle, rectangle, GraphicsUnit.Pixel);
+                int halfMarkerSize = Settings.MapCenterMarkerSize / 2;
+                int yAxisCenter = locationPictureBox.Image.Height / 2;
+                int markerYAxisStart = yAxisCenter - halfMarkerSize;
+                int xAxisCenter = locationPictureBox.Image.Width / 2;
+                int markerXAxisStart = xAxisCenter - halfMarkerSize;
+                for (int i = 0; i < Settings.MapCenterMarkerSize; i++) {
+                    Color color = Color.Black;
+                    myBitmap.SetPixel(markerXAxisStart + i, yAxisCenter, color);
+                    myBitmap.SetPixel(xAxisCenter, markerYAxisStart + i, color);
+                }
+                graphics.DrawImage(myBitmap, rectangle, rectangle, GraphicsUnit.Pixel);
+            }
+        }
+
         private void GeolocateTest() {
             CellTower cellTower = new CellTower(88, 222, 20041, 8228);
             try {
@@ -508,18 +551,30 @@ namespace Hineini {
                 ShowMainFormAfterPreAuthorization();
             }
 
-            bool displayedAndPendingImagesAreEqual = locationPictureBox.Image != null && locationPictureBox.Image.Equals(_pendingMapImage);
-            locationPictureBox.Image = _pendingMapImage;
-            UpdateMostRecentInfoMessageLabel();
-            if (!displayedAndPendingImagesAreEqual && _pendingMapImage != null) {
-                ResetUpdateTextBoxAfterMapImageUpdate();
+            if (locationPictureBox.Image != _pendingMapImage) {
+                locationPictureBox.Image = _pendingMapImage;
+                if (_pendingMapImage != null) {
+                    DrawMapCenterMarker();
+                    ResetUpdateTextBoxAfterMapImageUpdate();
+                }
             }
+            AdjustInfoMessageLabelBackgroundColor();
+            UpdateMostRecentInfoMessageLabel();
 
             ChangeToManualUpdateIntervalIfUserIsTypingLocation();
 
             if (_userShouldBeAdvisedAboutRecommendedVersion) {
                 ShowClientUpdateMenuItem();
                 _userShouldBeAdvisedAboutRecommendedVersion = false;
+            }
+        }
+
+        private void AdjustInfoMessageLabelBackgroundColor() {
+            if (_attemptingUpdate && Constants.MOST_RECENT_INFO_LABEL_BACKCOLOR_NORMAL.Equals(mostRecentInfoMessageLabel.BackColor)) {
+                mostRecentInfoMessageLabel.BackColor = Constants.MOST_RECENT_INFO_LABEL_BACKCOLOR_UPDATE_IN_PROGRESS;
+            }
+            else if (!_attemptingUpdate && Constants.MOST_RECENT_INFO_LABEL_BACKCOLOR_UPDATE_IN_PROGRESS.Equals(mostRecentInfoMessageLabel.BackColor)) {
+                mostRecentInfoMessageLabel.BackColor = Constants.MOST_RECENT_INFO_LABEL_BACKCOLOR_NORMAL;
             }
         }
 
@@ -530,7 +585,7 @@ namespace Hineini {
                 }
                 else {
                     MapInfo mapInfo = new MapInfo(_mostRecentLocation.ExactPoint, _mostRecentLocation.UpperCorner, _mostRecentLocation.LowerCorner);
-                    _pendingMapUrl = mapInfo.GetMapUrl(_mapHeight, _mapWidth);
+                    _pendingMapUrl = mapInfo.GetMapUrl(_mapHeight, _mapWidth, Settings.MapZoomLevel);
                 }
             }
             catch (Exception e) {
@@ -564,7 +619,7 @@ namespace Hineini {
         private void UpdateMostRecentInfoMessageLabel() {
             if (!mostRecentInfoMessageLabel.Text.Equals(MessagesForm.MostRecentInfoMessage)) {
                 mostRecentInfoMessageLabel.Text = MessagesForm.MostRecentInfoMessage;
-                MainUtility.ResizeLabel(mostRecentInfoMessageLabel, CreateGraphics());
+                MainUtility.ResizeLabel(mostRecentInfoMessageLabel, CreateGraphics(), locationPictureBox.Width);
             }
         }
 
@@ -663,8 +718,10 @@ namespace Hineini {
                     }
                 }
                 if (_pendingMapUrl != null && !_pendingMapUrl.Equals(_lastMappedUrl)) {
-                    if (Boolean.IsActiveApplication) {
+                    if (Settings.MapEnabled && Boolean.IsActiveApplication) {
+                        _attemptingUpdate = true;
                         _pendingMapImage = MapManager.GetMapImage(_pendingMapUrl);
+                        _attemptingUpdate = false;
                         _lastMappedUrl = _pendingMapUrl;
                         _pendingMapUrl = null;
                     }
@@ -724,6 +781,15 @@ namespace Hineini {
                 }
             }
             catch (Exception e1) {
+                string errorMessage = Constants.UNKNOWN_ERROR_MESSAGE;
+                if (Settings.ExtraLogEnabled) {
+                    errorMessage += " See Extra Log for details.";
+                }
+                else {
+                    errorMessage += " See Error Log for details.";
+                    MessagesForm.AddMessage(DateTime.Now, "The Extra Log (Menu>Log>Log Extra/Debug Information) may answer questions developers have about your error.", Constants.MessageType.Error);
+                }
+                MessagesForm.AddMessage(DateTime.Now, errorMessage, Constants.MessageType.Info);
                 Helpers.WriteToExtraLog(e1.Message, e1);
             }
             finally {
@@ -844,14 +910,6 @@ namespace Hineini {
             MainUtility.ChangeUpdateIntervalSetting(Constants.UPDATE_INTERVAL_MANUAL_ONLY, updateIntervalMenuItem, manuallyMenuItem);
         }
 
-        private void systemManagedMenuItem_Click(object sender, EventArgs e) {
-            MainUtility.ChangeBacklightSetting(Constants.BACKLIGHT_SYSTEM_MANAGED, true, backlightMenuItem, systemManagedMenuItem, alwaysOnMenuItem);
-        }
-
-        private void alwaysOnMenuItem_Click(object sender, EventArgs e) {
-            MainUtility.ChangeBacklightSetting(Constants.BACKLIGHT_ALWAYS_ON, true, backlightMenuItem, systemManagedMenuItem, alwaysOnMenuItem);
-        }
-
         private void UndoHineiniAuthorizationConfirmMenuItem_Click(object sender, EventArgs e) {
             ResetFireEagleAuthorization();
         }
@@ -865,7 +923,6 @@ namespace Hineini {
         }
 
         private void updateLinkLabel_Click(object sender, EventArgs e) {
-            MessagesForm.AddMessage(DateTime.Now, Constants.MANUAL_UPDATE_STARTED_MESSAGE, Constants.MessageType.Info);
             _manualUpdateRequested = true;
             SecondsBeforeNextFireEagleProcessing = 0;
         }
@@ -891,19 +948,19 @@ namespace Hineini {
         }
 
         private void noneMenuItem_Click(object sender, EventArgs e) {
-            MainUtility.ChangeGpsStationaryThresholdSetting(0.0, gpsStationaryThresholdMenuItem);
+            MainUtility.ChangeGpsStationaryThresholdSetting(Constants.GPS_STATIONARY_THRESHOLD_DISABLED, gpsStationaryThresholdMenuItem);
         }
 
         private void quarterMileMenuItem_Click(object sender, EventArgs e) {
-            MainUtility.ChangeGpsStationaryThresholdSetting(0.25, gpsStationaryThresholdMenuItem);
+            MainUtility.ChangeGpsStationaryThresholdSetting(Constants.GPS_STATIONARY_THRESHOLD_QUARTER_MILE, gpsStationaryThresholdMenuItem);
         }
 
         private void halfMileMenuItem_Click(object sender, EventArgs e) {
-            MainUtility.ChangeGpsStationaryThresholdSetting(0.5, gpsStationaryThresholdMenuItem);
+            MainUtility.ChangeGpsStationaryThresholdSetting(Constants.GPS_STATIONARY_THRESHOLD_HALF_MILE, gpsStationaryThresholdMenuItem);
         }
 
         private void oneMileMenuItem_Click(object sender, EventArgs e) {
-            MainUtility.ChangeGpsStationaryThresholdSetting(1.0, gpsStationaryThresholdMenuItem);
+            MainUtility.ChangeGpsStationaryThresholdSetting(Constants.GPS_STATIONARY_THRESHOLD_MILE, gpsStationaryThresholdMenuItem);
         }
         #endregion
 
@@ -986,7 +1043,7 @@ namespace Hineini {
             //mostRecentInfoMessageLabel.Location = new Point(1, locationPictureBox.Size.Height - mostRecentInfoMessageLabel.Size.Height + 1);
             mostRecentInfoMessageLabel.Location = new Point(1, 1);
             if (mostRecentInfoMessageLabel.Text.Length > 0) {
-                MainUtility.ResizeLabel(mostRecentInfoMessageLabel, CreateGraphics());
+                MainUtility.ResizeLabel(mostRecentInfoMessageLabel, CreateGraphics(), locationPictureBox.Width);
             }
         }
 
@@ -1040,5 +1097,70 @@ namespace Hineini {
                 Process.Start("http://gettag.mobi", null);
             }
         }
+
+        private void thirtyFeetMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeGpsStationaryThresholdSetting(Constants.GPS_STATIONARY_THRESHOLD_30_FEET, gpsStationaryThresholdMenuItem);
+        }
+
+        private void sixtyFeetMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeGpsStationaryThresholdSetting(Constants.GPS_STATIONARY_THRESHOLD_60_FEET, gpsStationaryThresholdMenuItem);
+        }
+
+        private void threeHundredFeetMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeGpsStationaryThresholdSetting(Constants.GPS_STATIONARY_THRESHOLD_300_FEET, gpsStationaryThresholdMenuItem);
+        }
+
+        private void systemManagedMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeBacklightSetting(Constants.BACKLIGHT_SYSTEM_MANAGED, true, backlightMenuItem, systemManagedMenuItem, alwaysOnMenuItem);
+        }
+
+        private void alwaysOnMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeBacklightSetting(Constants.BACKLIGHT_ALWAYS_ON, true, backlightMenuItem, systemManagedMenuItem, alwaysOnMenuItem);
+        }
+
+        private void mapEnabledMenuItem_Click(object sender, EventArgs e) {
+            mapEnabledMenuItem.Checked = !mapEnabledMenuItem.Checked;
+            MainUtility.ChangeMapEnabledSetting(mapEnabledMenuItem.Checked, true, mapEnabledMenuItem);
+            if (!centerMarkerMenuItem.Checked) {
+                _pendingMapImage = null;
+            }
+        }
+
+        private void centerMarkerDisabledMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeMapCenterMarkerSizeSetting(Constants.CENTER_MARKER_SIZE_DISABLED, centerMarkerMenuItem);
+        }
+
+        private void centerMarkerSmallMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeMapCenterMarkerSizeSetting(Constants.CENTER_MARKER_SIZE_SMALL, centerMarkerMenuItem);
+        }
+
+        private void centerMarkerMediumMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeMapCenterMarkerSizeSetting(Constants.CENTER_MARKER_SIZE_MEDIUM, centerMarkerMenuItem);
+        }
+
+        private void centerMarkerLargeMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeMapCenterMarkerSizeSetting(Constants.CENTER_MARKER_SIZE_LARGE, centerMarkerMenuItem);
+        }
+
+        private void zoomLeastMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeMapZoomLevelSetting(Constants.MAP_ZOOM_LEVEL_LEAST, zoomLevelMenuItem);
+        }
+
+        private void zoomLessMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeMapZoomLevelSetting(Constants.MAP_ZOOM_LEVEL_LESS, zoomLevelMenuItem);
+        }
+
+        private void zoomMoreMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeMapZoomLevelSetting(Constants.MAP_ZOOM_LEVEL_MORE, zoomLevelMenuItem);
+        }
+
+        private void zoomMostMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeMapZoomLevelSetting(Constants.MAP_ZOOM_LEVEL_MOST, zoomLevelMenuItem);
+        }
+
+        private void extraLogMenuItem_Click(object sender, EventArgs e) {
+            MainUtility.ChangeExtraLogEnabledSetting(!extraLogMenuItem.Checked, extraLogMenuItem);
+        }
+
     }
 }
