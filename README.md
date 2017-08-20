@@ -3,7 +3,7 @@ Hineini tells Yahoo's Fire Eagle service where you are. It runs natively in Wind
 Hineini sends your physical location (derived from CellID, GPS, or your input) to Fire Eagle.  That's it.  It depends on no service other than Fire Eagle to operate (if the map service becomes unavailable, your location is still updated w/ Fire Eagle).  You tell it whether updates should be automatic or manual.  A map of your most recent location is displayed on the screen only when Hineini is the active/foreground application (this preserves battery life when Hineini is running in the background).
 
 ![Screenshot](http://i.imgur.com/ev9iH7e.png "Screenshot")  
-More [Screenshots](/wiki/Screenshots)
+More [Screenshots](https://github.com/lancehilliard/Hineini/wiki/Screenshots)
 
 Like Hineini? [Buy me a beer!](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5491392)
 
