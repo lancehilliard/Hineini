@@ -11,4 +11,4 @@ This project offers two things:
 * a native Windows Mobile update client for Yahoo's Fire Eagle service
 * an opportunity for any developer wishing to contribute (all skill levels welcome)
 Note from the project owner:
-Every facet of this project and its source code is ripe for improvement.  You're encouraged to voice what about it you'd like improved first, but thank you for respecting the fact that those improvements can only come given the availability of the volunteer(s) willing to work on it at any given time. [Why Hineini?](Why)
+Every facet of this project and its source code is ripe for improvement.  You're encouraged to voice what about it you'd like improved first, but thank you for respecting the fact that those improvements can only come given the availability of the volunteer(s) willing to work on it at any given time. [Why Hineini?](https://github.com/lancehilliard/Hineini/wiki/Why-Hineini%3F)
